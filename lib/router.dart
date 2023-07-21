@@ -4,7 +4,7 @@ import 'package:kezzle/features/authentication/make_user_screen.dart';
 import 'package:kezzle/responsive/mobile_screen_layout.dart';
 
 final router = GoRouter(
-  initialLocation: "/home",
+  // initialLocation: "/home",
   routes: [
     GoRoute(
       name: LoginScreen.routeName,

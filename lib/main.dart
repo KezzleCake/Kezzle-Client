@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/date_symbol_data_local.dart';
-import 'package:kezzle/features/authentication/login_screen.dart';
-import 'package:kezzle/responsive/mobile_screen_layout.dart';
+// import 'package:kezzle/features/authentication/login_screen.dart';
+// import 'package:kezzle/responsive/mobile_screen_layout.dart';
 import 'package:kezzle/router.dart';
 import 'package:kezzle/utils/colors.dart';
 
@@ -32,8 +32,6 @@ class KezzleApp extends StatelessWidget {
         primaryColor: const Color(0xffFDDA81),
         textSelectionTheme: TextSelectionThemeData(
           cursorColor: coral01,
-          // selectionColor: const Color(0xffFDDA81),
-          // selectionHandleColor: const Color(0xffFDDA81),
         ),
         scaffoldBackgroundColor: const Color(0xffFFFFFF),
         appBarTheme: AppBarTheme(

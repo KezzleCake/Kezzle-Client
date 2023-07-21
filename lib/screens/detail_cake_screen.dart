@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:kezzle/screens/detail_store_screen.dart';
+import 'package:kezzle/screens/store/detail_store_screen.dart';
 import 'package:kezzle/screens/more_review_screen.dart';
 import 'package:kezzle/utils/colors.dart';
 import 'package:kezzle/widgets/keyword_widget.dart';

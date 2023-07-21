@@ -26,9 +26,6 @@ class _MobileScreenLayoutState extends State<MobileScreenLayout> {
   // int _selectedIndex = 0;
   late int _selectedIndex = _tabNames.indexOf(widget.tab);
 
-  //  탭 나타내는거 그지같음 수정해야될 듯.
-  //int _page = 0;
-  //late PageController pageController;
   void _onTap(int index) {
     context.go('/${_tabNames[index]}');
     setState(() {
@@ -36,43 +33,33 @@ class _MobileScreenLayoutState extends State<MobileScreenLayout> {
     });
   }
 
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   pageController = PageController();
-  //   setState(() {});
-  // }
-
-  // void navigationTapped(int page) {
-  //   pageController.jumpToPage(page);
-  // }
-
-  // @override
-  // void dispose() {
-  //   pageController.dispose();
-  //   super.dispose();
-  // }
-
-  // void onPageChanged(int page) {
-  //   setState(() {
-  //     _page = page;
-  //   });
-  // }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      //다른 탭 갔다와도 상태 유지하도록 하려면? Offstage, Stack 이용해보자. -> State를 유지하는 Navigation.
-      //탭에서 PageView는 그다지 유용하진 않은 듯?
-      // body: PageView(
-      //   children: homeScreenItems,
-      //   physics: const NeverScrollableScrollPhysics(),
-      //   controller: pageController,
-      //   onPageChanged: onPageChanged,
-      // ),
-      body: homeScreenItems[_selectedIndex],
-
-      //다른 탭으로 바꿔야징.
+      body: Stack(
+        children: [
+          Offstage(
+            offstage: _selectedIndex != 0,
+            child: homeScreenItems[0],
+          ),
+          Offstage(
+            offstage: _selectedIndex != 1,
+            child: homeScreenItems[1],
+          ),
+          Offstage(
+            offstage: _selectedIndex != 2,
+            child: homeScreenItems[2],
+          ),
+          Offstage(
+            offstage: _selectedIndex != 3,
+            child: homeScreenItems[3],
+          ),
+          Offstage(
+            offstage: _selectedIndex != 4,
+            child: homeScreenItems[4],
+          ),
+        ],
+      ),
       bottomNavigationBar: CupertinoTabBar(
         backgroundColor: Colors.white,
         onTap: _onTap,

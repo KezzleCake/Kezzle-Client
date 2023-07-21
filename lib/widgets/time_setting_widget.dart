@@ -11,23 +11,44 @@ class TimeSettingWidget extends StatefulWidget {
 }
 
 class _TimeSettingWidgetState extends State<TimeSettingWidget> {
+  DateTime _selectedTime = DateTime.now();
+
+  void _closed() {
+    //pop되면서 선택된 시간을 전달
+    Navigator.of(context).pop(_selectedTime);
+  }
+
+  void _onTimeChanged(DateTime newTime) {
+    print(newTime);
+    setState(() {
+      _selectedTime = newTime;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(20),
-          topRight: Radius.circular(20),
+    return WillPopScope(
+      onWillPop: () async {
+        _closed();
+        return false;
+      },
+      child: Container(
+        padding: const EdgeInsets.symmetric(
+          horizontal: 20,
         ),
-      ),
-      height: 237,
-      child: CupertinoDatePicker(
-        mode: CupertinoDatePickerMode.time,
-        initialDateTime: DateTime.now(),
-        onDateTimeChanged: (DateTime newDateTime) {
-          print(newDateTime);
-        },
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(20),
+            topRight: Radius.circular(20),
+          ),
+        ),
+        height: 237,
+        child: CupertinoDatePicker(
+          mode: CupertinoDatePickerMode.time,
+          initialDateTime: DateTime.now(),
+          onDateTimeChanged: _onTimeChanged,
+        ),
       ),
     );
   }
