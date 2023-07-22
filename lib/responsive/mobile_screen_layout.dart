@@ -36,6 +36,7 @@ class _MobileScreenLayoutState extends State<MobileScreenLayout> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      // 탭 3개로 줄임
       body: Stack(
         children: [
           Offstage(
@@ -44,20 +45,20 @@ class _MobileScreenLayoutState extends State<MobileScreenLayout> {
           ),
           Offstage(
             offstage: _selectedIndex != 1,
-            child: homeScreenItems[1],
-          ),
-          Offstage(
-            offstage: _selectedIndex != 2,
-            child: homeScreenItems[2],
-          ),
-          Offstage(
-            offstage: _selectedIndex != 3,
             child: homeScreenItems[3],
           ),
           Offstage(
-            offstage: _selectedIndex != 4,
+            offstage: _selectedIndex != 2,
             child: homeScreenItems[4],
           ),
+          // Offstage(
+          //   offstage: _selectedIndex != 3,
+          //   child: homeScreenItems[3],
+          // ),
+          // Offstage(
+          //   offstage: _selectedIndex != 4,
+          //   child: homeScreenItems[4],
+          // ),
         ],
       ),
       bottomNavigationBar: CupertinoTabBar(
@@ -72,9 +73,25 @@ class _MobileScreenLayoutState extends State<MobileScreenLayout> {
                   BlendMode.srcIn),
             ),
           ),
+          // BottomNavigationBarItem(
+          //   icon: SvgPicture.asset(
+          //     'assets/tab_icons/map.svg',
+          //     colorFilter: ColorFilter.mode(
+          //         _selectedIndex == 1 ? Colors.black : Colors.grey,
+          //         BlendMode.srcIn),
+          //   ),
+          // ),
+          // BottomNavigationBarItem(
+          //   icon: SvgPicture.asset(
+          //     'assets/tab_icons/search.svg',
+          //     colorFilter: ColorFilter.mode(
+          //         _selectedIndex == 2 ? Colors.black : Colors.grey,
+          //         BlendMode.srcIn),
+          //   ),
+          // ),
           BottomNavigationBarItem(
             icon: SvgPicture.asset(
-              'assets/tab_icons/map.svg',
+              'assets/tab_icons/like.svg',
               colorFilter: ColorFilter.mode(
                   _selectedIndex == 1 ? Colors.black : Colors.grey,
                   BlendMode.srcIn),
@@ -82,25 +99,9 @@ class _MobileScreenLayoutState extends State<MobileScreenLayout> {
           ),
           BottomNavigationBarItem(
             icon: SvgPicture.asset(
-              'assets/tab_icons/search.svg',
-              colorFilter: ColorFilter.mode(
-                  _selectedIndex == 2 ? Colors.black : Colors.grey,
-                  BlendMode.srcIn),
-            ),
-          ),
-          BottomNavigationBarItem(
-            icon: SvgPicture.asset(
-              'assets/tab_icons/like.svg',
-              colorFilter: ColorFilter.mode(
-                  _selectedIndex == 3 ? Colors.black : Colors.grey,
-                  BlendMode.srcIn),
-            ),
-          ),
-          BottomNavigationBarItem(
-            icon: SvgPicture.asset(
               'assets/tab_icons/profile.svg',
               colorFilter: ColorFilter.mode(
-                  _selectedIndex == 4 ? Colors.black : Colors.grey,
+                  _selectedIndex == 2 ? Colors.black : Colors.grey,
                   BlendMode.srcIn),
             ),
           ),

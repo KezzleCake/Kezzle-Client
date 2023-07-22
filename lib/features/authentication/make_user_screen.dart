@@ -22,6 +22,13 @@ class _MakeUserScreenState extends State<MakeUserScreen> {
     super.initState();
     _textEditingController.addListener(() {
       setState(() {
+        //10글자를 넘어가면 못쓰도록 제한
+        if (_textEditingController.text.length > 10) {
+          _textEditingController.text =
+              _textEditingController.text.substring(0, 10);
+          _textEditingController.selection = TextSelection.fromPosition(
+              TextPosition(offset: _textEditingController.text.length));
+        }
         _nickname = _textEditingController.text;
       });
     });
@@ -118,6 +125,10 @@ class _MakeUserScreenState extends State<MakeUserScreen> {
                       color: gray03,
                     ),
                   ),
+                  suffix: Text('${_nickname.length}/10',
+                      style: TextStyle(
+                        color: _nickname.isNotEmpty ? gray05 : gray04,
+                      )),
                 ),
               ),
             ],
@@ -143,7 +154,7 @@ class _MakeUserScreenState extends State<MakeUserScreen> {
                 clipBehavior: Clip.hardEdge,
                 duration: const Duration(milliseconds: 300),
                 child: Text(
-                  '시작하기',
+                  '다음',
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w700,

@@ -3,25 +3,33 @@ import 'package:flutter/material.dart';
 import 'package:kezzle/utils/colors.dart';
 
 class DistanceSettingWidget extends StatefulWidget {
-  const DistanceSettingWidget({super.key});
+  final int initialValue;
+  const DistanceSettingWidget({super.key, required this.initialValue});
 
   @override
   State<DistanceSettingWidget> createState() => _DistanceSettingWidgetState();
 }
 
 class _DistanceSettingWidgetState extends State<DistanceSettingWidget> {
-  int selectedIndex = 0;
+  late int selectedIndex;
+
+  @override
+  void initState() {
+    super.initState();
+    selectedIndex = widget.initialValue - 1;
+  }
 
   void _closed() {
-    //pop되면서 선택된 시간을 전달
+    //pop되면서 선택된 거리를 전달
     Navigator.of(context).pop(selectedIndex + 1);
+    //print(selectedIndex + 1);
   }
 
   void onSelectedItemChanged(int index) {
     setState(() {
       selectedIndex = index;
     });
-    print(selectedIndex);
+    // print(selectedIndex);
   }
 
   @override
@@ -49,7 +57,7 @@ class _DistanceSettingWidgetState extends State<DistanceSettingWidget> {
               for (int i = 0; i < 10; i++)
                 Padding(
                     padding: const EdgeInsets.only(
-                      top: 10,
+                      top: 11,
                     ),
                     child: Text(
                       '${i + 1}km',

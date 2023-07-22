@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+// import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:kezzle/utils/colors.dart';
 
 class StoreWidget extends StatelessWidget {
@@ -51,32 +51,28 @@ class StoreWidget extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(height: 4),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Row(
-                        children: [
-                          FaIcon(
-                            FontAwesomeIcons.solidStar,
-                            size: 14,
-                            color: orange01,
-                          ),
-                          const SizedBox(width: 2),
-                          Text(
-                            '4.5(100+)',
-                            style: TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w600,
-                              color: gray07,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
+                  // Row(
+                  //   children: [
+                  //     FaIcon(
+                  //       FontAwesomeIcons.solidStar,
+                  //       size: 14,
+                  //       color: orange01,
+                  //     ),
+                  //     const SizedBox(width: 2),
+                  //     Text(
+                  //       '4.5(100+)',
+                  //       style: TextStyle(
+                  //         fontSize: 12,
+                  //         fontWeight: FontWeight.w600,
+                  //         color: gray07,
+                  //       ),
+                  //     ),
+                  //   ],
+                  // ),
                   // const SizedBox(height: 4),
                   Text(
-                    '0.3km · 20,000원~40,000원',
+                    '0.3km',
+                    // '0.3km · 20,000원~40,000원',
                     style: TextStyle(
                       fontSize: 12,
                       color: gray05,

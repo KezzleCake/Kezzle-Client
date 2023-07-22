@@ -75,12 +75,12 @@ class _IntroduceStoreState extends State<IntroduceStore> {
                   Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('사업자등록번호',
-                            style: TextStyle(
-                                fontSize: 12,
-                                color: gray07,
-                                fontWeight: FontWeight.w600)),
-                        const SizedBox(height: 6),
+                        // Text('사업자등록번호',
+                        //     style: TextStyle(
+                        //         fontSize: 12,
+                        //         color: gray07,
+                        //         fontWeight: FontWeight.w600)),
+                        // const SizedBox(height: 6),
                         Text('픽업시간',
                             style: TextStyle(
                                 fontSize: 12,
@@ -97,12 +97,12 @@ class _IntroduceStoreState extends State<IntroduceStore> {
                   Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('123-45-67890',
-                            style: TextStyle(
-                                fontSize: 12,
-                                color: gray05,
-                                fontWeight: FontWeight.w600)),
-                        const SizedBox(height: 6),
+                        // Text('123-45-67890',
+                        //     style: TextStyle(
+                        //         fontSize: 12,
+                        //         color: gray05,
+                        //         fontWeight: FontWeight.w600)),
+                        // const SizedBox(height: 6),
                         Text('평일 12시~19시, 주말 12~18시',
                             style: TextStyle(
                                 fontSize: 12,
@@ -117,55 +117,55 @@ class _IntroduceStoreState extends State<IntroduceStore> {
                       ]),
                 ])),
           ])),
-      const MyDivider(),
-      Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
-          child:
-              Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text('가계 통계',
-                style: TextStyle(
-                    fontSize: 16, color: gray08, fontWeight: FontWeight.w600)),
-            const SizedBox(height: 16),
-            Container(
-                padding: const EdgeInsets.all(16),
-                width: double.infinity,
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(16), color: gray02),
-                child: Row(children: [
-                  Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('최근 주문 수',
-                            style: TextStyle(
-                                fontSize: 12,
-                                color: gray07,
-                                fontWeight: FontWeight.w600)),
-                        const SizedBox(height: 6),
-                        Text('전체 주문 수',
-                            style: TextStyle(
-                                fontSize: 12,
-                                color: gray07,
-                                fontWeight: FontWeight.w600)),
-                      ]),
-                  const SizedBox(width: 35),
-                  Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('1,000',
-                            style: TextStyle(
-                                fontSize: 12,
-                                color: gray05,
-                                fontWeight: FontWeight.w600)),
-                        const SizedBox(height: 6),
-                        Text('40,000',
-                            style: TextStyle(
-                                fontSize: 12,
-                                color: gray05,
-                                fontWeight: FontWeight.w600)),
-                      ]),
-                ])),
-          ])),
-      const SizedBox(height: 100),
+      // const MyDivider(),
+      // Padding(
+      //     padding: const EdgeInsets.symmetric(horizontal: 20),
+      //     child:
+      //         Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+      //       Text('가계 통계',
+      //           style: TextStyle(
+      //               fontSize: 16, color: gray08, fontWeight: FontWeight.w600)),
+      //       const SizedBox(height: 16),
+      //       Container(
+      //           padding: const EdgeInsets.all(16),
+      //           width: double.infinity,
+      //           decoration: BoxDecoration(
+      //               borderRadius: BorderRadius.circular(16), color: gray02),
+      //           child: Row(children: [
+      //             Column(
+      //                 crossAxisAlignment: CrossAxisAlignment.start,
+      //                 children: [
+      //                   Text('최근 주문 수',
+      //                       style: TextStyle(
+      //                           fontSize: 12,
+      //                           color: gray07,
+      //                           fontWeight: FontWeight.w600)),
+      //                   const SizedBox(height: 6),
+      //                   Text('전체 주문 수',
+      //                       style: TextStyle(
+      //                           fontSize: 12,
+      //                           color: gray07,
+      //                           fontWeight: FontWeight.w600)),
+      //                 ]),
+      //             const SizedBox(width: 35),
+      //             Column(
+      //                 crossAxisAlignment: CrossAxisAlignment.start,
+      //                 children: [
+      //                   Text('1,000',
+      //                       style: TextStyle(
+      //                           fontSize: 12,
+      //                           color: gray05,
+      //                           fontWeight: FontWeight.w600)),
+      //                   const SizedBox(height: 6),
+      //                   Text('40,000',
+      //                       style: TextStyle(
+      //                           fontSize: 12,
+      //                           color: gray05,
+      //                           fontWeight: FontWeight.w600)),
+      //                 ]),
+      //           ])),
+      //     ])),
+      const SizedBox(height: 50),
     ]);
   }
 }

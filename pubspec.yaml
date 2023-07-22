@@ -83,7 +83,14 @@ flutter:
     - assets/icons/order.svg
     - assets/icons/coupon.svg
     - assets/icons/review.svg
-
+    - assets/splash_icons/splash_cake1.svg
+    - assets/splash_icons/splash_cake2.svg
+    - assets/splash_icons/splash_cake3.svg
+    - assets/splash_icons/text-logo.svg
+    - assets/splash_icons/logo.svg
+    - assets/icons/Google.svg
+    - assets/icons/illust-empty.svg
+    
   #   - images/a_dot_ham.jpeg
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
