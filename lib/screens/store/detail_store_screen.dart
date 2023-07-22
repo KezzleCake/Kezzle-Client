@@ -49,11 +49,11 @@ class DetailStoreScreen extends StatelessWidget {
       tabs: [for (var tab in tabs) Tab(text: tab)]);
 
   Widget _tabBarView() =>
-      TabBarView(physics: NeverScrollableScrollPhysics(), children: [
+      TabBarView(physics: const NeverScrollableScrollPhysics(), children: [
         // const StorePrice(),
         StoreCakes(),
         const IntroduceStore(),
-        const StoreLocation(),
+        StoreLocation(),
         // StoreReview(),
       ]);
 

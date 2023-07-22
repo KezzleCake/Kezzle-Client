@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:intl/date_symbol_data_local.dart';
 // import 'package:kezzle/features/authentication/login_screen.dart';
 // import 'package:kezzle/responsive/mobile_screen_layout.dart';
@@ -12,6 +13,7 @@ void main() async {
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
   ]);
+  await dotenv.load(fileName: ".env"); // .env 파일 로드
   // runApp(const KezzleApp());
 
   initializeDateFormatting().then((_) => runApp(KezzleApp()));

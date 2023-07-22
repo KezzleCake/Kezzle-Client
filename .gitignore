@@ -251,3 +251,8 @@ fabric.properties
 # End of https://www.toptal.com/developers/gitignore/api/flutter,macos,visualstudiocode,androidstudio
 
 .idea
+
+*.env
+android/app/release/*.keystore
+android/app/release/*.apk
+android/app/release/output-metadata.json
