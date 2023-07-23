@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:kezzle/utils/colors.dart';
 import 'package:kezzle/widgets/my_divider_widget.dart';
+import 'package:photo_view/photo_view.dart';
 
 class IntroduceStore extends StatefulWidget {
   const IntroduceStore({super.key});
@@ -11,8 +13,23 @@ class IntroduceStore extends StatefulWidget {
 
 class _IntroduceStoreState extends State<IntroduceStore> {
   final scrollController = ScrollController();
+  final List<String> imageURLs = [
+    'assets/heart_cake.png',
+    'assets/heart_cake.png',
+    'assets/heart_cake.png',
+  ];
 
   final double horizontalPadding = 18;
+
+  void onTapImage(int index) {
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => FullScreenImage(
+                  imageURLs: imageURLs,
+                  initialIndex: index,
+                )));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -28,15 +45,23 @@ class _IntroduceStoreState extends State<IntroduceStore> {
                   separatorBuilder: (context, index) =>
                       const SizedBox(width: 12),
                   scrollDirection: Axis.horizontal,
-                  itemCount: 3,
+                  itemCount: imageURLs.length,
                   itemBuilder: (context, index) {
-                    return Container(
-                      margin: const EdgeInsets.only(bottom: 8),
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(16)),
-                      clipBehavior: Clip.hardEdge,
-                      child: Image.asset('assets/heart_cake.png',
-                          fit: BoxFit.fitHeight),
+                    return GestureDetector(
+                      onTap: () {
+                        onTapImage(index);
+                      },
+                      child: Hero(
+                        tag: 'image$index',
+                        child: Container(
+                          margin: const EdgeInsets.only(bottom: 8),
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(16)),
+                          clipBehavior: Clip.hardEdge,
+                          child: Image.asset(imageURLs[index],
+                              fit: BoxFit.fitHeight),
+                        ),
+                      ),
                     );
                   }))),
       const SizedBox(height: 16),
@@ -167,5 +192,114 @@ class _IntroduceStoreState extends State<IntroduceStore> {
       //     ])),
       const SizedBox(height: 50),
     ]);
+  }
+}
+
+class FullScreenImage extends StatefulWidget {
+  final List<String> imageURLs;
+  final int initialIndex;
+
+  const FullScreenImage(
+      {super.key, required this.imageURLs, required this.initialIndex});
+
+  @override
+  State<FullScreenImage> createState() => _FullScreenImageState();
+}
+
+class _FullScreenImageState extends State<FullScreenImage> {
+  late final PageController _pageController =
+      PageController(initialPage: widget.initialIndex);
+  late int _currentPage;
+
+  @override
+  void initState() {
+    super.initState();
+    // _pageController = PageController(initialPage: widget.initialIndex);
+    // _pageController.addListener(() {
+    //   setState(() {
+    //     _currentPage = _pageController.page!.toInt();
+    //   });
+    // });
+    _currentPage = widget.initialIndex;
+    // _pageController.addListener(() {
+    //   //print(_pageController.page);
+    //   if (_pageController.page != null) {
+    //     setState(() {
+    //       _currentPage = _pageController.page!.toInt();
+    //     });
+    //   }
+    // });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        backgroundColor: Colors.black,
+        // appBar: AppBar(
+        //   backgroundColor: Colors.black,
+        //   leading: IconButton(
+        //       onPressed: () {
+        //         Navigator.pop(context);
+        //       },
+        //       icon: const FaIcon(FontAwesomeIcons.xmark, color: Colors.white)),
+        // ),
+        body: SafeArea(
+            child: Stack(children: [
+          PageView.builder(
+            itemCount: widget.imageURLs.length,
+            onPageChanged: (value) => setState(() {
+              _currentPage = value;
+            }),
+            // controller: PageController(initialPage: initialIndex),
+            controller: _pageController,
+            itemBuilder: (context, index) {
+              return Hero(
+                tag: 'image$index',
+                child: PhotoView(
+                    imageProvider: AssetImage(widget.imageURLs[index]),
+                    minScale: PhotoViewComputedScale.contained,
+                    maxScale: PhotoViewComputedScale.covered * 2.0
+                    // child: AspectRatio(
+                    //   aspectRatio: 1,
+                    //   child: Container(
+                    //     color: Colors.black,
+                    //     child: Image.asset(
+                    //       imageURLs[index],
+                    //       fit: BoxFit.contain,
+                    //     ),
+                    //   ),
+                    // ),
+                    ),
+              );
+            },
+          ),
+          Stack(children: [
+            IconButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                icon:
+                    const FaIcon(FontAwesomeIcons.xmark, color: Colors.white)),
+            //현재 몇페이지에 있는지
+            // Text(
+            //     '${_pageController.page?.toInt()} / ${widget.imageURLs.length}',
+            //     style: const TextStyle(color: Colors.white)),
+            // // Text('}/${widget.imageURLs.length}'),
+
+            Align(
+                alignment: Alignment.topCenter,
+                child: Container(
+                  alignment: Alignment.center,
+                  width: 48,
+                  height: 48,
+                  child: Text(
+                      '${_currentPage + 1} / ${widget.imageURLs.length}',
+                      style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700)),
+                )),
+          ]),
+        ])));
   }
 }
