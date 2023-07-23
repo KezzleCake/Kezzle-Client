@@ -256,3 +256,9 @@ fabric.properties
 android/app/release/*.keystore
 android/app/release/*.apk
 android/app/release/output-metadata.json
+pubspec.lock
+
+android/app/google-services.json
+ios/Runner/GoogleService-Info.plist
+ios/firebase_app_id_file.json
+lib/firebase_options.dart

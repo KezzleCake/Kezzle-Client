@@ -4,7 +4,6 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:kezzle/utils/colors.dart';
 import 'package:kakaomap_webview/kakaomap_webview.dart';
 
-
 class StoreLocation extends StatelessWidget {
   final apiKey = dotenv.env['KAKAO_JAVASCRIPT_KEY'] ?? '';
 
