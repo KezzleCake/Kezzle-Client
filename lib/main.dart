@@ -8,6 +8,7 @@ import 'package:kezzle/firebase_options.dart';
 // import 'package:kezzle/responsive/mobile_screen_layout.dart';
 import 'package:kezzle/router.dart';
 import 'package:kezzle/utils/colors.dart';
+import 'package:provider/provider.dart';
 
 void main() async {
   // 화면 세로 고정
@@ -23,7 +24,11 @@ void main() async {
   await dotenv.load(fileName: ".env"); // .env 파일 로드
   // runApp(const KezzleApp());
 
-  initializeDateFormatting().then((_) => runApp(KezzleApp()));
+  initializeDateFormatting().then(
+    (_) => runApp(
+      const KezzleApp(),
+    ),
+  );
 }
 
 class KezzleApp extends StatelessWidget {
