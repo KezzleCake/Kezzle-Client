@@ -8,7 +8,7 @@ import 'package:kezzle/firebase_options.dart';
 // import 'package:kezzle/responsive/mobile_screen_layout.dart';
 import 'package:kezzle/router.dart';
 import 'package:kezzle/utils/colors.dart';
-import 'package:provider/provider.dart';
+// import 'package:provider/provider.dart';
 
 void main() async {
   // 화면 세로 고정

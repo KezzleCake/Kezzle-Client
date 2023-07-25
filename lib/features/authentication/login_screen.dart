@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
+import 'package:kezzle/features/authentication/services/auth_google_service.dart';
 import 'package:kezzle/features/authentication/make_user_screen.dart';
 import 'package:kezzle/utils/colors.dart';
 
@@ -15,6 +16,14 @@ class LoginScreen extends StatelessWidget {
     context.pushNamed(MakeUserScreen.routeName);
   }
 
+  void onTapGoogleBtn(BuildContext context) {
+    //context.pushNamed(MakeUserScreen.routeName);
+    AuthGoogleService().signInWithGoogle().then((value) {
+      print(value);
+      context.pushNamed(MakeUserScreen.routeName);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -24,37 +33,29 @@ class LoginScreen extends StatelessWidget {
       const SizedBox(height: 98),
       Row(mainAxisAlignment: MainAxisAlignment.center, children: [
         GestureDetector(
+            onTap: () => onTapGoogleBtn(context),
+            child: Container(
+              width: 52,
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(color: gray04, width: 1)),
+              child: SvgPicture.asset('assets/icons/Google.svg'),
+            )),
+        const SizedBox(width: 20),
+        GestureDetector(
           onTap: () => onTapBtn(context),
           child: Container(
-            width: 52,
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              border: Border.all(
-                color: gray04,
-                width: 1,
-              ),
-            ),
-            child: SvgPicture.asset('assets/icons/Google.svg'),
-          ),
-        ),
-        const SizedBox(width: 20),
-        Container(
-            width: 52,
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: Colors.black,
-              shape: BoxShape.circle,
-              border: Border.all(
+              width: 52,
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
                 color: Colors.black,
-                width: 1,
+                shape: BoxShape.circle,
+                border: Border.all(color: Colors.black, width: 1),
               ),
-            ),
-            child: const FaIcon(
-              FontAwesomeIcons.apple,
-              color: Colors.white,
-              size: 23,
-            )),
+              child: const FaIcon(FontAwesomeIcons.apple,
+                  color: Colors.white, size: 23)),
+        ),
       ]),
       const SizedBox(height: 20),
       SizedBox(
@@ -72,28 +73,25 @@ class LoginScreen extends StatelessWidget {
                         fontWeight: FontWeight.w600))),
           ])),
       const SizedBox(height: 40),
-      Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-            alignment: Alignment.center,
-            width: 102,
-            height: 30,
-            child: Text('개인정보처리방침',
-                style: TextStyle(
-                    fontSize: 12, fontWeight: FontWeight.w600, color: gray05)),
-          ),
-          const SizedBox(width: 10),
-          Container(
-            alignment: Alignment.center,
-            width: 58,
-            height: 30,
-            child: Text('이용약관',
-                style: TextStyle(
-                    fontSize: 12, fontWeight: FontWeight.w600, color: gray05)),
-          ),
-        ],
-      ),
+      Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+        Container(
+          alignment: Alignment.center,
+          width: 102,
+          height: 30,
+          child: Text('개인정보처리방침',
+              style: TextStyle(
+                  fontSize: 12, fontWeight: FontWeight.w600, color: gray05)),
+        ),
+        const SizedBox(width: 10),
+        Container(
+          alignment: Alignment.center,
+          width: 58,
+          height: 30,
+          child: Text('이용약관',
+              style: TextStyle(
+                  fontSize: 12, fontWeight: FontWeight.w600, color: gray05)),
+        ),
+      ]),
     ]));
   }
 }

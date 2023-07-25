@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
+import 'package:kezzle/features/address_search/address_search_vm.dart';
+import 'package:kezzle/features/onboarding/current_location_vm.dart';
 // import 'package:intl/intl.dart';
 import 'package:kezzle/responsive/mobile_screen_layout.dart';
 import 'package:kezzle/utils/colors.dart';
@@ -46,6 +48,22 @@ class _InitialSettingSreenState extends State<InitialSettingSreen> {
     print('result: ' + result.toString());
     setState(() {
       _selectedDistance = result!;
+    });
+  }
+
+  void _onTapCurrentLocation() {
+    print('현재위치로 설정 눌림');
+    CurrentLocationVM().getCurrentLocation().then((value) {
+      print(value);
+      // print(value!.latitude);
+      AddressSearchVM()
+          // .searchCurrentLocation(-value!.longitude, value.latitude)
+          // .searchCurrentLocation(122.406417, 37.785834)
+          .searchCurrentLocationGoogleMap(value!.longitude, value.latitude)
+          // .searchCurrentLocationGoogleMap(126.964338, 37.5612811)
+          .then((value) {
+        print(value);
+      });
     });
   }
 
@@ -283,17 +301,25 @@ class _InitialSettingSreenState extends State<InitialSettingSreen> {
                             ]))),
               ]),
               const SizedBox(height: 10),
-              Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
-                const FaIcon(FontAwesomeIcons.locationCrosshairs, size: 18),
-                const SizedBox(width: 6),
-                Text('현재 위치로 설정',
-                    style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w500,
-                        color: gray06)),
-                const SizedBox(width: 6),
-                FaIcon(FontAwesomeIcons.chevronRight, size: 10, color: gray05),
-              ]),
+              GestureDetector(
+                onTap: () => _onTapCurrentLocation(),
+                child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      const FaIcon(FontAwesomeIcons.locationCrosshairs,
+                          size: 18),
+                      const SizedBox(width: 6),
+                      Text('현재 위치로 설정',
+                          style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w500,
+                              color: gray06)),
+                      const SizedBox(width: 6),
+                      FaIcon(FontAwesomeIcons.chevronRight,
+                          size: 10, color: gray05),
+                    ]),
+              ),
               const SizedBox(height: 25),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,

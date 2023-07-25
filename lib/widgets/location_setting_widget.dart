@@ -75,7 +75,7 @@ class _LocationSettingWidgetState extends State<LocationSettingWidget> {
     print('onSubmitted: $value');
 
     // 검색 결과 가져오기
-    AddressSearchViewModel().searchAddress(value).then((value) {
+    AddressSearchVM().searchAddress(value).then((value) {
       print('검색결과\n');
       print(value);
       //검색된 주소 리스트 변경
@@ -134,7 +134,8 @@ class _LocationSettingWidgetState extends State<LocationSettingWidget> {
                               border: Border.all(
                                   color: _isFocused ? orange01 : gray03)),
                           controller: _textfiledController,
-                          placeholder: '지번, 도로명, 건물명으로 검색',
+                          // placeholder: '지번, 도로명, 건물명으로 검색',
+                          placeholder: '도로명으로 검색',
                           placeholderStyle: TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w600,
@@ -163,25 +164,24 @@ class _LocationSettingWidgetState extends State<LocationSettingWidget> {
                                 : historySearchedList.length,
                             itemBuilder: (context, index) {
                               return GestureDetector(
-                                onTap: () {
-                                  _isSearched
-                                      ? onTapAddress(searchedList[index])
-                                      : onTapAddress(
-                                          historySearchedList[index]);
-                                },
-                                child: Container(
-                                  padding:
-                                      const EdgeInsets.symmetric(vertical: 16),
-                                  child: Text(
-                                      _isSearched
-                                          ? searchedList[index]
-                                          : historySearchedList[index],
-                                      style: TextStyle(
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.w700,
-                                          color: gray05)),
-                                ),
-                              );
+                                  onTap: () {
+                                    _isSearched
+                                        ? onTapAddress(searchedList[index])
+                                        : onTapAddress(
+                                            historySearchedList[index]);
+                                  },
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 16),
+                                    child: Text(
+                                        _isSearched
+                                            ? searchedList[index]
+                                            : historySearchedList[index],
+                                        style: TextStyle(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w700,
+                                            color: gray05)),
+                                  ));
                             },
                           )),
                     ]))));

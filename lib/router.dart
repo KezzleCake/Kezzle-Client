@@ -6,7 +6,7 @@ import 'package:kezzle/features/splash/splash_screen.dart';
 import 'package:kezzle/responsive/mobile_screen_layout.dart';
 
 final router = GoRouter(
-  initialLocation: "/home",
+  // initialLocation: "/home",
   // initialLocation: "/splash",
 
   routes: [
