@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
-import 'package:kezzle/features/address_search/address_search_vm.dart';
-import 'package:kezzle/features/onboarding/current_location_vm.dart';
+// import 'package:kezzle/features/address_search/address_search_vm.dart';
+import 'package:kezzle/features/onboarding/current_location_screen.dart';
+// import 'package:kezzle/features/onboarding/current_location_vm.dart';
 // import 'package:intl/intl.dart';
 import 'package:kezzle/responsive/mobile_screen_layout.dart';
 import 'package:kezzle/utils/colors.dart';
@@ -27,16 +28,23 @@ class _InitialSettingSreenState extends State<InitialSettingSreen> {
   //     DateFormat('yyyy/MM/dd').format(DateTime.now()).toString();
   // DateTime _selectedTime = DateTime.now();
 
-  bool _isSearced = false;
+  // bool _isSearced = false;
   int _selectedDistance = 5;
+  String _selectedLocation = '';
 
-  void _onTapLocation(BuildContext context) {
-    showModalBottomSheet(
+  void _onTapLocation(BuildContext context) async {
+    final result = await showModalBottomSheet(
         context: context,
         isScrollControlled: true,
         builder: (context) {
           return const LocationSettingWidget();
         });
+    print('result: ' + result.toString());
+    if (result != null) {
+      setState(() {
+        _selectedLocation = result.toString();
+      });
+    }
   }
 
   void _onTapDistance(BuildContext context) async {
@@ -51,20 +59,17 @@ class _InitialSettingSreenState extends State<InitialSettingSreen> {
     });
   }
 
-  void _onTapCurrentLocation() {
-    print('현재위치로 설정 눌림');
-    CurrentLocationVM().getCurrentLocation().then((value) {
-      print(value);
-      // print(value!.latitude);
-      AddressSearchVM()
-          // .searchCurrentLocation(-value!.longitude, value.latitude)
-          // .searchCurrentLocation(122.406417, 37.785834)
-          .searchCurrentLocationGoogleMap(value!.longitude, value.latitude)
-          // .searchCurrentLocationGoogleMap(126.964338, 37.5612811)
-          .then((value) {
-        print(value);
+  void _onTapCurrentLocation() async {
+    // 화면 이동하고, 결과 받아오기
+    final result = await context.pushNamed(CurrentLocationScreen.routeName);
+
+    // 위치 설정 버튼으로 돌아왔을 때, 결과 받아오기
+    if (result != null) {
+      setState(() {
+        _selectedLocation = result.toString();
+        print(_selectedLocation);
       });
-    });
+    }
   }
 
   // void _onTapPickUpDate(BuildContext context) async {
@@ -131,19 +136,23 @@ class _InitialSettingSreenState extends State<InitialSettingSreen> {
             //                 fontWeight: FontWeight.w700)))),
             // const SizedBox(width: 10),
             Expanded(
-                child: GestureDetector(
-                    onTap: () => _onTapStart(context),
-                    child: Container(
-                        alignment: Alignment.center,
-                        padding: const EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                            color: coral01,
-                            borderRadius: BorderRadius.circular(28)),
-                        child: Text('시작하기',
-                            style: TextStyle(
-                                fontSize: 16,
-                                color: gray01,
-                                fontWeight: FontWeight.w700))))),
+                child: IgnorePointer(
+              ignoring: _selectedLocation.isEmpty,
+              child: GestureDetector(
+                  onTap: () => _onTapStart(context),
+                  child: Container(
+                      alignment: Alignment.center,
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                          color:
+                              _selectedLocation.isNotEmpty ? coral01 : gray03,
+                          borderRadius: BorderRadius.circular(28)),
+                      child: Text('시작하기',
+                          style: TextStyle(
+                              fontSize: 16,
+                              color: gray01,
+                              fontWeight: FontWeight.w700)))),
+            )),
           ])),
       appBar: AppBar(title: const Text('케이크 픽업 설정')),
       body: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -270,7 +279,7 @@ class _InitialSettingSreenState extends State<InitialSettingSreen> {
                                       style: TextStyle(
                                           fontSize: 14,
                                           fontWeight: FontWeight.w600,
-                                          color: _isSearced ? gray06 : gray04)),
+                                          color: gray05)),
                                 ])))),
                 const SizedBox(width: 12),
                 GestureDetector(
@@ -328,50 +337,50 @@ class _InitialSettingSreenState extends State<InitialSettingSreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          '인왕산힐스테이트아파트',
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                            color: gray08,
-                          ),
-                        ),
-                        const SizedBox(height: 3),
-                        Row(
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.all(4),
-                              decoration: BoxDecoration(
-                                color: coral01,
-                                borderRadius: BorderRadius.circular(15),
-                              ),
-                              child: const Text("도로명",
-                                  style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w600)),
-                            ),
-                            const SizedBox(width: 6),
-                            Text(
-                              "서울 서대문구 통일로 34길 46 인왕산 힐스테이트아파트",
-                              style: TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w500,
-                                color: gray06,
-                              ),
-                              // overflow: TextOverflow.ellipsis,
-                              // 문장 길이(도로명 주소) 길어지면 ... 처리하는거 넣어야 함.
-                            ),
-                          ],
-                        )
+                        Text(_selectedLocation,
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                              color: gray08,
+                            )),
+                        // const SizedBox(height: 3),
+                        // Row(
+                        //   children: [
+                        //     Container(
+                        //       padding: const EdgeInsets.all(4),
+                        //       decoration: BoxDecoration(
+                        //         color: coral01,
+                        //         borderRadius: BorderRadius.circular(15),
+                        //       ),
+                        //       child: const Text("도로명",
+                        //           style: TextStyle(
+                        //               color: Colors.white,
+                        //               fontSize: 12,
+                        //               fontWeight: FontWeight.w600)),
+                        //     ),
+                        //     const SizedBox(width: 6),
+                        //     Text(
+                        //       "서울 서대문구 통일로 34길 46 인왕산 힐스테이트아파트",
+                        //       style: TextStyle(
+                        //         fontSize: 12,
+                        //         fontWeight: FontWeight.w500,
+                        //         color: gray06,
+                        //       ),
+                        //       // overflow: TextOverflow.ellipsis,
+                        //       // 문장 길이(도로명 주소) 길어지면 ... 처리하는거 넣어야 함.
+                        //     ),
+                        //   ],
+                        // )
                       ],
                     ),
                   ),
-                  FaIcon(
-                    FontAwesomeIcons.check,
-                    size: 26,
-                    color: coral01,
-                  ),
+                  _selectedLocation.isNotEmpty
+                      ? FaIcon(
+                          FontAwesomeIcons.check,
+                          size: 26,
+                          color: coral01,
+                        )
+                      : Container(),
                 ],
               )
             ])),

@@ -1,6 +1,7 @@
 import 'package:go_router/go_router.dart';
 import 'package:kezzle/features/authentication/login_screen.dart';
 import 'package:kezzle/features/authentication/make_user_screen.dart';
+import 'package:kezzle/features/onboarding/current_location_screen.dart';
 import 'package:kezzle/features/profile/change_profile_screen.dart';
 import 'package:kezzle/features/splash/splash_screen.dart';
 import 'package:kezzle/responsive/mobile_screen_layout.dart';
@@ -8,6 +9,7 @@ import 'package:kezzle/responsive/mobile_screen_layout.dart';
 final router = GoRouter(
   // initialLocation: "/home",
   // initialLocation: "/splash",
+  // initialLocation: "/current_location_screen",
 
   routes: [
     // 스플래시 화면 라우팅 설정
@@ -43,6 +45,12 @@ final router = GoRouter(
       name: ChangeProfileScreen.routeName,
       path: ChangeProfileScreen.routeURL,
       builder: (context, state) => const ChangeProfileScreen(),
+    ),
+    // 현재위치로 설정 화면 라우팅 설정
+    GoRoute(
+      name: CurrentLocationScreen.routeName,
+      path: CurrentLocationScreen.routeURL,
+      builder: (context, state) => const CurrentLocationScreen(),
     ),
   ],
 );

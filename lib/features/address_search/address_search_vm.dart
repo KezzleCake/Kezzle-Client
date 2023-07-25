@@ -29,29 +29,29 @@ class AddressSearchVM {
     }
   }
 
-  //위도 경도로 주소 검색
-  Future<Map<String, dynamic>> searchCurrentLocation(
-      double longitude, double latitude) async {
-    final endpoint =
-        'https://dapi.kakao.com/v2/local/geo/coord2address.json?x=$longitude&y=$latitude&input_coord=WGS84';
-    _dio.options.headers['Authorization'] = 'KakaoAK $_apiKey';
+  //위도 경도로 주소 검색 -> 카카오맵 이용
+  // Future<Map<String, dynamic>> searchCurrentLocation(
+  //     double longitude, double latitude) async {
+  //   final endpoint =
+  //       'https://dapi.kakao.com/v2/local/geo/coord2address.json?x=$longitude&y=$latitude&input_coord=WGS84';
+  //   _dio.options.headers['Authorization'] = 'KakaoAK $_apiKey';
 
-    try {
-      final response = await _dio.get(endpoint);
+  //   try {
+  //     final response = await _dio.get(endpoint);
 
-      if (response.statusCode == 200) {
-        // API 호출 성공
-        return response.data;
-      } else {
-        // API 호출 실패
-        throw Exception('Failed to load data');
-      }
-    } catch (e) {
-      // 에러 처리
-      print(e);
-      throw Exception('Failed to load data');
-    }
-  }
+  //     if (response.statusCode == 200) {
+  //       // API 호출 성공
+  //       return response.data;
+  //     } else {
+  //       // API 호출 실패
+  //       throw Exception('Failed to load data');
+  //     }
+  //   } catch (e) {
+  //     // 에러 처리
+  //     print(e);
+  //     throw Exception('Failed to load data');
+  //   }
+  // }
 
   // 구글 지도 api를 이용한 위도 경도로 주소 검색
   Future<Map<String, dynamic>> searchCurrentLocationGoogleMap(

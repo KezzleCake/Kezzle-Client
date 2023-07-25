@@ -135,36 +135,30 @@ class _MakeUserScreenState extends State<MakeUserScreen> {
           ),
         ),
         bottomNavigationBar: BottomAppBar(
-          color: Colors.transparent,
-          elevation: 0,
-          child: IgnorePointer(
-            ignoring: _textEditingController.text.isEmpty, // 텍스트가 비어있으면 버튼 비활성화
-            child: GestureDetector(
-              onTap: onTap,
-              onTapDown: (details) => _onTapDown(details),
-              onTapUp: (details) => _onTapUp(details),
-              child: AnimatedContainer(
-                alignment: Alignment.center,
-                decoration: BoxDecoration(
-                  color: _textEditingController.text.isEmpty
-                      ? gray04
-                      : (_btnPressed ? coral03 : coral01),
-                  borderRadius: BorderRadius.circular(30),
-                ),
-                clipBehavior: Clip.hardEdge,
-                duration: const Duration(milliseconds: 300),
-                child: Text(
-                  '다음',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w700,
-                    color: gray01,
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ),
+            color: Colors.transparent,
+            elevation: 0,
+            child: IgnorePointer(
+                ignoring:
+                    _textEditingController.text.isEmpty, // 텍스트가 비어있으면 버튼 비활성화
+                child: GestureDetector(
+                  onTap: onTap,
+                  onTapDown: (details) => _onTapDown(details),
+                  onTapUp: (details) => _onTapUp(details),
+                  child: AnimatedContainer(
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                          color: _textEditingController.text.isEmpty
+                              ? gray04
+                              : (_btnPressed ? coral03 : coral01),
+                          borderRadius: BorderRadius.circular(30)),
+                      clipBehavior: Clip.hardEdge,
+                      duration: const Duration(milliseconds: 300),
+                      child: Text('다음',
+                          style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w700,
+                              color: gray01))),
+                ))),
       ),
     );
   }

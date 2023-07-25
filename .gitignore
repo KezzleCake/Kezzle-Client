@@ -262,3 +262,5 @@ android/app/google-services.json
 ios/Runner/GoogleService-Info.plist
 ios/firebase_app_id_file.json
 lib/firebase_options.dart
+ios/Runner/AppDelegate.swift
+android/app/src/main/AndroidManifest.xml
