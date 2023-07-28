@@ -1,9 +1,11 @@
 // import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
 // import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:kezzle/screens/detail_cake_screen.dart';
 import 'package:kezzle/utils/colors.dart';
+import 'package:kezzle/view_models/home_store_view_model.dart';
 import 'package:kezzle/widgets/distance_setting_widget.dart';
 // import 'package:kezzle/widgets/calendar_widget.dart';
 // import 'package:kezzle/widgets/curation_box_widget.dart';
@@ -456,16 +458,16 @@ class _CakeTabBarViewState extends State<CakeTabBarView>
   bool get wantKeepAlive => true;
 }
 
-class StoreTabBarView extends StatefulWidget {
+class StoreTabBarView extends ConsumerStatefulWidget {
   const StoreTabBarView({
     super.key,
   });
 
   @override
-  State<StoreTabBarView> createState() => _StoreTabBarViewState();
+  StoreTabBarViewState createState() => StoreTabBarViewState();
 }
 
-class _StoreTabBarViewState extends State<StoreTabBarView>
+class StoreTabBarViewState extends ConsumerState<StoreTabBarView>
     with AutomaticKeepAliveClientMixin {
   @override
   bool get wantKeepAlive => true;
@@ -476,32 +478,25 @@ class _StoreTabBarViewState extends State<StoreTabBarView>
   Widget build(BuildContext context) {
     super.build(context);
 
-    return RefreshIndicator(
-      onRefresh: () async {
-        await Future.delayed(const Duration(seconds: 1));
-      },
-      child: ListView.separated(
-        padding: const EdgeInsets.symmetric(
-          vertical: 30,
-          horizontal: 20,
-        ),
-        itemCount: 4,
-        itemBuilder: (context, index) => StoreWidget1(),
-        // StoreWidget(
-        //   onTap: (context) {
-        //     // Navigator.push(
-        //     //   context,
-        //     //   MaterialPageRoute(
-        //     //     builder: (context) => SearchStoreScreen(),
-        //     //   ),
-        //     // );
-        //   },
-        // ),
-        separatorBuilder: (context, index) => const SizedBox(
-          height: 12,
-        ),
-      ),
-    );
+    // async니까 빌드베서드 끝나도록 기다려야됨. -> when 사용
+    return ref.watch(homeStoreProvider).when(
+        loading: () => const Center(
+              child: CircularProgressIndicator(),
+            ),
+        error: (error, stackTrace) => Center(
+              child: Text('스토어 목록 불러오기 실패, $error'),
+            ),
+        data: (stores) => RefreshIndicator(
+            onRefresh: () async {
+              await Future.delayed(const Duration(seconds: 1));
+            },
+            child: ListView.separated(
+              padding: const EdgeInsets.symmetric(vertical: 30, horizontal: 20),
+              itemCount: stores.length,
+              itemBuilder: (context, index) =>
+                  StoreWidget1(store: stores[index]),
+              separatorBuilder: (context, index) => const SizedBox(height: 12),
+            )));
   }
 }
 

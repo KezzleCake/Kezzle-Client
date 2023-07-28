@@ -1,6 +1,6 @@
 # kezzle
 
-A new Flutter project.
+swm klh kezzle project
 
 ## Getting Started
 

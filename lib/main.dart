@@ -2,43 +2,47 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:intl/date_symbol_data_local.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kezzle/firebase_options.dart';
-// import 'package:kezzle/features/authentication/login_screen.dart';
-// import 'package:kezzle/responsive/mobile_screen_layout.dart';
+import 'package:kezzle/repo/search_setting_repo.dart';
 import 'package:kezzle/router.dart';
 import 'package:kezzle/utils/colors.dart';
-// import 'package:provider/provider.dart';
+import 'package:kezzle/view_models/search_setting_vm.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() async {
-  // 화면 세로 고정
   WidgetsFlutterBinding.ensureInitialized();
-
-  // Firebase 초기화
   await Firebase.initializeApp(
+    name: 'Kezzle',
     options: DefaultFirebaseOptions.currentPlatform,
   );
+
+  await dotenv.load(fileName: ".env"); // .env 파일 로드
+  final preferences = await SharedPreferences.getInstance();
+  final repository = SearchSettingRepository(preferences);
+
+  // 화면 세로 고정
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
   ]);
-  await dotenv.load(fileName: ".env"); // .env 파일 로드
-  // runApp(const KezzleApp());
 
-  initializeDateFormatting().then(
-    (_) => runApp(
-      const KezzleApp(),
-    ),
-  );
+  runApp(ProviderScope(
+    overrides: [
+      searchSettingViewModelProvider
+          .overrideWith(() => SearchSettingViewModel(repository)),
+    ],
+    child: KezzleApp(),
+  ));
 }
 
-class KezzleApp extends StatelessWidget {
+class KezzleApp extends ConsumerWidget {
   const KezzleApp({super.key});
 
   // This widget is the root of your application.
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return MaterialApp.router(
-      routerConfig: router,
+      routerConfig: ref.watch(routerProvider),
       title: 'Kezzle',
       theme: ThemeData(
         fontFamily: 'Pretendard',
@@ -52,10 +56,7 @@ class KezzleApp extends StatelessWidget {
           centerTitle: true,
           color: const Color(0xffFFFFFF),
           titleTextStyle: TextStyle(
-            color: gray08,
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-          ),
+              color: gray08, fontSize: 16, fontWeight: FontWeight.w600),
         ),
       ),
       // home: LoginScreen(),

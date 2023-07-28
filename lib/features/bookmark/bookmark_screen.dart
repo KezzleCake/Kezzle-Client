@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:kezzle/models/home_store_model.dart';
 import 'package:kezzle/utils/colors.dart';
 // import 'package:kezzle/widgets/store_widget.dart';
 import 'package:kezzle/widgets/store_widget1.dart';
@@ -100,7 +101,20 @@ class StoreBookmarkScreen extends StatelessWidget {
           //     // );
           //   },
           // ),
-          StoreWidget1(),
+          StoreWidget1(
+        store: HomeStoreModel(
+          name: '본비케이크',
+          thumbnail: 'assets/heart_cake.png',
+          address: '서울 강남구 역삼동',
+          distance: '0.3km',
+          iamges: [
+            'assets/heart_cake.png',
+            'assets/heart_cake.png',
+            'assets/heart_cake.png',
+          ],
+          like: true,
+        ),
+      ),
       separatorBuilder: (context, index) => const SizedBox(height: 12),
     );
   }

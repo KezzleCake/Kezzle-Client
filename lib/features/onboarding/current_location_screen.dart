@@ -1,24 +1,29 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:kezzle/features/address_search/address_search_vm.dart';
 import 'package:kezzle/utils/colors.dart';
+import 'package:kezzle/view_models/search_setting_vm.dart';
 
-class CurrentLocationScreen extends StatefulWidget {
+class CurrentLocationScreen extends ConsumerStatefulWidget {
   static const routeURL = '/current_location_screen';
   static const routeName = 'current_location_screen';
   const CurrentLocationScreen({super.key});
 
   @override
-  State<CurrentLocationScreen> createState() => _CurrentLocationScreenState();
+  CurrentLocationScreenState createState() => CurrentLocationScreenState();
 }
 
-class _CurrentLocationScreenState extends State<CurrentLocationScreen> {
+class CurrentLocationScreenState extends ConsumerState<CurrentLocationScreen> {
   bool _isMoved = false;
   String currentLocation = '';
 
   GoogleMapController? _mapController;
 
+  // 초기값은 받아와서 해야될거같은데 일단은 임의로 설정
+  double latitude = 37.5612811;
+  double longitude = 126.964338;
   final CameraPosition _kGooglePlex = const CameraPosition(
     // 초기값은 받아와서 해야될거같은데 일단은 임의로 설정
     target: LatLng(37.5612811, 126.964338),
@@ -33,24 +38,6 @@ class _CurrentLocationScreenState extends State<CurrentLocationScreen> {
   void _onCameraIdle() async {
     // final GoogleMapController controller = _mapController!;
     print('_onCameraIdle');
-    // LatLng centerPosition = await _mapController!.getLatLng(
-    //   ScreenCoordinate(
-    //     x: MediaQuery.of(context).size.width ~/ 2,
-    //     //y에서 appbar 높이만큼 빼줘야함
-    //     y: (MediaQuery.of(context).size.height -
-    //             AppBar().preferredSize.height) ~/
-    //         2,
-    //     // y: MediaQuery.of(context).size.height / 2 -
-    //     //             AppBar().preferredSize.height -
-    //     //             (55 + 75) +
-    //     //             28 as double,
-    //     // y: MediaQuery.of(context).size.height / 2 -
-    //     //     AppBar().preferredSize.height -
-    //     //     (55 + 75) +
-    //     //     28 -
-    //     //     15 as double,
-    //   ),
-    // );
     LatLngBounds visibleRegion = await _mapController!.getVisibleRegion();
     LatLng centerLatLng = LatLng(
       (visibleRegion.northeast.latitude + visibleRegion.southwest.latitude) / 2,
@@ -67,8 +54,14 @@ class _CurrentLocationScreenState extends State<CurrentLocationScreen> {
       //도로명 주소가 있으면 도로명 주소를, 없으면 지번 주소 가져오기
 
       // print(value['results'][0]['formatted_address']);
+
+      // 없을 수도 있을거 같으니까 예외처리 해줘야될듯?
       currentLocation = value['results'][0]['formatted_address'];
+
+      latitude = centerLatLng.latitude;
+      longitude = centerLatLng.longitude;
       _isMoved = false;
+
       setState(() {});
     });
   }
@@ -79,7 +72,15 @@ class _CurrentLocationScreenState extends State<CurrentLocationScreen> {
   }
 
   void onTapSetLocationButton(BuildContext context) {
-    Navigator.pop(context, currentLocation);
+    // 설정 누르면? 위도, 경도, 주소명 저장하고 pop하기.
+    ref
+        .read(searchSettingViewModelProvider.notifier)
+        .setAddress(currentLocation);
+    ref.read(searchSettingViewModelProvider.notifier).setLatitude(latitude);
+    ref.read(searchSettingViewModelProvider.notifier).setLongitude(longitude);
+    //Navigator.pop(context, currentLocation);
+
+    Navigator.pop(context);
   }
 
   @override

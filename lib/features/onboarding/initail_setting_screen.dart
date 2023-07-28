@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
@@ -8,28 +9,29 @@ import 'package:kezzle/features/onboarding/current_location_screen.dart';
 // import 'package:intl/intl.dart';
 import 'package:kezzle/responsive/mobile_screen_layout.dart';
 import 'package:kezzle/utils/colors.dart';
+import 'package:kezzle/view_models/search_setting_vm.dart';
 // import 'package:kezzle/widgets/calendar_widget.dart';
 import 'package:kezzle/widgets/distance_setting_widget.dart';
 import 'package:kezzle/widgets/location_setting_widget.dart';
 // import 'package:kezzle/widgets/my_divider_widget.dart';
 // import 'package:kezzle/widgets/time_setting_widget.dart';
 
-class InitialSettingSreen extends StatefulWidget {
+class InitialSettingSreen extends ConsumerStatefulWidget {
   // static const routeURL = '/initial_setting';
   static const routeName = 'initial_setting';
   const InitialSettingSreen({super.key});
 
   @override
-  State<InitialSettingSreen> createState() => _InitialSettingSreenState();
+  InitialSettingSreenState createState() => InitialSettingSreenState();
 }
 
-class _InitialSettingSreenState extends State<InitialSettingSreen> {
+class InitialSettingSreenState extends ConsumerState<InitialSettingSreen> {
   // String _selectedDate =
   //     DateFormat('yyyy/MM/dd').format(DateTime.now()).toString();
   // DateTime _selectedTime = DateTime.now();
 
   // bool _isSearced = false;
-  int _selectedDistance = 5;
+  // int _selectedDistance = 5;
   String _selectedLocation = '';
 
   void _onTapLocation(BuildContext context) async {
@@ -48,28 +50,35 @@ class _InitialSettingSreenState extends State<InitialSettingSreen> {
   }
 
   void _onTapDistance(BuildContext context) async {
-    final result = await showModalBottomSheet<int>(
+    // final result = await showModalBottomSheet<int>(
+    //     context: context,
+    //     builder: (context) {
+    //       return DistanceSettingWidget(initialValue: _selectedDistance);
+    //     });
+    // print('result: ' + result.toString());
+    // setState(() {
+    //   _selectedDistance = result!;
+    // });
+    showModalBottomSheet(
         context: context,
         builder: (context) {
-          return DistanceSettingWidget(initialValue: _selectedDistance);
+          return DistanceSettingWidget(
+              initialValue: ref.watch(searchSettingViewModelProvider).radius);
         });
-    print('result: ' + result.toString());
-    setState(() {
-      _selectedDistance = result!;
-    });
   }
 
-  void _onTapCurrentLocation() async {
+  void _onTapCurrentLocation() {
     // 화면 이동하고, 결과 받아오기
-    final result = await context.pushNamed(CurrentLocationScreen.routeName);
+    //final result = await context.pushNamed(CurrentLocationScreen.routeName);
 
     // 위치 설정 버튼으로 돌아왔을 때, 결과 받아오기
-    if (result != null) {
-      setState(() {
-        _selectedLocation = result.toString();
-        print(_selectedLocation);
-      });
-    }
+    // if (result != null) {
+    //   setState(() {
+    //     _selectedLocation = result.toString();
+    //     print(_selectedLocation);
+    //   });
+    // }
+    context.pushNamed(CurrentLocationScreen.routeName);
   }
 
   // void _onTapPickUpDate(BuildContext context) async {
@@ -299,7 +308,8 @@ class _InitialSettingSreenState extends State<InitialSettingSreen> {
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
                               Expanded(
-                                  child: Text('${_selectedDistance}km',
+                                  child: Text(
+                                      '${ref.watch(searchSettingViewModelProvider).radius}km',
                                       style: TextStyle(
                                         fontSize: 14,
                                         fontWeight: FontWeight.w600,
@@ -337,7 +347,7 @@ class _InitialSettingSreenState extends State<InitialSettingSreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(_selectedLocation,
+                        Text(ref.watch(searchSettingViewModelProvider).address,
                             style: TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w600,
@@ -374,7 +384,7 @@ class _InitialSettingSreenState extends State<InitialSettingSreen> {
                       ],
                     ),
                   ),
-                  _selectedLocation.isNotEmpty
+                  ref.watch(searchSettingViewModelProvider).address.isNotEmpty
                       ? FaIcon(
                           FontAwesomeIcons.check,
                           size: 26,

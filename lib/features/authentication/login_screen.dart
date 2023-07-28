@@ -1,17 +1,25 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
+import 'package:kezzle/features/authentication/repos/authentication_repo.dart';
 import 'package:kezzle/features/authentication/services/auth_google_service.dart';
 import 'package:kezzle/features/authentication/make_user_screen.dart';
+// import 'package:kezzle/screens/home_screen.dart';
 import 'package:kezzle/utils/colors.dart';
 
-class LoginScreen extends StatelessWidget {
+class LoginScreen extends ConsumerStatefulWidget {
   static const routeURL = '/'; // 처음 앱 키면 나오게 하려고 임시로 수정
   static const routeName = 'login';
 
   const LoginScreen({super.key});
 
+  @override
+  LoginScreenState createState() => LoginScreenState();
+}
+
+class LoginScreenState extends ConsumerState<LoginScreen> {
   void onTapBtn(BuildContext context) {
     context.pushNamed(MakeUserScreen.routeName);
   }
@@ -20,6 +28,12 @@ class LoginScreen extends StatelessWidget {
     //context.pushNamed(MakeUserScreen.routeName);
     AuthGoogleService().signInWithGoogle().then((value) {
       print(value);
+
+      // if (ref.read(authRepo).isNewUser) {
+      //   context.pushNamed(MakeUserScreen.routeName);
+      // } else {
+      //   context.go('/home');
+      // }
       context.pushNamed(MakeUserScreen.routeName);
     });
   }

@@ -1,22 +1,29 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
+import 'package:kezzle/features/authentication/repos/authentication_repo.dart';
 import 'package:kezzle/features/profile/change_profile_screen.dart';
-import 'package:kezzle/features/profile/review_screen.dart';
+// import 'package:kezzle/features/profile/review_screen.dart';
 import 'package:kezzle/utils/colors.dart';
 // import 'package:kezzle/widgets/my_divider_widget.dart';
 
-class UserScreen extends StatelessWidget {
+class UserScreen extends ConsumerStatefulWidget {
   const UserScreen({super.key});
 
-  void onTapReview(BuildContext context) {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) => const ReviewScreen(),
-      ),
-    );
-  }
+  @override
+  UserScreenState createState() => UserScreenState();
+}
+
+class UserScreenState extends ConsumerState<UserScreen> {
+  // void onTapReview(BuildContext context) {
+  //   Navigator.of(context).push(
+  //     MaterialPageRoute(
+  //       builder: (context) => const ReviewScreen(),
+  //     ),
+  //   );
+  // }
 
   void onTapNickName(BuildContext context) {
     //프로필 수정 화면으로 이동
@@ -30,8 +37,18 @@ class UserScreen extends StatelessWidget {
         isScrollControlled: true,
         builder: (context) {
           // 나중에 동작 함수도 같이 파라미터로 넣어줘야할 듯
-          return const AlertBottomSheet(
-              content: '정말 로그아웃 하시겠어요?', cancelText: '취소', confirmText: '로그아웃');
+          return AlertBottomSheet(
+              content: '정말 로그아웃 하시겠어요?',
+              cancelText: '취소',
+              confirmText: '로그아웃',
+              // 그냥 나오기
+              onTapCancel: () => Navigator.pop(context),
+              // 로그아웃 시키기
+              onTapConfirm: () {
+                print('로그아웃');
+                ref.read(authRepo).signOut();
+                context.go("/");
+              });
         });
   }
 
@@ -42,10 +59,14 @@ class UserScreen extends StatelessWidget {
         isScrollControlled: true,
         builder: (context) {
           // 나중에 동작 함수도 같이 파라미터로 넣어줘야할 듯
-          return const AlertBottomSheet(
-              content: '정말 회원탈퇴 하시겠어요?',
-              cancelText: '탈퇴하기',
-              confirmText: '계속 유지할게요');
+          return AlertBottomSheet(
+            content: '정말 회원탈퇴 하시겠어요?',
+            cancelText: '탈퇴하기',
+            confirmText: '계속 유지할게요',
+            // onTapCancel: () => Navigator.pop(context),
+
+            onTapConfirm: () => Navigator.pop(context),
+          );
         });
   }
 
@@ -492,12 +513,16 @@ class AlertBottomSheet extends StatelessWidget {
   final String content;
   final String cancelText;
   final String confirmText;
+  final Function? onTapCancel;
+  final Function? onTapConfirm;
 
   const AlertBottomSheet({
     super.key,
     required this.content,
     required this.cancelText,
     required this.confirmText,
+    this.onTapCancel,
+    this.onTapConfirm,
   });
 
   @override
@@ -518,30 +543,37 @@ class AlertBottomSheet extends StatelessWidget {
           Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Row(children: [
-                Container(
-                    alignment: Alignment.center,
-                    width: MediaQuery.of(context).size.width / 3,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    decoration: BoxDecoration(
-                        color: gray03, borderRadius: BorderRadius.circular(28)),
-                    child: Text(cancelText,
-                        style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w700,
-                            color: gray05))),
+                GestureDetector(
+                  onTap: onTapCancel as void Function()?,
+                  child: Container(
+                      alignment: Alignment.center,
+                      width: MediaQuery.of(context).size.width / 3,
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      decoration: BoxDecoration(
+                          color: gray03,
+                          borderRadius: BorderRadius.circular(28)),
+                      child: Text(cancelText,
+                          style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w700,
+                              color: gray05))),
+                ),
                 const SizedBox(width: 10),
                 Expanded(
-                    child: Container(
-                        alignment: Alignment.center,
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        decoration: BoxDecoration(
-                            color: coral01,
-                            borderRadius: BorderRadius.circular(28)),
-                        child: Text(confirmText,
-                            style: const TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w700,
-                                color: Colors.white)))),
+                    child: GestureDetector(
+                  onTap: onTapConfirm as void Function()?,
+                  child: Container(
+                      alignment: Alignment.center,
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      decoration: BoxDecoration(
+                          color: coral01,
+                          borderRadius: BorderRadius.circular(28)),
+                      child: Text(confirmText,
+                          style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w700,
+                              color: Colors.white))),
+                )),
               ])),
         ]));
   }
@@ -562,17 +594,13 @@ class ProfileOptionWidget extends StatelessWidget {
     return Column(
       children: [
         SvgPicture.asset(iconPath),
-        const SizedBox(
-          height: 2,
-        ),
-        Text(
-          title,
-          style: TextStyle(
-            fontSize: 12,
-            fontWeight: FontWeight.w600,
-            color: gray06,
-          ),
-        ),
+        const SizedBox(height: 2),
+        Text(title,
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+              color: gray06,
+            )),
       ],
     );
   }

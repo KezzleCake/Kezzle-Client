@@ -1,7 +1,11 @@
+import 'dart:io';
+
 import 'package:dio/dio.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class AddressSearchVM {
+  final _googleMapAndroidApiKey = dotenv.env['GOOGLE_MAP_ANDROID_KEY'] ?? '';
+  final _googleMapIosApiKey = dotenv.env['GOOGLE_MAP_IOS_KEY'] ?? '';
   final _apiKey = dotenv.env['KAKAO_REST_API_KEY'] ?? '';
   final _dio = Dio();
 
@@ -56,7 +60,14 @@ class AddressSearchVM {
   // 구글 지도 api를 이용한 위도 경도로 주소 검색
   Future<Map<String, dynamic>> searchCurrentLocationGoogleMap(
       double longitude, double latitude) async {
-    String apikey = 'AIzaSyBusKn_uRSBpTOQyHlIZvwJGMtbE5a163w';
+    String apikey;
+    if (Platform.isAndroid) {
+      apikey = _googleMapAndroidApiKey;
+    } else if (Platform.isIOS) {
+      apikey = _googleMapIosApiKey;
+    } else {
+      throw Exception('Failed to load data');
+    }
     final endpoint =
         'https://maps.googleapis.com/maps/api/geocode/json?latlng=$latitude,$longitude&key=$apikey&language=ko';
 

@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:kezzle/models/home_store_model.dart';
 import 'package:kezzle/utils/colors.dart';
 
 class StoreWidget1 extends StatelessWidget {
-  bool liked = false;
+  // bool liked = false;
+  final HomeStoreModel store;
 
-  StoreWidget1({
+  const StoreWidget1({
     super.key,
+    required this.store,
   });
 
   @override
@@ -26,10 +29,8 @@ class StoreWidget1 extends StatelessWidget {
             right: 16,
           ),
           child: Row(children: [
-            const CircleAvatar(
-              backgroundImage: AssetImage('assets/heart_cake.png'),
-              radius: 63 / 2,
-            ),
+            CircleAvatar(
+                backgroundImage: AssetImage(store.thumbnail), radius: 63 / 2),
             const SizedBox(width: 8),
             Expanded(
                 child: Column(
@@ -43,7 +44,7 @@ class StoreWidget1 extends StatelessWidget {
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600,
                                 color: gray08)),
-                        liked
+                        store.like
                             ? SvgPicture.asset(
                                 'assets/icons/like=on_in.svg',
                                 width: 24,
@@ -54,7 +55,7 @@ class StoreWidget1 extends StatelessWidget {
                               ),
                       ]),
                   const SizedBox(height: 1),
-                  Text('0.3kmㆍ서울 강남구 역삼동',
+                  Text('${store.distance}ㆍ${store.address}',
                       style: TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w400,
@@ -71,17 +72,16 @@ class StoreWidget1 extends StatelessWidget {
               right: 16,
               bottom: 16,
             ),
-            itemCount: 5,
+            itemCount: store.iamges.length,
             scrollDirection: Axis.horizontal,
             separatorBuilder: (context, index) => const SizedBox(width: 6),
             itemBuilder: (context, index) => Container(
                 width: 90,
                 height: 90,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(16),
-                ),
+                decoration:
+                    BoxDecoration(borderRadius: BorderRadius.circular(16)),
                 clipBehavior: Clip.hardEdge,
-                child: Image.asset('assets/heart_cake.png', fit: BoxFit.cover)),
+                child: Image.asset(store.iamges[index], fit: BoxFit.cover)),
           ),
         ),
       ]),

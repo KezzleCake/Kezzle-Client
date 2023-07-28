@@ -1,16 +1,18 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kezzle/utils/colors.dart';
+import 'package:kezzle/view_models/search_setting_vm.dart';
 
-class DistanceSettingWidget extends StatefulWidget {
+class DistanceSettingWidget extends ConsumerStatefulWidget {
   final int initialValue;
   const DistanceSettingWidget({super.key, required this.initialValue});
 
   @override
-  State<DistanceSettingWidget> createState() => _DistanceSettingWidgetState();
+  DistanceSettingWidgetState createState() => DistanceSettingWidgetState();
 }
 
-class _DistanceSettingWidgetState extends State<DistanceSettingWidget> {
+class DistanceSettingWidgetState extends ConsumerState<DistanceSettingWidget> {
   late int selectedIndex;
 
   @override
@@ -21,8 +23,14 @@ class _DistanceSettingWidgetState extends State<DistanceSettingWidget> {
 
   void _closed() {
     //pop되면서 선택된 거리를 전달
-    Navigator.of(context).pop(selectedIndex + 1);
+    // Navigator.of(context).pop(selectedIndex + 1);
     //print(selectedIndex + 1);
+
+    // pop 되면서 선택된 거리로 데이터 변경
+    ref
+        .read(searchSettingViewModelProvider.notifier)
+        .setRadius(selectedIndex + 1);
+    Navigator.of(context).pop();
   }
 
   void onSelectedItemChanged(int index) {
@@ -42,12 +50,11 @@ class _DistanceSettingWidgetState extends State<DistanceSettingWidget> {
       child: Container(
         height: 215,
         decoration: const BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(20),
-            topRight: Radius.circular(20),
-          ),
-        ),
+            color: Colors.white,
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(20),
+              topRight: Radius.circular(20),
+            )),
         child: CupertinoPicker(
             scrollController:
                 FixedExtentScrollController(initialItem: selectedIndex),

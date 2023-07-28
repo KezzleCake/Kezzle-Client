@@ -1,7 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:go_router/go_router.dart';
 import 'package:kezzle/features/address_search/address_search_vm.dart';
+import 'package:kezzle/features/onboarding/current_location_screen.dart';
+import 'package:kezzle/models/address_model.dart';
 import 'package:kezzle/utils/colors.dart';
 
 class LocationSettingWidget extends StatefulWidget {
@@ -19,20 +23,36 @@ class _LocationSettingWidgetState extends State<LocationSettingWidget> {
   FocusNode myFocusNode = FocusNode();
   bool _isFocused = false;
 
-  List<String> historySearchedList = [
-    '서울 강남구 테헤란로',
-    '경기 파주시 경의로 997-15',
-    '서울 동작구 상도로 47가길 28',
-    '서울 서초구 서초대로 65길 13-10',
+  // List<String> historySearchedList = [
+  //   '서울 강남구 테헤란로',
+  //   '경기 파주시 경의로 997-15',
+  //   '서울 동작구 상도로 47가길 28',
+  //   '서울 서초구 서초대로 65길 13-10',
+  // ];
+  // List<String> searchedList = [
+  //   '경기 파주시 10004번길',
+  //   '경기 파주시 경의로',
+  //   '경기 파주시 경의로1240번길',
+  //   '경기 파주시 경의로 983 한소망교회',
+  //   '경기 파주시 경의로 982',
+  //   '경기 파주시 경의로 982-2',
+  // ];
+
+  List<AddressModel> historySearchedList = [
+    AddressModel(
+        latitude: 37.7065276,
+        longitude: 126.758759,
+        address: "경기 파주시 경의로 997-15"),
+    AddressModel(
+        latitude: 37.7065276,
+        longitude: 126.758759,
+        address: "경기 파주시 경의로 997-15"),
+    AddressModel(
+        latitude: 37.7065276,
+        longitude: 126.758759,
+        address: "경기 파주시 경의로 997-15"),
   ];
-  List<String> searchedList = [
-    '경기 파주시 10004번길',
-    '경기 파주시 경의로',
-    '경기 파주시 경의로1240번길',
-    '경기 파주시 경의로 983 한소망교회',
-    '경기 파주시 경의로 982',
-    '경기 파주시 경의로 982-2',
-  ];
+  List<AddressModel> searchedList = [];
 
   @override
   void initState() {
@@ -103,13 +123,22 @@ class _LocationSettingWidgetState extends State<LocationSettingWidget> {
     Navigator.pop(context, address);
   }
 
+  void onTapCurrentLocation() async {
+    print('onTapCurrentLocation');
+    // Navigator.pop(context, '현재 위치');
+    final result = await context.pushNamed(CurrentLocationScreen.routeName);
+    // Navigator.pop(context, result);
+    // Navigator.pop(context, result);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Padding(
         padding:
             EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
         child: Container(
-            height: 453,
+            // height: 453,
+            height: 470,
             width: double.infinity,
             decoration: const BoxDecoration(
                 color: Colors.white,
@@ -147,6 +176,23 @@ class _LocationSettingWidgetState extends State<LocationSettingWidget> {
                               fontWeight: FontWeight.w600,
                               color: gray06)),
                       const SizedBox(height: 24),
+                      GestureDetector(
+                        onTap: () => onTapCurrentLocation(),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text('현재 위치로 설정',
+                                style: TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w600,
+                                    color: gray06)),
+                            const SizedBox(width: 8),
+                            FaIcon(FontAwesomeIcons.locationDot,
+                                color: orange01, size: 12)
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 24),
                       Text(
                         _isSearched ? '검색 결과' : '검색 기록',
                         style: TextStyle(
@@ -156,7 +202,7 @@ class _LocationSettingWidgetState extends State<LocationSettingWidget> {
                       ),
                       const SizedBox(height: 8),
                       SizedBox(
-                          height: 320,
+                          height: 300,
                           child: ListView.builder(
                             // shrinkWrap: true,
                             itemCount: _isSearched
@@ -165,18 +211,18 @@ class _LocationSettingWidgetState extends State<LocationSettingWidget> {
                             itemBuilder: (context, index) {
                               return GestureDetector(
                                   onTap: () {
-                                    _isSearched
-                                        ? onTapAddress(searchedList[index])
-                                        : onTapAddress(
-                                            historySearchedList[index]);
+                                    // _isSearched
+                                    //     ? onTapAddress(searchedList[index])
+                                    //     : onTapAddress(
+                                    //         historySearchedList[index]);
                                   },
                                   child: Container(
                                     padding: const EdgeInsets.symmetric(
                                         vertical: 16),
-                                    child: Text(
-                                        _isSearched
-                                            ? searchedList[index]
-                                            : historySearchedList[index],
+                                    child: Text('',
+                                        // _isSearched
+                                        //     ? searchedList[index]
+                                        //     : historySearchedList[index],
                                         style: TextStyle(
                                             fontSize: 14,
                                             fontWeight: FontWeight.w700,
