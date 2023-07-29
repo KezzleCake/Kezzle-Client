@@ -1,25 +1,31 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:kezzle/features/profile/view_models/profile_vm.dart';
 import 'package:kezzle/utils/colors.dart';
 
-class ChangeProfileScreen extends StatefulWidget {
+class ChangeProfileScreen extends ConsumerStatefulWidget {
   static const routeURL = '/change_profile';
   static const routeName = 'change_profile';
 
   const ChangeProfileScreen({super.key});
 
   @override
-  State<ChangeProfileScreen> createState() => _ChangeProfileScreenState();
+  ChangeProfileScreenState createState() => ChangeProfileScreenState();
 }
 
-class _ChangeProfileScreenState extends State<ChangeProfileScreen> {
+class ChangeProfileScreenState extends ConsumerState<ChangeProfileScreen> {
   final TextEditingController _textEditingController = TextEditingController();
   // 초기 닉네임(저장되어있던)
-  String _nickname = '보나';
+  String _nickname = '';
+  String newNickname = '';
   bool _btnPressed = false;
 
   @override
   void initState() {
     super.initState();
+    _nickname = ref.read(profileProvider).value!.nickname;
+    newNickname = _nickname;
     _textEditingController.text = _nickname;
     _textEditingController.addListener(() {
       setState(() {
@@ -30,7 +36,8 @@ class _ChangeProfileScreenState extends State<ChangeProfileScreen> {
           _textEditingController.selection = TextSelection.fromPosition(
               TextPosition(offset: _textEditingController.text.length));
         }
-        _nickname = _textEditingController.text;
+        // _nickname = _textEditingController.text;
+        newNickname = _textEditingController.text;
       });
     });
   }
@@ -54,12 +61,11 @@ class _ChangeProfileScreenState extends State<ChangeProfileScreen> {
   }
 
   void onTapSaveBtn() {
-    print('Tapped');
-    print(_nickname);
-    // 변경된 닉네임 저장
-
-    //현재 화면 pop
-    Navigator.of(context).pop();
+    // 닉네임이 다른 경우, 변경하고 서버에 저장.
+    if (newNickname != _nickname) {
+      ref.read(profileProvider.notifier).updateProfile(newNickname);
+    }
+    context.pop();
   }
 
   void keyboardDismiss() {

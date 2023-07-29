@@ -5,6 +5,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kezzle/features/authentication/repos/authentication_repo.dart';
 import 'package:kezzle/features/profile/change_profile_screen.dart';
+import 'package:kezzle/features/profile/view_models/profile_vm.dart';
 // import 'package:kezzle/features/profile/review_screen.dart';
 import 'package:kezzle/utils/colors.dart';
 // import 'package:kezzle/widgets/my_divider_widget.dart';
@@ -42,7 +43,7 @@ class UserScreenState extends ConsumerState<UserScreen> {
               cancelText: '취소',
               confirmText: '로그아웃',
               // 그냥 나오기
-              onTapCancel: () => Navigator.pop(context),
+              onTapCancel: () => context.pop(),
               // 로그아웃 시키기
               onTapConfirm: () {
                 print('로그아웃');
@@ -65,131 +66,246 @@ class UserScreenState extends ConsumerState<UserScreen> {
             confirmText: '계속 유지할게요',
             // onTapCancel: () => Navigator.pop(context),
 
-            onTapConfirm: () => Navigator.pop(context),
+            onTapConfirm: () => context.pop(),
           );
         });
   }
 
-  void onTapMail() {
-    print(ref.read(authRepo).user!.providerData[0].providerId);
-  }
-
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(title: const Text('마이페이지'), elevation: 0, actions: [
-          IconButton(
-            onPressed: () {},
-            icon: const FaIcon(FontAwesomeIcons.bell, size: 24),
-          ),
-        ]),
-        body: Column(children: [
-          Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SizedBox(height: 20),
-                    InkWell(
-                      onTap: () => onTapNickName(context),
-                      child: Row(mainAxisSize: MainAxisSize.min, children: [
-                        RichText(
-                            text: TextSpan(
-                                style: TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.w600,
-                                    color: coral01),
-                                children: [
-                              const TextSpan(text: '보나'),
-                              TextSpan(
-                                  text: '님',
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      color: gray08)),
-                            ])),
-                        // const SizedBox(width: 15),
-                        Container(
-                          padding: const EdgeInsets.only(left: 15),
-                          child: FaIcon(FontAwesomeIcons.chevronRight,
-                              size: 15, color: gray05),
+    return ref.watch(profileProvider).when(
+        error: (error, stackTrace) => Center(child: Text(error.toString())),
+        loading: () =>
+            const Center(child: CircularProgressIndicator.adaptive()),
+        data: (data) => Scaffold(
+            appBar: AppBar(title: const Text('마이페이지'), elevation: 0, actions: [
+              IconButton(
+                onPressed: () {},
+                icon: const FaIcon(FontAwesomeIcons.bell, size: 24),
+              ),
+            ]),
+            body: Column(children: [
+              Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const SizedBox(height: 20),
+                        InkWell(
+                          onTap: () => onTapNickName(context),
+                          child: Row(mainAxisSize: MainAxisSize.min, children: [
+                            RichText(
+                                text: TextSpan(
+                                    style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.w600,
+                                        color: coral01),
+                                    children: [
+                                  TextSpan(text: data.nickname),
+                                  TextSpan(
+                                      text: '님',
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          color: gray08)),
+                                ])),
+                            // const SizedBox(width: 15),
+                            Container(
+                              padding: const EdgeInsets.only(left: 15),
+                              child: FaIcon(FontAwesomeIcons.chevronRight,
+                                  size: 15, color: gray05),
+                            ),
+                          ]),
                         ),
-                      ]),
-                    ),
-                    const SizedBox(height: 10),
-                    Row(children: [
-                      const FaIcon(FontAwesomeIcons.apple, size: 14),
-                      const SizedBox(width: 8),
-                      GestureDetector(
-                        onTap: () => onTapMail(),
-                        child: Text(ref.read(authRepo).user?.email ?? '',
-                            style: TextStyle(
-                                color: gray05,
-                                fontSize: 12,
-                                fontWeight: FontWeight.w400)),
-                      ),
-                    ]),
-                    // const SizedBox(height: 30),
-                    // const Row(
-                    //     mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    //     children: [
-                    //       ProfileOptionWidget(
-                    //           title: '주문내역', iconPath: 'assets/icons/order.svg'),
-                    //       ProfileOptionWidget(
-                    //           title: '리뷰', iconPath: 'assets/icons/review.svg'),
-                    //       ProfileOptionWidget(
-                    //           title: '쿠폰', iconPath: 'assets/icons/coupon.svg'),
-                    //     ]),
-                  ])),
-          // const MyDivider(),
-          // ListTile(
-          //   // horizontalTitleGap: 30,
-          //   contentPadding: const EdgeInsets.symmetric(horizontal: 20),
+                        const SizedBox(height: 10),
+                        Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              FaIcon(
+                                  data.oathProvider == 'google.com'
+                                      ? FontAwesomeIcons.google
+                                      : FontAwesomeIcons.apple,
+                                  size: 14),
+                              const SizedBox(width: 8),
+                              Text(data.email,
+                                  style: TextStyle(
+                                      color: gray05,
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w400)),
+                            ]),
+                        // const SizedBox(height: 30),
+                        // const Row(
+                        //     mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        //     children: [
+                        //       ProfileOptionWidget(
+                        //           title: '주문내역', iconPath: 'assets/icons/order.svg'),
+                        //       ProfileOptionWidget(
+                        //           title: '리뷰', iconPath: 'assets/icons/review.svg'),
+                        //       ProfileOptionWidget(
+                        //           title: '쿠폰', iconPath: 'assets/icons/coupon.svg'),
+                        //     ]),
+                      ])),
+              // const MyDivider(),
+              // ListTile(
+              //   // horizontalTitleGap: 30,
+              //   contentPadding: const EdgeInsets.symmetric(horizontal: 20),
 
-          //   title: Text(
-          //     '휴대폰 번호 변경',
-          //     style: TextStyle(
-          //       fontSize: 14,
-          //       fontWeight: FontWeight.w600,
-          //       color: gray07,
-          //     ),
-          //   ),
-          //   trailing: Container(
-          //     padding: const EdgeInsets.all(8),
-          //     child: FaIcon(
-          //       FontAwesomeIcons.chevronRight,
-          //       size: 15,
-          //       color: gray05,
-          //     ),
-          //   ),
-          // ),
-          const SizedBox(height: 20),
-          Padding(
-              padding: const EdgeInsets.only(right: 20),
-              child: Row(mainAxisAlignment: MainAxisAlignment.end, children: [
-                GestureDetector(
-                  onTap: () => onTapLogout(context),
-                  child: Container(
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 6, horizontal: 8),
-                      child: Text('로그아웃',
-                          style: TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w600,
-                              color: gray05))),
-                ),
-                GestureDetector(
-                  onTap: () => onTapWithdrawal(context),
-                  child: Container(
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 6, horizontal: 8),
-                      child: Text('회원탈퇴',
-                          style: TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w600,
-                              color: gray05))),
-                ),
-              ])),
-        ]));
+              //   title: Text(
+              //     '휴대폰 번호 변경',
+              //     style: TextStyle(
+              //       fontSize: 14,
+              //       fontWeight: FontWeight.w600,
+              //       color: gray07,
+              //     ),
+              //   ),
+              //   trailing: Container(
+              //     padding: const EdgeInsets.all(8),
+              //     child: FaIcon(
+              //       FontAwesomeIcons.chevronRight,
+              //       size: 15,
+              //       color: gray05,
+              //     ),
+              //   ),
+              // ),
+              const SizedBox(height: 20),
+              Padding(
+                  padding: const EdgeInsets.only(right: 20),
+                  child:
+                      Row(mainAxisAlignment: MainAxisAlignment.end, children: [
+                    GestureDetector(
+                      onTap: () => onTapLogout(context),
+                      child: Container(
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 6, horizontal: 8),
+                          child: Text('로그아웃',
+                              style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600,
+                                  color: gray05))),
+                    ),
+                    GestureDetector(
+                      onTap: () => onTapWithdrawal(context),
+                      child: Container(
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 6, horizontal: 8),
+                          child: Text('회원탈퇴',
+                              style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600,
+                                  color: gray05))),
+                    ),
+                  ])),
+            ])));
+    // return Scaffold(
+    //     appBar: AppBar(title: const Text('마이페이지'), elevation: 0, actions: [
+    //       IconButton(
+    //         onPressed: () {},
+    //         icon: const FaIcon(FontAwesomeIcons.bell, size: 24),
+    //       ),
+    //     ]),
+    //     body: Column(children: [
+    //       Padding(
+    //           padding: const EdgeInsets.symmetric(horizontal: 20),
+    //           child: Column(
+    //               crossAxisAlignment: CrossAxisAlignment.start,
+    //               children: [
+    //                 const SizedBox(height: 20),
+    //                 InkWell(
+    //                   onTap: () => onTapNickName(context),
+    //                   child: Row(mainAxisSize: MainAxisSize.min, children: [
+    //                     RichText(
+    //                         text: TextSpan(
+    //                             style: TextStyle(
+    //                                 fontSize: 18,
+    //                                 fontWeight: FontWeight.w600,
+    //                                 color: coral01),
+    //                             children: [
+    //                           const TextSpan(text: '보나'),
+    //                           TextSpan(
+    //                               text: '님',
+    //                               style: TextStyle(
+    //                                   fontWeight: FontWeight.bold,
+    //                                   color: gray08)),
+    //                         ])),
+    //                     // const SizedBox(width: 15),
+    //                     Container(
+    //                       padding: const EdgeInsets.only(left: 15),
+    //                       child: FaIcon(FontAwesomeIcons.chevronRight,
+    //                           size: 15, color: gray05),
+    //                     ),
+    //                   ]),
+    //                 ),
+    //                 const SizedBox(height: 10),
+    //                 Row(children: [
+    //                   const FaIcon(FontAwesomeIcons.apple, size: 14),
+    //                   const SizedBox(width: 8),
+    //                   Text(ref.read(authRepo).user?.email ?? '',
+    //                       style: TextStyle(
+    //                           color: gray05,
+    //                           fontSize: 12,
+    //                           fontWeight: FontWeight.w400)),
+    //                 ]),
+    //                 // const SizedBox(height: 30),
+    //                 // const Row(
+    //                 //     mainAxisAlignment: MainAxisAlignment.spaceAround,
+    //                 //     children: [
+    //                 //       ProfileOptionWidget(
+    //                 //           title: '주문내역', iconPath: 'assets/icons/order.svg'),
+    //                 //       ProfileOptionWidget(
+    //                 //           title: '리뷰', iconPath: 'assets/icons/review.svg'),
+    //                 //       ProfileOptionWidget(
+    //                 //           title: '쿠폰', iconPath: 'assets/icons/coupon.svg'),
+    //                 //     ]),
+    //               ])),
+    //       // const MyDivider(),
+    //       // ListTile(
+    //       //   // horizontalTitleGap: 30,
+    //       //   contentPadding: const EdgeInsets.symmetric(horizontal: 20),
+
+    //       //   title: Text(
+    //       //     '휴대폰 번호 변경',
+    //       //     style: TextStyle(
+    //       //       fontSize: 14,
+    //       //       fontWeight: FontWeight.w600,
+    //       //       color: gray07,
+    //       //     ),
+    //       //   ),
+    //       //   trailing: Container(
+    //       //     padding: const EdgeInsets.all(8),
+    //       //     child: FaIcon(
+    //       //       FontAwesomeIcons.chevronRight,
+    //       //       size: 15,
+    //       //       color: gray05,
+    //       //     ),
+    //       //   ),
+    //       // ),
+    //       const SizedBox(height: 20),
+    //       Padding(
+    //           padding: const EdgeInsets.only(right: 20),
+    //           child: Row(mainAxisAlignment: MainAxisAlignment.end, children: [
+    //             GestureDetector(
+    //               onTap: () => onTapLogout(context),
+    //               child: Container(
+    //                   padding: const EdgeInsets.symmetric(
+    //                       vertical: 6, horizontal: 8),
+    //                   child: Text('로그아웃',
+    //                       style: TextStyle(
+    //                           fontSize: 12,
+    //                           fontWeight: FontWeight.w600,
+    //                           color: gray05))),
+    //             ),
+    //             GestureDetector(
+    //               onTap: () => onTapWithdrawal(context),
+    //               child: Container(
+    //                   padding: const EdgeInsets.symmetric(
+    //                       vertical: 6, horizontal: 8),
+    //                   child: Text('회원탈퇴',
+    //                       style: TextStyle(
+    //                           fontSize: 12,
+    //                           fontWeight: FontWeight.w600,
+    //                           color: gray05))),
+    //             ),
+    //           ])),
+    //     ]));
     //   return Scaffold(
     //     // backgroundColor: Colors.white,
     //     body: SafeArea(
