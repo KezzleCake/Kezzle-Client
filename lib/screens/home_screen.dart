@@ -6,6 +6,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:kezzle/screens/detail_cake_screen.dart';
 import 'package:kezzle/utils/colors.dart';
 import 'package:kezzle/view_models/home_store_view_model.dart';
+import 'package:kezzle/view_models/search_setting_vm.dart';
 import 'package:kezzle/widgets/distance_setting_widget.dart';
 // import 'package:kezzle/widgets/calendar_widget.dart';
 // import 'package:kezzle/widgets/curation_box_widget.dart';
@@ -14,14 +15,14 @@ import 'package:kezzle/widgets/store_widget1.dart';
 // import 'package:kezzle/widgets/store_widget.dart';
 // import 'package:visibility_detector/visibility_detector.dart';
 
-class HomeScreen extends StatefulWidget {
+class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
+  HomeScreenState createState() => HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen>
+class HomeScreenState extends ConsumerState<HomeScreen>
     with SingleTickerProviderStateMixin {
   // final CarouselController _carouselController = CarouselController();
 
@@ -36,8 +37,8 @@ class _HomeScreenState extends State<HomeScreen>
   // bool autoplay = false;
 
   final List<String> tabList = ['스토어 모아보기', '케이크 모아보기'];
-  int _selectedDistance = 1;
-  String _selectedLocation = '서울 강남구 테헤란로';
+  // int _selectedDistance = 1;
+  // String _selectedLocation = '서울 강남구 테헤란로';
 
   @override
   void initState() {
@@ -78,31 +79,23 @@ class _HomeScreenState extends State<HomeScreen>
   //   }
   // }
 
-  void _onTapLocation(BuildContext context) async {
-    final result = await showModalBottomSheet(
+  void _onTapLocation(BuildContext context) {
+    showModalBottomSheet(
         context: context,
         isScrollControlled: true,
         builder: (context) {
           // return const CalendarWidget();
           return const LocationSettingWidget();
         });
-    print(result);
-    if (result == null) return;
-    setState(() {
-      _selectedLocation = result.toString();
-    });
   }
 
-  void _onTapDistance(BuildContext context) async {
-    final result = await showModalBottomSheet<int>(
+  void _onTapDistance(BuildContext context) {
+    showModalBottomSheet<int>(
         context: context,
         builder: (context) {
-          return DistanceSettingWidget(initialValue: _selectedDistance);
+          return DistanceSettingWidget(
+              initialValue: ref.watch(searchSettingViewModelProvider).radius);
         });
-    print('result: ' + result.toString());
-    setState(() {
-      _selectedDistance = result!;
-    });
   }
 
   // void _onTapPickUpDate(BuildContext context) async {
@@ -125,7 +118,7 @@ class _HomeScreenState extends State<HomeScreen>
             GestureDetector(
               onTap: () => _onTapLocation(context),
               child: Row(children: [
-                Text(_selectedLocation,
+                Text(ref.watch(searchSettingViewModelProvider).address,
                     style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w600,
@@ -137,7 +130,7 @@ class _HomeScreenState extends State<HomeScreen>
             GestureDetector(
               onTap: () => _onTapDistance(context),
               child: Row(children: [
-                Text('${_selectedDistance}km',
+                Text('${ref.watch(searchSettingViewModelProvider).radius}km',
                     style: const TextStyle(
                         fontSize: 14, fontWeight: FontWeight.w600)),
                 SvgPicture.asset('assets/icons/arrow-down.svg',
@@ -204,9 +197,9 @@ class _HomeScreenState extends State<HomeScreen>
                   ),
                 ],
               ),
-              Flexible(
+              const Flexible(
                   child: TabBarView(children: [
-                const StoreTabBarView(),
+                StoreTabBarView(),
                 //디자인 모아보기 탭 화면
                 CakeTabBarView(),
               ])),

@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
@@ -7,17 +8,19 @@ import 'package:kezzle/features/address_search/address_search_vm.dart';
 import 'package:kezzle/features/onboarding/current_location_screen.dart';
 import 'package:kezzle/models/address_model.dart';
 import 'package:kezzle/utils/colors.dart';
+import 'package:kezzle/view_models/search_setting_vm.dart';
+import 'package:kezzle/view_models/searched_address_view_model.dart';
 
-class LocationSettingWidget extends StatefulWidget {
+class LocationSettingWidget extends ConsumerStatefulWidget {
   const LocationSettingWidget({
     super.key,
   });
 
   @override
-  State<LocationSettingWidget> createState() => _LocationSettingWidgetState();
+  LocationSettingWidgetState createState() => LocationSettingWidgetState();
 }
 
-class _LocationSettingWidgetState extends State<LocationSettingWidget> {
+class LocationSettingWidgetState extends ConsumerState<LocationSettingWidget> {
   final TextEditingController _textfiledController = TextEditingController();
   bool _isSearched = false;
   FocusNode myFocusNode = FocusNode();
@@ -38,21 +41,23 @@ class _LocationSettingWidgetState extends State<LocationSettingWidget> {
   //   '경기 파주시 경의로 982-2',
   // ];
 
-  List<AddressModel> historySearchedList = [
-    AddressModel(
-        latitude: 37.7065276,
-        longitude: 126.758759,
-        address: "경기 파주시 경의로 997-15"),
-    AddressModel(
-        latitude: 37.7065276,
-        longitude: 126.758759,
-        address: "경기 파주시 경의로 997-15"),
-    AddressModel(
-        latitude: 37.7065276,
-        longitude: 126.758759,
-        address: "경기 파주시 경의로 997-15"),
-  ];
+  // 사용자가 주소를 검색한 기록
+  // List<AddressModel> historySearchedList = [
+  //   AddressModel(
+  //       latitude: 37.7065276,
+  //       longitude: 126.758759,
+  //       address: "경기 파주시 경의로 997-15"),
+  //   AddressModel(
+  //       latitude: 37.7065276,
+  //       longitude: 126.758759,
+  //       address: "경기 파주시 경의로 997-15"),
+  //   AddressModel(
+  //       latitude: 37.7065276,
+  //       longitude: 126.758759,
+  //       address: "경기 파주시 경의로 997-15"),
+  // ];
   List<AddressModel> searchedList = [];
+  List<AddressModel> historySearchedList = [];
 
   @override
   void initState() {
@@ -81,6 +86,30 @@ class _LocationSettingWidgetState extends State<LocationSettingWidget> {
         });
       }
     });
+    Future.delayed(Duration.zero, () {
+      // print(ref
+      //     .watch(searchedHistoryAddressVMProvider)
+      //     .searchedHistoryAddressList
+      //     .length);
+      for (int i = ref
+                  .watch(searchedHistoryAddressVMProvider)
+                  .searchedHistoryAddressList
+                  .length -
+              1;
+          i >= 0;
+          i--) {
+        String result = ref
+            .watch(searchedHistoryAddressVMProvider)
+            .searchedHistoryAddressList[i];
+        List<String> resultSplit = result.split(',');
+        historySearchedList.add(AddressModel(
+          latitude: double.parse(resultSplit[1]),
+          longitude: double.parse(resultSplit[0]),
+          address: resultSplit[2],
+        ));
+        setState(() {});
+      }
+    });
   }
 
   @override
@@ -98,6 +127,7 @@ class _LocationSettingWidgetState extends State<LocationSettingWidget> {
     AddressSearchVM().searchAddress(value).then((value) {
       print('검색결과\n');
       print(value);
+
       //검색된 주소 리스트 변경
       searchedList = [];
       // print(value['documents'].length);
@@ -110,25 +140,50 @@ class _LocationSettingWidgetState extends State<LocationSettingWidget> {
           break;
         }
         // searchedList.add(value['documents'][i]['road_address']['address_name']);
-        searchedList.add(value['documents'][i]['address_name']);
+        // searchedList.add(value['documents'][i]['address_name']);
+        searchedList.add(AddressModel(
+            latitude: double.parse(value['documents'][i]['y']),
+            longitude: double.parse(value['documents'][i]['x']),
+            address: value['documents'][i]['address_name']));
       }
       setState(() {});
     });
   }
 
-  void onTapAddress(String address) {
+  void onTapAddress(int index) {
     print('onTapAddress');
     // Navigator.pop(context);
     // pop하면서 주소값 전달
-    Navigator.pop(context, address);
+    // Navigator.pop(context, address);
+
+    // 검색된 주소를 클릭한 경우, 검색 기록에 추가하기 -> 이미 검색된 주소면 추가하지 않아야하는데 어케함 조졌다.
+    if (_isSearched) {
+      ref
+          .read(searchedHistoryAddressVMProvider.notifier)
+          .addSearchedHistoryAddress(searchedList[index]);
+    }
+    // 설정 위치 바꾸기
+    ref.read(searchSettingViewModelProvider.notifier).setAddress(_isSearched
+        ? searchedList[index].address
+        : historySearchedList[index].address);
+    //설정 경도 바꾸기
+    ref.read(searchSettingViewModelProvider.notifier).setLongitude(_isSearched
+        ? searchedList[index].longitude
+        : historySearchedList[index].longitude);
+    // 설정 위도 바꾸기
+    ref.read(searchSettingViewModelProvider.notifier).setLatitude(_isSearched
+        ? searchedList[index].latitude
+        : historySearchedList[index].latitude);
+
+    //위도, 경도, 반경을 토대로 케이크 리스트 갱신 요청
+
+    context.pop();
   }
 
   void onTapCurrentLocation() async {
-    print('onTapCurrentLocation');
-    // Navigator.pop(context, '현재 위치');
-    final result = await context.pushNamed(CurrentLocationScreen.routeName);
-    // Navigator.pop(context, result);
-    // Navigator.pop(context, result);
+    // print('onTapCurrentLocation');
+    context.pop();
+    context.pushNamed(CurrentLocationScreen.routeName);
   }
 
   @override
@@ -208,26 +263,25 @@ class _LocationSettingWidgetState extends State<LocationSettingWidget> {
                             itemCount: _isSearched
                                 ? searchedList.length
                                 : historySearchedList.length,
+                            // : historySearchedList.length,
                             itemBuilder: (context, index) {
                               return GestureDetector(
-                                  onTap: () {
-                                    // _isSearched
-                                    //     ? onTapAddress(searchedList[index])
-                                    //     : onTapAddress(
-                                    //         historySearchedList[index]);
-                                  },
-                                  child: Container(
-                                    padding: const EdgeInsets.symmetric(
-                                        vertical: 16),
-                                    child: Text('',
-                                        // _isSearched
-                                        //     ? searchedList[index]
-                                        //     : historySearchedList[index],
-                                        style: TextStyle(
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.w700,
-                                            color: gray05)),
-                                  ));
+                                onTap: () {
+                                  onTapAddress(index);
+                                },
+                                child: Container(
+                                  padding:
+                                      const EdgeInsets.symmetric(vertical: 16),
+                                  child: Text(
+                                      _isSearched
+                                          ? searchedList[index].address
+                                          : historySearchedList[index].address,
+                                      style: TextStyle(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w700,
+                                          color: gray05)),
+                                ),
+                              );
                             },
                           )),
                     ]))));

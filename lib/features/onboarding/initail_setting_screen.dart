@@ -394,13 +394,6 @@ class InitialSettingSreenState extends ConsumerState<InitialSettingSreen> {
                 ],
               )
             ])),
-
-        // const SizedBox(height: 20),
-        // Container(
-        //     width: double.infinity,
-        //     height: 300,
-        //     color: gray03,
-        //     child: const Center(child: Text('지도'))),
       ]),
     );
   }
