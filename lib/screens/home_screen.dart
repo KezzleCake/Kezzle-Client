@@ -471,25 +471,31 @@ class StoreTabBarViewState extends ConsumerState<StoreTabBarView>
   Widget build(BuildContext context) {
     super.build(context);
 
+    // 반경이나, 위도 경도 변경되면 실행되는 리스너
+    ref.listen(searchSettingViewModelProvider, (previous, next) {
+      // print(previous!.radius);
+      // print(next!.radius);
+      ref.read(homeStoreProvider.notifier).refresh(
+          radius: next.radius,
+          latitude: next.latitude,
+          longitude: next.longitude);
+    });
+
     // async니까 빌드베서드 끝나도록 기다려야됨. -> when 사용
     return ref.watch(homeStoreProvider).when(
-        loading: () => const Center(
-              child: CircularProgressIndicator(),
+        loading: () => Center(
+              child: CircularProgressIndicator(color: coral01),
             ),
         error: (error, stackTrace) => Center(
               child: Text('스토어 목록 불러오기 실패, $error'),
             ),
-        data: (stores) => RefreshIndicator(
-            onRefresh: () async {
-              await Future.delayed(const Duration(seconds: 1));
-            },
-            child: ListView.separated(
+        data: (stores) => ListView.separated(
               padding: const EdgeInsets.symmetric(vertical: 30, horizontal: 20),
               itemCount: stores.length,
               itemBuilder: (context, index) =>
                   StoreWidget1(store: stores[index]),
               separatorBuilder: (context, index) => const SizedBox(height: 12),
-            )));
+            ));
   }
 }
 

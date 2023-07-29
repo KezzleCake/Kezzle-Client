@@ -70,6 +70,10 @@ class UserScreenState extends ConsumerState<UserScreen> {
         });
   }
 
+  void onTapMail() {
+    print(ref.read(authRepo).user!.providerData[0].providerId);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -113,13 +117,16 @@ class UserScreenState extends ConsumerState<UserScreen> {
                     ),
                     const SizedBox(height: 10),
                     Row(children: [
-                      const FaIcon(FontAwesomeIcons.comment, size: 12),
+                      const FaIcon(FontAwesomeIcons.apple, size: 14),
                       const SizedBox(width: 8),
-                      Text('zzle@kakao.com',
-                          style: TextStyle(
-                              color: gray05,
-                              fontSize: 12,
-                              fontWeight: FontWeight.w400)),
+                      GestureDetector(
+                        onTap: () => onTapMail(),
+                        child: Text(ref.read(authRepo).user?.email ?? '',
+                            style: TextStyle(
+                                color: gray05,
+                                fontSize: 12,
+                                fontWeight: FontWeight.w400)),
+                      ),
                     ]),
                     // const SizedBox(height: 30),
                     // const Row(

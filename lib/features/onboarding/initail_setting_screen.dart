@@ -32,21 +32,21 @@ class InitialSettingSreenState extends ConsumerState<InitialSettingSreen> {
 
   // bool _isSearced = false;
   // int _selectedDistance = 5;
-  String _selectedLocation = '';
+  // String _selectedLocation = '';
 
-  void _onTapLocation(BuildContext context) async {
-    final result = await showModalBottomSheet(
+  void _onTapLocation(BuildContext context) {
+    showModalBottomSheet(
         context: context,
         isScrollControlled: true,
         builder: (context) {
           return const LocationSettingWidget();
         });
-    print('result: ' + result.toString());
-    if (result != null) {
-      setState(() {
-        _selectedLocation = result.toString();
-      });
-    }
+    // print('result: ' + result.toString());
+    // if (result != null) {
+    //   setState(() {
+    //     _selectedLocation = result.toString();
+    //   });
+    // }
   }
 
   void _onTapDistance(BuildContext context) async {
@@ -146,15 +146,20 @@ class InitialSettingSreenState extends ConsumerState<InitialSettingSreen> {
             // const SizedBox(width: 10),
             Expanded(
                 child: IgnorePointer(
-              ignoring: _selectedLocation.isEmpty,
+              ignoring:
+                  ref.watch(searchSettingViewModelProvider).address.isEmpty,
               child: GestureDetector(
                   onTap: () => _onTapStart(context),
                   child: Container(
                       alignment: Alignment.center,
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
-                          color:
-                              _selectedLocation.isNotEmpty ? coral01 : gray03,
+                          color: ref
+                                  .watch(searchSettingViewModelProvider)
+                                  .address
+                                  .isNotEmpty
+                              ? coral01
+                              : gray03,
                           borderRadius: BorderRadius.circular(28)),
                       child: Text('시작하기',
                           style: TextStyle(

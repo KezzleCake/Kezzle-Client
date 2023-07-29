@@ -22,12 +22,9 @@ class AuthGoogleService {
       idToken: googleAuth?.idToken,
     );
 
-// FirebaseAuth.instance.signInWithCredential(credential);
-
     // Once signed in, return the UserCredential
     // Firebase의 FirebaseAuth 인스턴스를 사용하여 생성된 credential을 이용해 사용자를 로그인시킵니다.
     // 이 메서드는 로그인이 성공하면 UserCredential 객체를 반환합니다.
-    // UserCredential userCredential =
     return await FirebaseAuth.instance.signInWithCredential(credential);
 
     // IdTokenResult tokenResult =
