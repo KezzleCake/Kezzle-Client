@@ -73,67 +73,39 @@ class _MakeUserScreenState extends State<MakeUserScreen> {
       onTap: keyboardDismiss, // 키보드 내리기
       child: Scaffold(
         resizeToAvoidBottomInset: false,
-        appBar: AppBar(
-          title: const Text('계정 만들기'),
-        ),
+        appBar: AppBar(title: const Text('계정 만들기')),
         body: Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: 20,
-            vertical: 30,
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                '닉네임을 입력해주세요',
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  color: gray08,
-                ),
-              ),
-              const SizedBox(
-                height: 8,
-              ),
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
+            child:
+                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Text('닉네임을 입력해주세요',
+                  style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: gray08)),
+              const SizedBox(height: 8),
               TextField(
-                keyboardType: TextInputType.name,
-                // autofocus: true,
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  color: gray06,
-                ),
-                controller: _textEditingController,
-                decoration: InputDecoration(
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 16,
-                  ),
-                  hintText: '예) 케즐',
-                  hintStyle: TextStyle(
-                    color: gray04,
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(30),
-                    borderSide: BorderSide(
-                      color: gray03,
-                    ),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(30),
-                    borderSide: BorderSide(
-                      color: gray03,
-                    ),
-                  ),
-                  suffix: Text('${_nickname.length}/10',
-                      style: TextStyle(
-                        color: _nickname.isNotEmpty ? gray05 : gray04,
-                      )),
-                ),
-              ),
-            ],
-          ),
-        ),
+                  keyboardType: TextInputType.name,
+                  // autofocus: true,
+                  style: TextStyle(
+                      fontSize: 14, fontWeight: FontWeight.w600, color: gray06),
+                  controller: _textEditingController,
+                  decoration: InputDecoration(
+                    contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 16),
+                    hintText: '예) 케즐',
+                    hintStyle: TextStyle(color: gray04),
+                    enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(30),
+                        borderSide: BorderSide(color: gray03)),
+                    focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(30),
+                        borderSide: BorderSide(color: gray03)),
+                    suffix: Text('${_nickname.length}/10',
+                        style: TextStyle(
+                            color: _nickname.isNotEmpty ? gray05 : gray04)),
+                  )),
+            ])),
         bottomNavigationBar: BottomAppBar(
             color: Colors.transparent,
             elevation: 0,

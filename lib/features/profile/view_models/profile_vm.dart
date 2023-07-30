@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:firebase_auth/firebase_auth.dart';
+// import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kezzle/features/authentication/repos/authentication_repo.dart';
 import 'package:kezzle/features/profile/models/user_model.dart';
@@ -20,7 +20,11 @@ class ProfileVM extends AsyncNotifier<UserModel> {
 
     // 로그인된 상태면 서버에 요청해서 데이터 가져오기.
     // if (_authRepo.isLoggedIn) {
-    //   final profile = await _userRepo.fetchProfile(_authRepo.user!.uid);
+    //   // 토큰을 가져오기.
+    //   final String? token = await _authRepo.user!.getIdToken();
+    //   // 서버에 요청해서 프로필 정보  json으로 가져오기
+    //   final Map<String, dynamic>? profile =
+    //       await _userRepo.fetchProfile(token!, _authRepo.user!.uid);
     //   if (profile != null) {
     //     return UserModel.fromJson(profile);
     //   }
@@ -28,7 +32,6 @@ class ProfileVM extends AsyncNotifier<UserModel> {
 
     // 로그인 안된 상태면 빈 데이터 반환
     // return UserModel.empty();
-
     // 지금은 일단 더미 데이터 반환
     return UserModel(
       uid: '180',
@@ -39,22 +42,37 @@ class ProfileVM extends AsyncNotifier<UserModel> {
   }
 
   // 새로 로그인한 유저 정보 받아서 프로필 정보 서버에 저장
-  Future<void> createProfile(UserCredential credential, String nickname) async {
-    if (credential.user == null) {
-      throw Exception("유저 정보가 없습니다.");
-    }
+  Future<void> createProfile(
+      /*UserCredential credential,*/ String nickname) async {
     state = const AsyncValue.loading();
+    // 토큰을 가져와서
+    final String? token = await _authRepo.user!.getIdToken();
+
+    // if (credential.user == null) {
+    //   throw Exception("유저 정보가 없습니다.");
+    // }
+
+    // 유저 프로필 정보를 만들어서
+    // final profile = UserModel(
+    //   uid: credential.user!.uid,
+    //   email: credential.user!.email! ?? "kezzle@google.com",
+    //   nickname: nickname,
+    //   // 프로바이더가 잘 나오는지 모르겠네.. 일단...적어놓자..
+    //   oathProvider: credential.user!.providerData[0].providerId ?? "kakao.com",
+    // );
+    // 서버에 저장
+    // await _userRepo.createProfile(profile);
+    // state = AsyncValue.data(profile);
 
     // 유저 프로필 정보를 만들어서
     final profile = UserModel(
-      uid: credential.user!.uid,
-      email: credential.user!.email! ?? "kezzle@google.com",
+      uid: _authRepo.user!.uid,
+      email: _authRepo.user!.email!,
       nickname: nickname,
-      // 프로바이더가 잘 나오는지 모르겠네.. 일단...적어놓자..
-      oathProvider: credential.user!.providerData[0].providerId ?? "kakao.com",
+      oathProvider: _authRepo.user!.providerData[0].providerId,
     );
-    // 서버에 저장
-    await _userRepo.createProfile(profile);
+    // 서버에 저장 후, state 변경
+    await _userRepo.createProfile(profile, token!);
     state = AsyncValue.data(profile);
   }
 
