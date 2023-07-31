@@ -3,8 +3,10 @@ import 'dart:async';
 // import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kezzle/models/home_store_model.dart';
+import 'package:kezzle/repo/home_stores_repo.dart';
 
 class HomeStoreViewModel extends AsyncNotifier<List<HomeStoreModel>> {
+  late final HomeStoresRepo _repository;
   // 더미 데이터!!
   List<HomeStoreModel> _homeStoreList = [
     HomeStoreModel(
@@ -23,9 +25,18 @@ class HomeStoreViewModel extends AsyncNotifier<List<HomeStoreModel>> {
 
   @override
   FutureOr<List<HomeStoreModel>> build() async {
+    _repository = ref.read(homeStoreRepo);
+
+    // 인자로 뭘 줘야될거같긴한데...
+    // final result = await _repository.fetchStores();
+    // // 받아온정보 map으로 각 스토어를 HomeStoreModel로 변환해서 리스트 만들기
+    // final newList = [];
+    // _homeStoreList = newList;
+
     // api 로부터 응답받는데 걸리는 시간을 2초로 가정
     await Future.delayed(const Duration(seconds: 2));
     // throw Exception("데이터 fetch 실패");
+    print('dpd');
 
     return _homeStoreList;
   }

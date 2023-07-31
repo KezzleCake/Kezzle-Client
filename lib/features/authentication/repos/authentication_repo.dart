@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -18,6 +20,11 @@ class AuthenticatoinRepository {
 
   // Stream 생성 -> 로그인 상태 변화를 감지
   Stream<User?> authStateChanges() => _firebaseAuth.authStateChanges();
+
+  // 이게 맞나? ㅎㅎ 자동 idtoken refresh 해주는 리스너 등록해주는 함수
+  StreamSubscription<User?> idTokenChanges() => _firebaseAuth
+      .idTokenChanges()
+      .listen((event) => event!.getIdTokenResult(true));
 
   // 로그아웃
   Future<void> signOut() async {
@@ -43,6 +50,8 @@ class AuthenticatoinRepository {
       accessToken: googleAuth?.accessToken,
       idToken: googleAuth?.idToken,
     );
+
+    idTokenChanges();
 
     // Once signed in, return the UserCredential
     // Firebase의 FirebaseAuth 인스턴스를 사용하여 생성된 credential을 이용해 사용자를 로그인시킵니다.

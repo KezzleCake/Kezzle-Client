@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:kezzle/features/splash/splash_screen.dart';
 // import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:kezzle/screens/detail_cake_screen.dart';
 import 'package:kezzle/utils/colors.dart';
@@ -467,6 +468,14 @@ class StoreTabBarViewState extends ConsumerState<StoreTabBarView>
   // TODO: implement wantKeepAlive
   // bool get wantKeepAlive => throw UnimplementedError();
 
+  void onTapStore() {
+    //print('store tapped');
+    //스토어 상세보기 화면으로 이동
+    Navigator.of(context).push(MaterialPageRoute(
+      builder: (context) => const SplashScreen(),
+    ));
+  }
+
   @override
   Widget build(BuildContext context) {
     super.build(context);
@@ -492,9 +501,17 @@ class StoreTabBarViewState extends ConsumerState<StoreTabBarView>
         data: (stores) => ListView.separated(
               padding: const EdgeInsets.symmetric(vertical: 30, horizontal: 20),
               itemCount: stores.length,
-              itemBuilder: (context, index) =>
-                  StoreWidget1(store: stores[index]),
               separatorBuilder: (context, index) => const SizedBox(height: 12),
+              itemBuilder: (context, index) {
+                final storeData = stores[index];
+                return GestureDetector(
+                  onTap: onTapStore,
+                  child: StoreWidget1(
+                    // store: stores[index],
+                    storeData: storeData,
+                  ),
+                );
+              },
             ));
   }
 }

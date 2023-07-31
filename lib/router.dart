@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kezzle/features/authentication/login_screen.dart';
@@ -5,18 +7,19 @@ import 'package:kezzle/features/authentication/make_user_screen.dart';
 import 'package:kezzle/features/authentication/repos/authentication_repo.dart';
 import 'package:kezzle/features/onboarding/current_location_screen.dart';
 import 'package:kezzle/features/profile/change_profile_screen.dart';
+import 'package:kezzle/features/splash/splash_screen.dart';
 import 'package:kezzle/responsive/mobile_screen_layout.dart';
 
 final routerProvider = Provider((ref) {
   return GoRouter(
-    initialLocation: "/home",
+    initialLocation: Platform.isAndroid ? "/splash" : "/home",
 
     // initialLocation: "/splash",
     // initialLocation: "/current_location_screen",
     redirect: (context, state) {
       // 로그인 했는 지 확인하고 안했으면 로그인 화면으로 이동.
       final isLoggedIn = ref.watch(authRepo).isLoggedIn;
-      if (!isLoggedIn) {
+      if (!isLoggedIn && state.location == "/home") {
         if (state.location != "/login") {
           return LoginScreen.routeURL;
         }
@@ -31,11 +34,11 @@ final routerProvider = Provider((ref) {
     },
     routes: [
       // 스플래시 화면 라우팅 설정
-      // GoRoute(
-      //   name: SplashScreen.routeName,
-      //   path: SplashScreen.routeURL,
-      //   builder: (context, state) => const SplashScreen(),
-      // ),
+      GoRoute(
+        name: SplashScreen.routeName,
+        path: SplashScreen.routeURL,
+        builder: (context, state) => const SplashScreen(),
+      ),
       // 로그인 화면 라우팅 설정
       GoRoute(
         name: LoginScreen.routeName,

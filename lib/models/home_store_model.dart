@@ -14,4 +14,12 @@ class HomeStoreModel {
     required this.iamges,
     required this.like,
   });
+
+  HomeStoreModel.fromJson(Map<String, dynamic> json)
+      : name = json['name'],
+        thumbnail = json['thumbnail'],
+        address = json['address'],
+        distance = json['distance'],
+        iamges = json['iamges'],
+        like = json['like'];
 }

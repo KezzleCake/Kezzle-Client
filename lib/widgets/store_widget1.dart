@@ -5,11 +5,11 @@ import 'package:kezzle/utils/colors.dart';
 
 class StoreWidget1 extends StatelessWidget {
   // bool liked = false;
-  final HomeStoreModel store;
+  final HomeStoreModel storeData;
 
   const StoreWidget1({
     super.key,
-    required this.store,
+    required this.storeData,
   });
 
   @override
@@ -30,7 +30,8 @@ class StoreWidget1 extends StatelessWidget {
           ),
           child: Row(children: [
             CircleAvatar(
-                backgroundImage: AssetImage(store.thumbnail), radius: 63 / 2),
+                backgroundImage: AssetImage(storeData.thumbnail),
+                radius: 63 / 2),
             const SizedBox(width: 8),
             Expanded(
                 child: Column(
@@ -39,12 +40,12 @@ class StoreWidget1 extends StatelessWidget {
                   Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text('본비케이크',
+                        Text(storeData.name,
                             style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600,
                                 color: gray08)),
-                        store.like
+                        storeData.like
                             ? SvgPicture.asset(
                                 'assets/icons/like=on_in.svg',
                                 width: 24,
@@ -55,7 +56,7 @@ class StoreWidget1 extends StatelessWidget {
                               ),
                       ]),
                   const SizedBox(height: 1),
-                  Text('${store.distance}ㆍ${store.address}',
+                  Text('${storeData.distance}ㆍ${storeData.address}',
                       style: TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w400,
@@ -72,7 +73,7 @@ class StoreWidget1 extends StatelessWidget {
               right: 16,
               bottom: 16,
             ),
-            itemCount: store.iamges.length,
+            itemCount: storeData.iamges.length,
             scrollDirection: Axis.horizontal,
             separatorBuilder: (context, index) => const SizedBox(width: 6),
             itemBuilder: (context, index) => Container(
@@ -81,7 +82,7 @@ class StoreWidget1 extends StatelessWidget {
                 decoration:
                     BoxDecoration(borderRadius: BorderRadius.circular(16)),
                 clipBehavior: Clip.hardEdge,
-                child: Image.asset(store.iamges[index], fit: BoxFit.cover)),
+                child: Image.asset(storeData.iamges[index], fit: BoxFit.cover)),
           ),
         ),
       ]),
