@@ -32,7 +32,9 @@ class DetailCakeScreen extends StatelessWidget {
     print('ddd');
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (context) => const DetailStoreScreen(),
+        builder: (context) => const DetailStoreScreen(
+          storeId: 1,
+        ),
       ),
     );
   }

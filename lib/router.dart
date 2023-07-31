@@ -9,6 +9,7 @@ import 'package:kezzle/features/onboarding/current_location_screen.dart';
 import 'package:kezzle/features/profile/change_profile_screen.dart';
 import 'package:kezzle/features/splash/splash_screen.dart';
 import 'package:kezzle/responsive/mobile_screen_layout.dart';
+import 'package:kezzle/screens/store/detail_store_screen.dart';
 
 final routerProvider = Provider((ref) {
   return GoRouter(
@@ -72,6 +73,15 @@ final routerProvider = Provider((ref) {
         name: CurrentLocationScreen.routeName,
         path: CurrentLocationScreen.routeURL,
         builder: (context, state) => const CurrentLocationScreen(),
+      ),
+      // 스토어 상세 화면 라우팅 설정
+      GoRoute(
+        path: "/detail_store/:id",
+        name: DetailStoreScreen.routeName,
+        builder: (context, state) {
+          final id = state.pathParameters['id']!;
+          return DetailStoreScreen(storeId: int.parse(id));
+        },
       ),
     ],
   );

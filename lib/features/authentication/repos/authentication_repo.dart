@@ -22,9 +22,9 @@ class AuthenticatoinRepository {
   Stream<User?> authStateChanges() => _firebaseAuth.authStateChanges();
 
   // 이게 맞나? ㅎㅎ 자동 idtoken refresh 해주는 리스너 등록해주는 함수
-  StreamSubscription<User?> idTokenChanges() => _firebaseAuth
-      .idTokenChanges()
-      .listen((event) => event!.getIdTokenResult(true));
+  // StreamSubscription<User?> idTokenChanges() => _firebaseAuth
+  //     .idTokenChanges()
+  //     .listen((event) => event!.getIdTokenResult(true));
 
   // 로그아웃
   Future<void> signOut() async {
@@ -51,7 +51,7 @@ class AuthenticatoinRepository {
       idToken: googleAuth?.idToken,
     );
 
-    idTokenChanges();
+    // idTokenChanges();
 
     // Once signed in, return the UserCredential
     // Firebase의 FirebaseAuth 인스턴스를 사용하여 생성된 credential을 이용해 사용자를 로그인시킵니다.

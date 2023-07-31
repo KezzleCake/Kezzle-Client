@@ -2,7 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:kezzle/features/splash/splash_screen.dart';
+import 'package:go_router/go_router.dart';
 // import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:kezzle/screens/detail_cake_screen.dart';
 import 'package:kezzle/utils/colors.dart';
@@ -465,20 +465,21 @@ class StoreTabBarViewState extends ConsumerState<StoreTabBarView>
     with AutomaticKeepAliveClientMixin {
   @override
   bool get wantKeepAlive => true;
-  // TODO: implement wantKeepAlive
-  // bool get wantKeepAlive => throw UnimplementedError();
+
+  int _storeCount = 0;
+  bool isMore = false;
 
   void onTapStore() {
     //print('store tapped');
     //스토어 상세보기 화면으로 이동
-    Navigator.of(context).push(MaterialPageRoute(
-      builder: (context) => const SplashScreen(),
-    ));
+    context.push('/detail_store/1');
   }
 
   @override
   Widget build(BuildContext context) {
     super.build(context);
+
+    print('build');
 
     // 반경이나, 위도 경도 변경되면 실행되는 리스너
     ref.listen(searchSettingViewModelProvider, (previous, next) {
@@ -498,21 +499,47 @@ class StoreTabBarViewState extends ConsumerState<StoreTabBarView>
         error: (error, stackTrace) => Center(
               child: Text('스토어 목록 불러오기 실패, $error'),
             ),
-        data: (stores) => ListView.separated(
-              padding: const EdgeInsets.symmetric(vertical: 30, horizontal: 20),
-              itemCount: stores.length,
-              separatorBuilder: (context, index) => const SizedBox(height: 12),
-              itemBuilder: (context, index) {
-                final storeData = stores[index];
-                return GestureDetector(
-                  onTap: onTapStore,
-                  child: StoreWidget1(
-                    // store: stores[index],
-                    storeData: storeData,
-                  ),
-                );
+        data: (stores) {
+          _storeCount = stores.length;
+          return NotificationListener<ScrollUpdateNotification>(
+              onNotification: (notification) {
+                if (notification.metrics.pixels >
+                    notification.metrics.maxScrollExtent * 0.85) {
+                  print('끝까지 왔다');
+                  // print('현재 스토어 개수: $_storeCount');
+                  // print('더보기: $isMore');
+                  // if (_storeCount % 10 == 0 && !isMore) {
+                  //   // print('다음 페이지 요청');
+                  isMore = true;
+                  // setState 여기 쓰는 거 좀 아닌거같은데...................................맞나?ㅎㅎ
+                  setState(() {});
+                  //   ref.read(homeStoreProvider.notifier).fetchNextPage();
+                  // }
+                  isMore = false;
+                }
+                return true;
               },
-            ));
+              child: ListView.separated(
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 30, horizontal: 20),
+                  itemCount: stores.length,
+                  separatorBuilder: (context, index) =>
+                      const SizedBox(height: 12),
+                  itemBuilder: (context, index) {
+                    final storeData = stores[index];
+
+                    return Column(children: [
+                      GestureDetector(
+                          onTap: onTapStore,
+                          child: StoreWidget1(storeData: storeData)),
+                      if (isMore && index == stores.length - 1) ...[
+                        const SizedBox(height: 12),
+                        Center(
+                            child: CircularProgressIndicator(color: coral01)),
+                      ]
+                    ]);
+                  }));
+        });
   }
 }
 

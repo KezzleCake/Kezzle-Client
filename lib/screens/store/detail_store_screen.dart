@@ -16,7 +16,11 @@ final tabs = [
 ];
 
 class DetailStoreScreen extends StatelessWidget {
-  const DetailStoreScreen({super.key});
+  static const routeURL = '/detail_store';
+  static const routeName = 'detail_store';
+  final int storeId;
+
+  const DetailStoreScreen({super.key, required this.storeId});
 
   @override
   Widget build(BuildContext context) {
@@ -118,119 +122,104 @@ class StoreCakes extends StatefulWidget {
 }
 
 class _StoreCakesState extends State<StoreCakes> {
-  int selectedKeywordIndex = 0;
-  final List<String> keywords = [
-    '전체',
-    '생일',
-    '커플',
-    '아이',
-    '기념일',
-    '기타',
-    '곰돌이',
-    '레터링',
-    '꽃',
-  ];
+  bool isLike = false;
+  // int selectedKeywordIndex = 0;
+  // final List<String> keywords = [
+  //   '전체',
+  //   '생일',
+  //   '커플',
+  //   '아이',
+  //   '기념일',
+  //   '기타',
+  //   '곰돌이',
+  //   '레터링',
+  //   '꽃',
+  // ];
 
   //버튼 누르면 선택된 인덱스를 바꾸는 함수
-  void onTapKeyword(int index) {
+  // void onTapKeyword(int index) {
+  //   setState(() {
+  //     selectedKeywordIndex = index;
+  //   });
+  // }
+
+  void onTapLike() {
     setState(() {
-      selectedKeywordIndex = index;
+      isLike = !isLike;
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        const SizedBox(height: 30),
-        SizedBox(
-          height: 30,
-          child: ListView.separated(
-            itemCount: keywords.length,
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            scrollDirection: Axis.horizontal,
-            separatorBuilder: (context, index) => const SizedBox(width: 8),
-            itemBuilder: (context, index) => GestureDetector(
-              //누르면 선택된 인덱스를 바꾸는 함수
-              onTap: () => onTapKeyword(index),
-              child: AnimatedContainer(
-                duration: const Duration(milliseconds: 100),
-                alignment: Alignment.center,
-                padding:
-                    const EdgeInsets.symmetric(vertical: 4, horizontal: 10),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(16),
-                  color: index == selectedKeywordIndex ? coral01 : coral04,
-                ),
-                child: Text(
-                  keywords[index],
-                  style: TextStyle(
-                    fontSize: 14,
-                    color:
-                        index == selectedKeywordIndex ? Colors.white : coral01,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ),
-        const SizedBox(height: 16),
-        Flexible(
+    return Column(children: [
+      // const SizedBox(height: 30),
+      // SizedBox(
+      //     height: 30,
+      //     child: ListView.separated(
+      //         itemCount: keywords.length,
+      //         padding: const EdgeInsets.symmetric(horizontal: 20),
+      //         scrollDirection: Axis.horizontal,
+      //         separatorBuilder: (context, index) => const SizedBox(width: 8),
+      //         itemBuilder: (context, index) => GestureDetector(
+      //               //누르면 선택된 인덱스를 바꾸는 함수
+      //               onTap: () => onTapKeyword(index),
+      //               child: AnimatedContainer(
+      //                   duration: const Duration(milliseconds: 100),
+      //                   alignment: Alignment.center,
+      //                   padding: const EdgeInsets.symmetric(
+      //                       vertical: 4, horizontal: 10),
+      //                   decoration: BoxDecoration(
+      //                       borderRadius: BorderRadius.circular(16),
+      //                       color: index == selectedKeywordIndex
+      //                           ? coral01
+      //                           : coral04),
+      //                   child: Text(keywords[index],
+      //                       style: TextStyle(
+      //                           fontSize: 14,
+      //                           color: index == selectedKeywordIndex
+      //                               ? Colors.white
+      //                               : coral01,
+      //                           fontWeight: FontWeight.w600))),
+      //             ))),
+      // const SizedBox(height: 16),
+      Flexible(
           child: GridView.builder(
-            itemCount: 20,
-            padding: const EdgeInsets.only(
-              top: 16,
-              left: 20,
-              right: 20,
-              bottom: 40,
-            ),
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 3,
-              crossAxisSpacing: 6,
-              mainAxisSpacing: 6,
-              childAspectRatio: 1,
-            ),
-            itemBuilder: (context, index) => Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(16),
-                boxShadow: [shadow01],
-              ),
-              clipBehavior: Clip.hardEdge,
-              child: Stack(
-                alignment: Alignment.bottomRight,
-                children: [
-                  Image.asset(
-                    'assets/heart_cake.png',
-                    fit: BoxFit.cover,
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Stack(
-                      children: [
-                        SvgPicture.asset(
-                          'assets/icons/like=on_in.svg',
-                          colorFilter: ColorFilter.mode(
-                            coral01,
-                            BlendMode.srcATop,
-                          ),
-                        ),
-                        SvgPicture.asset(
-                          'assets/icons/like=off.svg',
+        itemCount: 20,
+        padding: const EdgeInsets.only(
+          top: 16,
+          left: 20,
+          right: 20,
+          bottom: 40,
+        ),
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 3,
+          crossAxisSpacing: 6,
+          mainAxisSpacing: 6,
+          childAspectRatio: 1,
+        ),
+        itemBuilder: (context, index) => Container(
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(16), boxShadow: [shadow01]),
+            clipBehavior: Clip.hardEdge,
+            child: Stack(alignment: Alignment.bottomRight, children: [
+              Image.asset('assets/heart_cake.png', fit: BoxFit.cover),
+              Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: GestureDetector(
+                    onTap: onTapLike,
+                    child: Stack(children: [
+                      isLike
+                          ? SvgPicture.asset('assets/icons/like=on_in.svg')
+                          : SvgPicture.asset('assets/icons/like=off_in.svg'),
+                      SvgPicture.asset('assets/icons/like=off.svg',
                           colorFilter: const ColorFilter.mode(
                             Colors.white,
                             BlendMode.srcATop,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ],
-    );
+                          )),
+                    ]),
+                  )),
+            ])),
+      )),
+    ]);
   }
 }
