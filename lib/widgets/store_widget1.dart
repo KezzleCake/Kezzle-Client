@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:kezzle/features/bookmark/view_models/bookmark_vm.dart';
 import 'package:kezzle/models/home_store_model.dart';
 import 'package:kezzle/utils/colors.dart';
 import 'package:kezzle/view_models/store_view_model.dart';
@@ -20,21 +21,35 @@ class StoreWidget1 extends ConsumerStatefulWidget {
 
 class StoreWidget1State extends ConsumerState<StoreWidget1> {
   void onTapLikes() async {
+    ref.watch(storeProvider(widget.storeData.id)).whenData((value) {
+      if (value == true) {
+        // 좋아요 취소
+        ref.read(storeProvider(widget.storeData.id).notifier).dislikeStore();
+      } else {
+        // 좋아요
+        ref
+            .read(storeProvider(widget.storeData.id).notifier)
+            .likeStore(widget.storeData);
+      }
+    });
     // 특정 스토어를 위한 프로바이더를 만들어줌
     // 이미 좋아요를 누른상태면 좋아요 취소
     // 좋아요 상태까지도 처음에 초기화 해줘야될거같음.
-    if (widget.storeData.like) {
-      await ref.read(storeProvider(widget.storeData.id).notifier).likeStore();
-    }
-    // 좋아요를 누르지 않은 상태면 좋아요
-    else {
-      await ref
-          .read(storeProvider(widget.storeData.id).notifier)
-          .dislikeStore();
-    }
-    setState(() {
-      widget.storeData.like = !widget.storeData.like;
-    });
+    // init state에서 해주면 되려나?
+    // if (widget.storeData.like) {
+    //   await ref.read(storeProvider(widget.storeData.id).notifier).likeStore();
+    // }
+    // // 좋아요를 누르지 않은 상태면 좋아요
+    // else {
+    //   await ref
+    //       .read(storeProvider(widget.storeData.id).notifier)
+    //       .dislikeStore();
+    // }
+    // setState(() {
+    //   widget.storeData.like = !widget.storeData.like;
+    // });
+    // ref.watch(storeProvider(widget.storeData.id).notifier).
+    // ref.watch(storeProvider(widget.storeData.id).notifier).toggleLike();
   }
 
   @override
@@ -66,13 +81,29 @@ class StoreWidget1State extends ConsumerState<StoreWidget1> {
                                   fontWeight: FontWeight.w600,
                                   color: gray08)),
                           GestureDetector(
-                            onTap: onTapLikes,
-                            child: SvgPicture.asset(
-                                widget.storeData.like
-                                    ? 'assets/icons/like=on_in.svg'
-                                    : 'assets/icons/like=off_in.svg',
-                                width: 24),
-                          ),
+                              onTap: onTapLikes,
+                              // child: SvgPicture.asset(
+                              //     widget.storeData.like
+                              //         ? 'assets/icons/like=on_in.svg'
+                              //         : 'assets/icons/like=off_in.svg',
+                              //     width: 24),
+                              child: SvgPicture.asset(
+                                ref
+                                    .watch(storeProvider(widget.storeData.id))
+                                    .when(
+                                      data: (data) {
+                                        if (data == true) {
+                                          return 'assets/icons/like=on_in.svg';
+                                        } else {
+                                          return 'assets/icons/like=off_in.svg';
+                                        }
+                                      },
+                                      loading: () =>
+                                          'assets/icons/like=off_in.svg',
+                                      error: (err, stack) =>
+                                          'assets/icons/like=off_in.svg',
+                                    ),
+                              )),
                         ]),
                     const SizedBox(height: 1),
                     Text(

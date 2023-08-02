@@ -27,9 +27,12 @@ class DistanceSettingWidgetState extends ConsumerState<DistanceSettingWidget> {
     //print(selectedIndex + 1);
 
     // pop 되면서 선택된 거리로 데이터 변경
-    ref
-        .read(searchSettingViewModelProvider.notifier)
-        .setRadius(selectedIndex + 1);
+    // selectedIndex + 1과 값이 다르면 변경
+    if (ref.read(searchSettingViewModelProvider).radius != selectedIndex + 1) {
+      ref
+          .read(searchSettingViewModelProvider.notifier)
+          .setRadius(selectedIndex + 1);
+    }
     Navigator.of(context).pop();
   }
 

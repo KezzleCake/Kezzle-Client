@@ -6,7 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
-class AuthenticatoinRepository {
+class AuthRepo {
   // FirebaseAuth 인스턴스 생성
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
 
@@ -108,7 +108,7 @@ class AuthenticatoinRepository {
   }
 }
 
-final authRepo = Provider((ref) => AuthenticatoinRepository());
+final authRepo = Provider((ref) => AuthRepo());
 
 // 유저의 인증상태를 감지하는 스트림을 expose
 final authState = StreamProvider((ref) {

@@ -1,8 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class HomeStoresRepo {
+class StoreRepo {
   // 위도 경도에 맞는 모든 스토어 리스트 가져오기.
+  // 위도 경도 받아야됨..
   // 목록 더 불러오기
   Future<Map<String, dynamic>> fetchStores({int? page}) async {
     if (page == null) {
@@ -24,7 +25,13 @@ class HomeStoresRepo {
     // 스토어 아이디랑 유저정보 받아서 좋아요 취소 처리
     // 여기서 정보 보내기!!
   }
+
+  // 사용자가 찜한 스토어 리스트 가져오기
+  Future<List<String>> fetchBookmarkedStores(User user) async {
+    // 사용자 정보 받아서 찜한 스토어 리스트 가져오기
+    return [];
+  }
 }
 
 // homeStoreRepo 라는 이름으로, HomeStoresRepo 클래스를 Provider로 등록
-final homeStoreRepo = Provider((ref) => HomeStoresRepo());
+final homeStoreRepo = Provider((ref) => StoreRepo());

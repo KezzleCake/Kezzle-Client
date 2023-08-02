@@ -3,7 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kezzle/features/profile/models/user_model.dart';
 
-class UserRepository {
+class UserRepo {
   final String endpoint = 'ddd';
 
   // 유저 만들기(닉네임 정보를 토대로 데이터 저장)
@@ -34,7 +34,7 @@ class UserRepository {
     // } finally {
     //   dio.close();
     // }
-    // return {};
+    return {};
   }
 
   // 닉네임 수정
@@ -44,5 +44,5 @@ class UserRepository {
 }
 
 final userRepo = Provider(
-  (ref) => UserRepository(),
+  (ref) => UserRepo(),
 );

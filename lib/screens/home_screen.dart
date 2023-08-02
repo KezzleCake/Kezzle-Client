@@ -117,27 +117,25 @@ class HomeScreenState extends ConsumerState<HomeScreen>
           title: Row(children: [
             const SizedBox(width: 10),
             GestureDetector(
-              onTap: () => _onTapLocation(context),
-              child: Row(children: [
-                Text(ref.watch(searchSettingViewModelProvider).address,
-                    style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                        color: gray08)),
-                SvgPicture.asset('assets/icons/arrow-down.svg',
-                    colorFilter: ColorFilter.mode(gray07, BlendMode.srcIn))
-              ]),
-            ),
+                onTap: () => _onTapLocation(context),
+                child: Row(children: [
+                  Text(ref.watch(searchSettingViewModelProvider).address,
+                      style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          color: gray08)),
+                  SvgPicture.asset('assets/icons/arrow-down.svg',
+                      colorFilter: ColorFilter.mode(gray07, BlendMode.srcIn))
+                ])),
             GestureDetector(
-              onTap: () => _onTapDistance(context),
-              child: Row(children: [
-                Text('${ref.watch(searchSettingViewModelProvider).radius}km',
-                    style: const TextStyle(
-                        fontSize: 14, fontWeight: FontWeight.w600)),
-                SvgPicture.asset('assets/icons/arrow-down.svg',
-                    colorFilter: ColorFilter.mode(gray07, BlendMode.srcIn)),
-              ]),
-            ),
+                onTap: () => _onTapDistance(context),
+                child: Row(children: [
+                  Text('${ref.watch(searchSettingViewModelProvider).radius}km',
+                      style: const TextStyle(
+                          fontSize: 14, fontWeight: FontWeight.w600)),
+                  SvgPicture.asset('assets/icons/arrow-down.svg',
+                      colorFilter: ColorFilter.mode(gray07, BlendMode.srcIn)),
+                ])),
             // 픽업 시간
             // const SizedBox(width: 10),
             // Expanded(child: Container()),
@@ -169,35 +167,22 @@ class HomeScreenState extends ConsumerState<HomeScreen>
             length: 2,
             child: Column(children: [
               TabBar(
-                splashFactory: NoSplash.splashFactory,
-                labelColor: coral01,
-                indicatorSize: TabBarIndicatorSize.tab,
-                labelStyle: const TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w700,
-                ),
-                unselectedLabelStyle: const TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                ),
-                unselectedLabelColor: gray05,
-                indicator: BoxDecoration(
-                  border: Border(
-                    bottom: BorderSide(
-                      color: coral01,
-                      width: 2,
-                    ),
-                  ),
-                ),
-                tabs: [
-                  Tab(
-                    text: tabList[0],
-                  ),
-                  Tab(
-                    text: tabList[1],
-                  ),
-                ],
-              ),
+                  splashFactory: NoSplash.splashFactory,
+                  labelColor: coral01,
+                  indicatorSize: TabBarIndicatorSize.tab,
+                  labelStyle: const TextStyle(
+                      fontSize: 14, fontWeight: FontWeight.w700),
+                  unselectedLabelStyle: const TextStyle(
+                      fontSize: 14, fontWeight: FontWeight.w600),
+                  unselectedLabelColor: gray05,
+                  indicator: BoxDecoration(
+                      border: Border(
+                    bottom: BorderSide(color: coral01, width: 2),
+                  )),
+                  tabs: [
+                    Tab(text: tabList[0]),
+                    Tab(text: tabList[1]),
+                  ]),
               const Flexible(
                   child: TabBarView(children: [
                 StoreTabBarView(),
@@ -498,7 +483,9 @@ class StoreTabBarViewState extends ConsumerState<StoreTabBarView>
     ref.listen(searchSettingViewModelProvider, (previous, next) {
       // print(previous!.radius);
       // print(next!.radius);
-      ref.read(homeStoreProvider.notifier).refresh();
+      if (previous != next) {
+        ref.read(homeStoreProvider.notifier).refresh();
+      }
     });
 
     // async니까 빌드베서드 끝나도록 기다려야됨. -> when 사용

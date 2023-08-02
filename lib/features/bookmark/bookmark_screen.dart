@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:kezzle/features/bookmark/view_models/bookmark_vm.dart';
 import 'package:kezzle/models/home_store_model.dart';
 import 'package:kezzle/utils/colors.dart';
+import 'package:kezzle/view_models/search_setting_vm.dart';
 // import 'package:kezzle/widgets/store_widget.dart';
 import 'package:kezzle/widgets/store_widget1.dart';
 // import 'package:kezzle/features/store_search/search_store_screen.dart';
@@ -80,44 +83,42 @@ class CakeBookmarkScreen extends StatelessWidget {
   }
 }
 
-class StoreBookmarkScreen extends StatelessWidget {
+class StoreBookmarkScreen extends ConsumerWidget {
   const StoreBookmarkScreen({
     super.key,
   });
 
   @override
-  Widget build(BuildContext context) {
-    return ListView.separated(
-      padding: const EdgeInsets.symmetric(vertical: 30, horizontal: 20),
-      itemCount: 4,
-      itemBuilder: (context, index) =>
-          // StoreWidget(
-          //   onTap: (context) {
-          //     // Navigator.push(
-          //     //   context,
-          //     //   MaterialPageRoute(
-          //     //     builder: (context) => SearchStoreScreen(),
-          //     //   ),
-          //     // );
-          //   },
-          // ),
-          StoreWidget1(
-        storeData: HomeStoreModel(
-          id: '1',
-          name: '본비케이크',
-          thumbnail: 'assets/heart_cake.png',
-          address: '서울 강남구 역삼동',
-          distance: '0.3km',
-          iamges: [
-            'assets/heart_cake.png',
-            'assets/heart_cake.png',
-            'assets/heart_cake.png',
-          ],
-          like: true,
-        ),
-      ),
-      separatorBuilder: (context, index) => const SizedBox(height: 12),
-    );
+  Widget build(BuildContext context, WidgetRef ref) {
+    // 위도 경도 변경되면 실행되는 리스너
+    ref.listen(searchSettingViewModelProvider, (previous, next) {
+      if (previous!.latitude != next.latitude ||
+          previous.longitude != next.longitude) {
+        ref.read(bookmarkedStoreProvider.notifier).refresh();
+      }
+    });
+
+    return ref.watch(bookmarkedStoreProvider).when(
+        loading: () => Center(
+              child: CircularProgressIndicator(color: coral01),
+            ),
+        error: (error, stackTrace) => Center(
+              child: Text('찜 목록 불러오기 실패, $error'),
+            ),
+        data: (stores) {
+          if (stores.isEmpty) {
+            return const NoItemScreen(text: "찜한 스토어가 없어요");
+          }
+          return ListView.separated(
+            padding: const EdgeInsets.symmetric(vertical: 30, horizontal: 20),
+            separatorBuilder: (context, index) => const SizedBox(height: 12),
+            itemCount: stores.length,
+            itemBuilder: (context, index) {
+              final store = stores[index];
+              return StoreWidget1(storeData: store);
+            },
+          );
+        });
   }
 }
 

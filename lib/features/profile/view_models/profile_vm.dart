@@ -7,8 +7,8 @@ import 'package:kezzle/features/profile/models/user_model.dart';
 import 'package:kezzle/features/profile/repos/user_repo.dart';
 
 class ProfileVM extends AsyncNotifier<UserModel> {
-  late final UserRepository _userRepo;
-  late final AuthenticatoinRepository _authRepo;
+  late final UserRepo _userRepo;
+  late final AuthRepo _authRepo;
 
   @override
   FutureOr<UserModel> build() async {
