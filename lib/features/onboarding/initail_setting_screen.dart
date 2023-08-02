@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:go_router/go_router.dart';
+import 'package:geolocator/geolocator.dart';
+// import 'package:go_router/go_router.dart';
 // import 'package:kezzle/features/address_search/address_search_vm.dart';
 import 'package:kezzle/features/onboarding/current_location_screen.dart';
+import 'package:kezzle/features/onboarding/current_location_service.dart';
 // import 'package:kezzle/features/onboarding/current_location_vm.dart';
 // import 'package:intl/intl.dart';
-import 'package:kezzle/responsive/mobile_screen_layout.dart';
+// import 'package:kezzle/responsive/mobile_screen_layout.dart';
 import 'package:kezzle/utils/colors.dart';
 import 'package:kezzle/view_models/search_setting_vm.dart';
 // import 'package:kezzle/widgets/calendar_widget.dart';
@@ -17,9 +19,11 @@ import 'package:kezzle/widgets/location_setting_widget.dart';
 // import 'package:kezzle/widgets/time_setting_widget.dart';
 
 class InitialSettingSreen extends ConsumerStatefulWidget {
-  // static const routeURL = '/initial_setting';
+  static const routeURL = '/initial_setting';
   static const routeName = 'initial_setting';
-  const InitialSettingSreen({super.key});
+
+  final String _nickname;
+  const InitialSettingSreen(this._nickname, {super.key});
 
   @override
   InitialSettingSreenState createState() => InitialSettingSreenState();
@@ -49,16 +53,7 @@ class InitialSettingSreenState extends ConsumerState<InitialSettingSreen> {
     // }
   }
 
-  void _onTapDistance(BuildContext context) async {
-    // final result = await showModalBottomSheet<int>(
-    //     context: context,
-    //     builder: (context) {
-    //       return DistanceSettingWidget(initialValue: _selectedDistance);
-    //     });
-    // print('result: ' + result.toString());
-    // setState(() {
-    //   _selectedDistance = result!;
-    // });
+  void _onTapDistance(BuildContext context) {
     showModalBottomSheet(
         context: context,
         builder: (context) {
@@ -67,18 +62,21 @@ class InitialSettingSreenState extends ConsumerState<InitialSettingSreen> {
         });
   }
 
-  void _onTapCurrentLocation() {
-    // 화면 이동하고, 결과 받아오기
-    //final result = await context.pushNamed(CurrentLocationScreen.routeName);
+  void _onTapCurrentLocation() async {
+    // 위치 권한 확인 후, 위치 받아오고 받아온 위치 전달해서 화면 이동
+    final Position? currentPosition =
+        await CurrentLocationService().getCurrentLocation();
+    // print('currentPosition: ' + currentPosition.toString());
+    if (!mounted) return;
+    if (currentPosition != null) {
+      Navigator.of(context).push(MaterialPageRoute(
+          builder: (context) => CurrentLocationScreen(
+                initial_lat: currentPosition.latitude,
+                initial_lng: currentPosition.longitude,
+              )));
+    }
 
-    // 위치 설정 버튼으로 돌아왔을 때, 결과 받아오기
-    // if (result != null) {
-    //   setState(() {
-    //     _selectedLocation = result.toString();
-    //     print(_selectedLocation);
-    //   });
-    // }
-    context.pushNamed(CurrentLocationScreen.routeName);
+    // context.pushNamed(CurrentLocationScreen.routeName);
   }
 
   // void _onTapPickUpDate(BuildContext context) async {
@@ -117,13 +115,16 @@ class InitialSettingSreenState extends ConsumerState<InitialSettingSreen> {
   //       .goNamed(MobileScreenLayout.routeName, pathParameters: {'tab': 'home'});
   // }
 
+  // 시작하기 버튼 누를 시
   void _onTapStart(BuildContext context) {
-    context
-        .goNamed(MobileScreenLayout.routeName, pathParameters: {'tab': 'home'});
+    print('start');
+    // context
+    //     .goNamed(MobileScreenLayout.routeName, pathParameters: {'tab': 'home'});
   }
 
   @override
   Widget build(BuildContext context) {
+    print(widget._nickname);
     return Scaffold(
       resizeToAvoidBottomInset: false,
       bottomNavigationBar: BottomAppBar(

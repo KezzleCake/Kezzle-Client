@@ -31,4 +31,18 @@ class UserModel {
       'oathProvider': oathProvider,
     };
   }
+
+  UserModel copyWith({
+    String? uid,
+    String? nickname,
+    String? email,
+    String? oathProvider,
+  }) {
+    return UserModel(
+      uid: uid ?? this.uid,
+      nickname: nickname ?? this.nickname,
+      email: email ?? this.email,
+      oathProvider: oathProvider ?? this.oathProvider,
+    );
+  }
 }

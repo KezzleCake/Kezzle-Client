@@ -1,4 +1,5 @@
 class HomeStoreModel {
+  String id;
   String name;
   String thumbnail;
   String address;
@@ -7,6 +8,7 @@ class HomeStoreModel {
   bool like;
 
   HomeStoreModel({
+    required this.id,
     required this.name,
     required this.thumbnail,
     required this.address,
@@ -16,10 +18,23 @@ class HomeStoreModel {
   });
 
   HomeStoreModel.fromJson(Map<String, dynamic> json)
-      : name = json['name'],
+      : id = json['id'],
+        name = json['name'],
         thumbnail = json['thumbnail'],
         address = json['address'],
         distance = json['distance'],
         iamges = json['iamges'],
         like = json['like'];
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+      'thumbnail': thumbnail,
+      'address': address,
+      'distance': distance,
+      'iamges': iamges,
+      'like': like,
+    };
+  }
 }

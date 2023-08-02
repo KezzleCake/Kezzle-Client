@@ -475,6 +475,19 @@ class StoreTabBarViewState extends ConsumerState<StoreTabBarView>
     context.push('/detail_store/1');
   }
 
+  Future<void> onRefresh() async {
+    // await Future.delayed(const Duration(seconds: 1));
+    return ref.watch(homeStoreProvider.notifier).refresh();
+  }
+
+  Future<void> fetchNextPage() async {
+    isMore = true;
+    setState(() {});
+    await ref.read(homeStoreProvider.notifier).fetchNextPage();
+    isMore = false;
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     super.build(context);
@@ -485,10 +498,7 @@ class StoreTabBarViewState extends ConsumerState<StoreTabBarView>
     ref.listen(searchSettingViewModelProvider, (previous, next) {
       // print(previous!.radius);
       // print(next!.radius);
-      ref.read(homeStoreProvider.notifier).refresh(
-          radius: next.radius,
-          latitude: next.latitude,
-          longitude: next.longitude);
+      ref.read(homeStoreProvider.notifier).refresh();
     });
 
     // async니까 빌드베서드 끝나도록 기다려야됨. -> when 사용
@@ -500,45 +510,42 @@ class StoreTabBarViewState extends ConsumerState<StoreTabBarView>
               child: Text('스토어 목록 불러오기 실패, $error'),
             ),
         data: (stores) {
+          // _storeCount를 굳이 써야되나? stores.length만으로도 조건을 세울수 있을거같음.
           _storeCount = stores.length;
           return NotificationListener<ScrollUpdateNotification>(
               onNotification: (notification) {
                 if (notification.metrics.pixels >
                     notification.metrics.maxScrollExtent * 0.85) {
-                  print('끝까지 왔다');
-                  // print('현재 스토어 개수: $_storeCount');
-                  // print('더보기: $isMore');
-                  // if (_storeCount % 10 == 0 && !isMore) {
-                  //   // print('다음 페이지 요청');
-                  isMore = true;
-                  // setState 여기 쓰는 거 좀 아닌거같은데...................................맞나?ㅎㅎ
-                  setState(() {});
-                  //   ref.read(homeStoreProvider.notifier).fetchNextPage();
-                  // }
-                  isMore = false;
+                  // 다음 거 가져오는 조건?
+                  if (!isMore && _storeCount % 10 == 0) {
+                    fetchNextPage();
+                  }
                 }
                 return true;
               },
-              child: ListView.separated(
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 30, horizontal: 20),
-                  itemCount: stores.length,
-                  separatorBuilder: (context, index) =>
-                      const SizedBox(height: 12),
-                  itemBuilder: (context, index) {
-                    final storeData = stores[index];
-
-                    return Column(children: [
-                      GestureDetector(
-                          onTap: onTapStore,
-                          child: StoreWidget1(storeData: storeData)),
-                      if (isMore && index == stores.length - 1) ...[
+              child: RefreshIndicator(
+                onRefresh: onRefresh,
+                child: ListView.separated(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 30, horizontal: 20),
+                    itemCount: stores.length,
+                    separatorBuilder: (context, index) =>
                         const SizedBox(height: 12),
-                        Center(
-                            child: CircularProgressIndicator(color: coral01)),
-                      ]
-                    ]);
-                  }));
+                    itemBuilder: (context, index) {
+                      final storeData = stores[index];
+
+                      return Column(children: [
+                        GestureDetector(
+                            onTap: onTapStore,
+                            child: StoreWidget1(storeData: storeData)),
+                        if (isMore && index == stores.length - 1) ...[
+                          const SizedBox(height: 12),
+                          Center(
+                              child: CircularProgressIndicator(color: coral01)),
+                        ]
+                      ]);
+                    }),
+              ));
         });
   }
 }

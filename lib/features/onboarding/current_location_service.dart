@@ -1,6 +1,6 @@
 import 'package:geolocator/geolocator.dart';
 
-class CurrentLocationVM {
+class CurrentLocationService {
   Future<Position?> getCurrentLocation() async {
     LocationPermission permission = await checkPermission();
     if (permission == LocationPermission.denied) {

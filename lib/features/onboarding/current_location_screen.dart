@@ -9,7 +9,15 @@ import 'package:kezzle/view_models/search_setting_vm.dart';
 class CurrentLocationScreen extends ConsumerStatefulWidget {
   static const routeURL = '/current_location_screen';
   static const routeName = 'current_location_screen';
-  const CurrentLocationScreen({super.key});
+
+  final double initial_lat;
+  final double initial_lng;
+
+  const CurrentLocationScreen({
+    super.key,
+    required this.initial_lat,
+    required this.initial_lng,
+  });
 
   @override
   CurrentLocationScreenState createState() => CurrentLocationScreenState();
@@ -24,9 +32,13 @@ class CurrentLocationScreenState extends ConsumerState<CurrentLocationScreen> {
   // 초기값은 받아와서 해야될거같은데 일단은 임의로 설정
   double latitude = 37.5612811;
   double longitude = 126.964338;
-  final CameraPosition _kGooglePlex = const CameraPosition(
-    // 초기값은 받아와서 해야될거같은데 일단은 임의로 설정
-    target: LatLng(37.5612811, 126.964338),
+  // final CameraPosition _kGooglePlex = const CameraPosition(
+  //   // 초기값은 받아와서 해야될거같은데 일단은 임의로 설정
+  //   target: LatLng(37.5612811, 126.964338),
+  //   zoom: 20,
+  // );
+  late final CameraPosition _kGooglePlex = CameraPosition(
+    target: LatLng(widget.initial_lat, widget.initial_lng),
     zoom: 20,
   );
 

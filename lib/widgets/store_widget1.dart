@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:kezzle/models/home_store_model.dart';
 import 'package:kezzle/utils/colors.dart';
+import 'package:kezzle/view_models/store_view_model.dart';
 
-class StoreWidget1 extends StatefulWidget {
+class StoreWidget1 extends ConsumerStatefulWidget {
   // bool liked = false;
   final HomeStoreModel storeData;
 
@@ -13,11 +15,23 @@ class StoreWidget1 extends StatefulWidget {
   });
 
   @override
-  State<StoreWidget1> createState() => _StoreWidget1State();
+  StoreWidget1State createState() => StoreWidget1State();
 }
 
-class _StoreWidget1State extends State<StoreWidget1> {
-  void onTapLikes() {
+class StoreWidget1State extends ConsumerState<StoreWidget1> {
+  void onTapLikes() async {
+    // 특정 스토어를 위한 프로바이더를 만들어줌
+    // 이미 좋아요를 누른상태면 좋아요 취소
+    // 좋아요 상태까지도 처음에 초기화 해줘야될거같음.
+    if (widget.storeData.like) {
+      await ref.read(storeProvider(widget.storeData.id).notifier).likeStore();
+    }
+    // 좋아요를 누르지 않은 상태면 좋아요
+    else {
+      await ref
+          .read(storeProvider(widget.storeData.id).notifier)
+          .dislikeStore();
+    }
     setState(() {
       widget.storeData.like = !widget.storeData.like;
     });

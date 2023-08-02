@@ -5,7 +5,8 @@ import 'package:go_router/go_router.dart';
 import 'package:kezzle/features/authentication/login_screen.dart';
 import 'package:kezzle/features/authentication/make_user_screen.dart';
 import 'package:kezzle/features/authentication/repos/authentication_repo.dart';
-import 'package:kezzle/features/onboarding/current_location_screen.dart';
+// import 'package:kezzle/features/onboarding/current_location_screen.dart';
+// import 'package:kezzle/features/onboarding/initail_setting_screen.dart';
 import 'package:kezzle/features/profile/change_profile_screen.dart';
 import 'package:kezzle/features/splash/splash_screen.dart';
 import 'package:kezzle/responsive/mobile_screen_layout.dart';
@@ -52,6 +53,12 @@ final routerProvider = Provider((ref) {
         path: MakeUserScreen.routeURL,
         builder: (context, state) => const MakeUserScreen(),
       ),
+      // initial_setting 화면 라우팅 설정
+      // GoRoute(
+      //   name: InitialSettingSreen.routeName,
+      //   path: InitialSettingSreen.routeURL,
+      //   // builder: (context, state) => const InitialSettingScreen(),
+      // ),
       // 홈 화면 라우팅 설정
       GoRoute(
         path: "/:tab(home|map|search|favorite|profile)",
@@ -69,11 +76,11 @@ final routerProvider = Provider((ref) {
         builder: (context, state) => const ChangeProfileScreen(),
       ),
       //현재위치로 설정 화면 라우팅 설정
-      GoRoute(
-        name: CurrentLocationScreen.routeName,
-        path: CurrentLocationScreen.routeURL,
-        builder: (context, state) => const CurrentLocationScreen(),
-      ),
+      // GoRoute(
+      //   name: CurrentLocationScreen.routeName,
+      //   path: CurrentLocationScreen.routeURL,
+      //   builder: (context, state) => const CurrentLocationScreen(),
+      // ),
       // 스토어 상세 화면 라우팅 설정
       GoRoute(
         path: "/detail_store/:id",

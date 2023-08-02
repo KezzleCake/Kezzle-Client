@@ -1,8 +1,10 @@
 import 'dart:async';
 
 import 'package:firebase_auth/firebase_auth.dart';
+// import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 class AuthenticatoinRepository {
   // FirebaseAuth 인스턴스 생성
@@ -73,6 +75,37 @@ class AuthenticatoinRepository {
   }
 
   // apple 로그인도 만들기
+  Future<UserCredential> signInWithApple() async {
+    // final appleProvider = AppleAuthProvider();
+    // if (kIsWeb) {
+    //   await FirebaseAuth.instance.signInWithPopup(appleProvider);
+    // } else {
+    // return await FirebaseAuth.instance.signInWithProvider(appleProvider);
+    // }
+    // String redirectURL = dotenv.env['APPLE_REDIRECT_URI'].toString();
+    // print(redirectURL);
+    // String? clientID = dotenv.env['APPLE_CLIENT_ID'];
+
+    final appleCredential = await SignInWithApple.getAppleIDCredential(
+      scopes: [
+        AppleIDAuthorizationScopes.email,
+        AppleIDAuthorizationScopes.fullName,
+      ],
+      // webAuthenticationOptions: WebAuthenticationOptions(
+      //   clientId: clientID!,
+      //   redirectUri: Uri.parse(redirectURL),
+      // ),
+    );
+
+    print(appleCredential);
+
+    final oauthCredential = OAuthProvider('apple.com').credential(
+      idToken: appleCredential.identityToken,
+      accessToken: appleCredential.authorizationCode,
+    );
+
+    return await FirebaseAuth.instance.signInWithCredential(oauthCredential);
+  }
 }
 
 final authRepo = Provider((ref) => AuthenticatoinRepository());

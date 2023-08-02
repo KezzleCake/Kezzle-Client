@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class HomeStoresRepo {
@@ -11,6 +12,17 @@ class HomeStoresRepo {
       // 다음 페이지 가져오기
       return {};
     }
+  }
+
+  // 스토어 좋아요
+  Future<void> likeStore(String storeId, User user) async {
+    // 스토어 아이디랑 유저정보 받아서 좋아요 처리
+    // 여기서 정보 보내기!!
+  }
+  // 스토어 좋아요 취소
+  Future<void> dislikeStore(String storeId, User user) async {
+    // 스토어 아이디랑 유저정보 받아서 좋아요 취소 처리
+    // 여기서 정보 보내기!!
   }
 }
 

@@ -103,6 +103,7 @@ class StoreBookmarkScreen extends StatelessWidget {
           // ),
           StoreWidget1(
         storeData: HomeStoreModel(
+          id: '1',
           name: '본비케이크',
           thumbnail: 'assets/heart_cake.png',
           address: '서울 강남구 역삼동',

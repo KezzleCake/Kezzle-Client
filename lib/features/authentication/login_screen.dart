@@ -1,10 +1,11 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kezzle/features/authentication/repos/authentication_repo.dart';
-import 'package:kezzle/features/authentication/services/auth_google_service.dart';
 import 'package:kezzle/features/authentication/make_user_screen.dart';
 // import 'package:kezzle/screens/home_screen.dart';
 import 'package:kezzle/utils/colors.dart';
@@ -24,15 +25,30 @@ class LoginScreenState extends ConsumerState<LoginScreen> {
     context.pushNamed(MakeUserScreen.routeName);
   }
 
-  void onTapGoogleBtn(BuildContext context) {
+  void onTapGoogleBtn() {
     ref.read(authRepo).signInWithGoogle().then((value) {
       print(value);
+      // 로그인하고, 새 유저면 MakeUserScreen으로, 기존 유저면 HomeScreen으로
       // if (ref.read(authRepo).isNewUser) {
-      //   context.pushNamed(MakeUserScreen.routeName);
+      //   context.go(MakeUserScreen.routeURL);
       // } else {
       //   context.go('/home');
       // }
       context.pushNamed(MakeUserScreen.routeName);
+    });
+  }
+
+  void onTapAppleBtn() {
+    // print('apple');
+    ref.read(authRepo).signInWithApple().then((value) {
+      print(value);
+      // 로그인하고, 새 유저면 MakeUserScreen으로, 기존 유저면 HomeScreen으로
+      if (ref.read(authRepo).isNewUser) {
+        // context.pushNamed(MakeUserScreen.routeName);
+        context.go(MakeUserScreen.routeURL);
+      } else {
+        context.go('/home');
+      }
     });
   }
 
@@ -48,7 +64,7 @@ class LoginScreenState extends ConsumerState<LoginScreen> {
             const SizedBox(height: 98),
             Row(mainAxisAlignment: MainAxisAlignment.center, children: [
               GestureDetector(
-                  onTap: () => onTapGoogleBtn(context),
+                  onTap: () => onTapGoogleBtn(),
                   child: Container(
                     width: 52,
                     padding: const EdgeInsets.all(16),
@@ -57,20 +73,21 @@ class LoginScreenState extends ConsumerState<LoginScreen> {
                         border: Border.all(color: gray04, width: 1)),
                     child: SvgPicture.asset('assets/icons/Google.svg'),
                   )),
-              const SizedBox(width: 20),
-              GestureDetector(
-                onTap: () => onTapBtn(context),
-                child: Container(
-                    width: 52,
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: Colors.black,
-                      shape: BoxShape.circle,
-                      border: Border.all(color: Colors.black, width: 1),
-                    ),
-                    child: const FaIcon(FontAwesomeIcons.apple,
-                        color: Colors.white, size: 23)),
-              ),
+              if (Platform.isIOS) ...[
+                const SizedBox(width: 20),
+                GestureDetector(
+                    onTap: () => onTapAppleBtn(),
+                    child: Container(
+                        width: 52,
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: Colors.black,
+                          shape: BoxShape.circle,
+                          border: Border.all(color: Colors.black, width: 1),
+                        ),
+                        child: const FaIcon(FontAwesomeIcons.apple,
+                            color: Colors.white, size: 23))),
+              ]
             ]),
             const SizedBox(height: 20),
             SizedBox(

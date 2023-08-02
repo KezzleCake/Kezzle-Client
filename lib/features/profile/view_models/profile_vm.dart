@@ -15,30 +15,36 @@ class ProfileVM extends AsyncNotifier<UserModel> {
     // 딜레이 테스트
     // await Future.delayed(const Duration(seconds: 7));
 
-    _userRepo = ref.read(userRopo);
+    _userRepo = ref.read(userRepo);
     _authRepo = ref.read(authRepo);
 
     // 로그인된 상태면 서버에 요청해서 데이터 가져오기.
-    // if (_authRepo.isLoggedIn) {
-    //   // 토큰을 가져오기.
-    //   final String? token = await _authRepo.user!.getIdToken();
-    //   // 서버에 요청해서 프로필 정보  json으로 가져오기
-    //   final Map<String, dynamic>? profile =
-    //       await _userRepo.fetchProfile(token!, _authRepo.user!.uid);
-    //   if (profile != null) {
-    //     return UserModel.fromJson(profile);
-    //   }
-    // }
+    if (_authRepo.isLoggedIn) {
+      // 토큰을 가져오기.
+      // final String? token = await _authRepo.user!.getIdToken();
+      // 서버에 요청해서 프로필 정보  json으로 가져오기
+      final Map<String, dynamic>? profile =
+          await _userRepo.fetchProfile(_authRepo.user!);
+      if (profile != null) {
+        return UserModel.fromJson(profile);
+        // return UserModel(
+        //   uid: '1',
+        //   email: 'vvvv@nate.com',
+        //   nickname: '으응?',
+        //   oathProvider: 'nate.com',
+        // );
+      }
+    }
 
     // 로그인 안된 상태면 빈 데이터 반환
-    // return UserModel.empty();
+    return UserModel.empty();
     // 지금은 일단 더미 데이터 반환
-    return UserModel(
-      uid: '180',
-      email: 'kezzle180@nate.com',
-      nickname: '푸치짱귀여움',
-      oathProvider: 'nate.com',
-    );
+    // return UserModel(
+    //   uid: '180',
+    //   email: 'kezzle180@nate.com',
+    //   nickname: '푸치짱귀여움',
+    //   oathProvider: 'nate.com',
+    // );
   }
 
   // 새로 로그인한 유저 정보 받아서 프로필 정보 서버에 저장
@@ -72,24 +78,25 @@ class ProfileVM extends AsyncNotifier<UserModel> {
       oathProvider: _authRepo.user!.providerData[0].providerId,
     );
     // 서버에 저장 후, state 변경
-    await _userRepo.createProfile(profile, token!);
+    await _userRepo.createProfile(profile, _authRepo.user!);
     state = AsyncValue.data(profile);
   }
 
   // 닉네임 수정 시, 변경 내용을 서버에 저장
   Future<void> updateProfile(String nickname) async {
     // profile에서 닉네임만 수정
-    final UserModel profile = UserModel(
-      uid: state.value!.uid,
-      nickname: nickname,
-      email: state.value!.email,
-      oathProvider: state.value!.oathProvider,
-    );
-    // 서버에 저장
-    await _userRepo.updateProfile(profile);
+    // final UserModel profile = UserModel(
+    //   uid: state.value!.uid,
+    //   nickname: nickname,
+    //   email: state.value!.email,
+    //   oathProvider: state.value!.oathProvider,
+    // );
+    // 서버에 업데이트
+    await _userRepo.updateProfile(_authRepo.user!, nickname);
 
     // state 변경
-    state = AsyncValue.data(profile);
+    // state = AsyncValue.data(profile);
+    state = AsyncValue.data(state.value!.copyWith(nickname: nickname));
   }
 }
 

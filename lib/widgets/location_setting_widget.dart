@@ -3,9 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kezzle/features/address_search/address_search_vm.dart';
 import 'package:kezzle/features/onboarding/current_location_screen.dart';
+import 'package:kezzle/features/onboarding/current_location_service.dart';
 import 'package:kezzle/models/address_model.dart';
 import 'package:kezzle/utils/colors.dart';
 import 'package:kezzle/view_models/search_setting_vm.dart';
@@ -181,9 +183,21 @@ class LocationSettingWidgetState extends ConsumerState<LocationSettingWidget> {
   }
 
   void onTapCurrentLocation() async {
+    // 위치 권한 확인 후, 위치 받아오고 받아온 위치 전달해서 화면 이동
+    final Position? currentPosition =
+        await CurrentLocationService().getCurrentLocation();
+    // print('currentPosition: ' + currentPosition.toString());
+    if (!mounted) return;
+    if (currentPosition != null) {
+      context.pop();
+      Navigator.of(context).push(MaterialPageRoute(
+          builder: (context) => CurrentLocationScreen(
+                initial_lat: currentPosition.latitude,
+                initial_lng: currentPosition.longitude,
+              )));
+    }
     // print('onTapCurrentLocation');
-    context.pop();
-    context.pushNamed(CurrentLocationScreen.routeName);
+    // context.pushNamed(CurrentLocationScreen.routeName);
   }
 
   @override
@@ -232,10 +246,8 @@ class LocationSettingWidgetState extends ConsumerState<LocationSettingWidget> {
                               color: gray06)),
                       const SizedBox(height: 24),
                       GestureDetector(
-                        onTap: () => onTapCurrentLocation(),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
+                          onTap: () => onTapCurrentLocation(),
+                          child: Row(mainAxisSize: MainAxisSize.min, children: [
                             Text('현재 위치로 설정',
                                 style: TextStyle(
                                     fontSize: 12,
@@ -244,46 +256,41 @@ class LocationSettingWidgetState extends ConsumerState<LocationSettingWidget> {
                             const SizedBox(width: 8),
                             FaIcon(FontAwesomeIcons.locationDot,
                                 color: orange01, size: 12)
-                          ],
-                        ),
-                      ),
+                          ])),
                       const SizedBox(height: 24),
-                      Text(
-                        _isSearched ? '검색 결과' : '검색 기록',
-                        style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
-                            color: gray06),
-                      ),
+                      Text(_isSearched ? '검색 결과' : '검색 기록',
+                          style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                              color: gray06)),
                       const SizedBox(height: 8),
                       SizedBox(
                           height: 300,
                           child: ListView.builder(
-                            // shrinkWrap: true,
-                            itemCount: _isSearched
-                                ? searchedList.length
-                                : historySearchedList.length,
-                            // : historySearchedList.length,
-                            itemBuilder: (context, index) {
-                              return GestureDetector(
-                                onTap: () {
-                                  onTapAddress(index);
-                                },
-                                child: Container(
-                                  padding:
-                                      const EdgeInsets.symmetric(vertical: 16),
-                                  child: Text(
-                                      _isSearched
-                                          ? searchedList[index].address
-                                          : historySearchedList[index].address,
-                                      style: TextStyle(
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.w700,
-                                          color: gray05)),
-                                ),
-                              );
-                            },
-                          )),
+                              // shrinkWrap: true,
+                              itemCount: _isSearched
+                                  ? searchedList.length
+                                  : historySearchedList.length,
+                              // : historySearchedList.length,
+                              itemBuilder: (context, index) {
+                                return GestureDetector(
+                                  onTap: () {
+                                    onTapAddress(index);
+                                  },
+                                  child: Container(
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 16),
+                                      child: Text(
+                                          _isSearched
+                                              ? searchedList[index].address
+                                              : historySearchedList[index]
+                                                  .address,
+                                          style: TextStyle(
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.w700,
+                                              color: gray05))),
+                                );
+                              })),
                     ]))));
   }
 }
