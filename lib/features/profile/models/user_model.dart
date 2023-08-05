@@ -17,6 +17,8 @@ class UserModel {
         email = '',
         oathProvider = '';
 
+  bool get isEmpty => uid.isEmpty;
+
   UserModel.fromJson(Map<String, dynamic> json)
       : uid = json['uid'] ?? '',
         nickname = json['nickname'] ?? '',

@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:kezzle/features/authentication/repos/authentication_repo.dart';
 import 'package:kezzle/features/profile/change_profile_screen.dart';
 import 'package:kezzle/features/profile/view_models/profile_vm.dart';
+import 'package:kezzle/router.dart';
 // import 'package:kezzle/features/profile/review_screen.dart';
 import 'package:kezzle/utils/colors.dart';
 // import 'package:kezzle/widgets/my_divider_widget.dart';
@@ -48,6 +49,13 @@ class UserScreenState extends ConsumerState<UserScreen> {
               onTapConfirm: () {
                 print('로그아웃');
                 ref.read(authRepo).signOut();
+                // 모든 프로바이더 삭제 -> 안되잖아 ㅜㅜ
+                // final container = ProviderContainer();
+                // container.dispose();
+
+                // 등록된 모든 프로바이더 삭제
+                // dbExistProvider 초기화 하기
+                ref.read(dbExistProvider.notifier).state = false;
                 context.go("/");
               });
         });
@@ -64,8 +72,10 @@ class UserScreenState extends ConsumerState<UserScreen> {
             content: '정말 회원탈퇴 하시겠어요?',
             cancelText: '탈퇴하기',
             confirmText: '계속 유지할게요',
-            // onTapCancel: () => Navigator.pop(context),
-
+            onTapCancel: () {
+              ref.read(profileProvider.notifier).deleteProfile();
+              context.go("/authorization_check_screen");
+            },
             onTapConfirm: () => context.pop(),
           );
         });
@@ -79,10 +89,10 @@ class UserScreenState extends ConsumerState<UserScreen> {
             const Center(child: CircularProgressIndicator.adaptive()),
         data: (data) => Scaffold(
             appBar: AppBar(title: const Text('마이페이지'), elevation: 0, actions: [
-              IconButton(
-                onPressed: () {},
-                icon: const FaIcon(FontAwesomeIcons.bell, size: 24),
-              ),
+              // IconButton(
+              //   onPressed: () {},
+              //   icon: const FaIcon(FontAwesomeIcons.bell, size: 24),
+              // ),
             ]),
             body: Column(children: [
               Padding(

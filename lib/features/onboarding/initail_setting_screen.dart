@@ -1,12 +1,17 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:go_router/go_router.dart';
+import 'package:kezzle/features/authentication/repos/authentication_repo.dart';
 // import 'package:go_router/go_router.dart';
 // import 'package:kezzle/features/address_search/address_search_vm.dart';
 import 'package:kezzle/features/onboarding/current_location_screen.dart';
 import 'package:kezzle/features/onboarding/current_location_service.dart';
+import 'package:kezzle/features/profile/repos/user_repo.dart';
+import 'package:kezzle/features/profile/view_models/profile_vm.dart';
 // import 'package:kezzle/features/onboarding/current_location_vm.dart';
 // import 'package:intl/intl.dart';
 // import 'package:kezzle/responsive/mobile_screen_layout.dart';
@@ -15,6 +20,8 @@ import 'package:kezzle/view_models/search_setting_vm.dart';
 // import 'package:kezzle/widgets/calendar_widget.dart';
 import 'package:kezzle/widgets/distance_setting_widget.dart';
 import 'package:kezzle/widgets/location_setting_widget.dart';
+
+import '../../responsive/mobile_screen_layout.dart';
 // import 'package:kezzle/widgets/my_divider_widget.dart';
 // import 'package:kezzle/widgets/time_setting_widget.dart';
 
@@ -116,10 +123,17 @@ class InitialSettingSreenState extends ConsumerState<InitialSettingSreen> {
   // }
 
   // 시작하기 버튼 누를 시
-  void _onTapStart(BuildContext context) {
+  void _onTapStart() async {
     print('start');
-    // context
-    //     .goNamed(MobileScreenLayout.routeName, pathParameters: {'tab': 'home'});
+    User user = ref.read(authRepo).user!;
+    print(user);
+    final response =
+        await ref.read(userRepo).createProfile(widget._nickname, user);
+    if (response != null) {
+      if (!mounted) return;
+      context.goNamed(MobileScreenLayout.routeName,
+          pathParameters: {'tab': 'home'});
+    }
   }
 
   @override
@@ -150,7 +164,7 @@ class InitialSettingSreenState extends ConsumerState<InitialSettingSreen> {
               ignoring:
                   ref.watch(searchSettingViewModelProvider).address.isEmpty,
               child: GestureDetector(
-                  onTap: () => _onTapStart(context),
+                  onTap: () => _onTapStart(),
                   child: Container(
                       alignment: Alignment.center,
                       padding: const EdgeInsets.all(16),
@@ -261,10 +275,10 @@ class InitialSettingSreenState extends ConsumerState<InitialSettingSreen> {
                     children: [
                       TextSpan(
                           text: '출발할 장소', style: TextStyle(color: coral01)),
-                      const TextSpan(text: '와 '),
-                      TextSpan(
-                          text: '이동가능 거리', style: TextStyle(color: coral01)),
-                      const TextSpan(text: '를 설정해주세요'),
+                      const TextSpan(text: '를 선택해주세요'),
+                      // TextSpan(
+                      //     text: '이동가능 거리', style: TextStyle(color: coral01)),
+                      // const TextSpan(text: '를 설정해주세요'),
                     ]),
               ),
               const SizedBox(height: 30),
@@ -297,33 +311,33 @@ class InitialSettingSreenState extends ConsumerState<InitialSettingSreen> {
                                           color: gray05)),
                                 ])))),
                 const SizedBox(width: 12),
-                GestureDetector(
-                    onTap: () => _onTapDistance(context),
-                    child: Container(
-                        padding: const EdgeInsets.all(16),
-                        height: 53,
-                        width: MediaQuery.of(context).size.width * 130 / 390,
-                        // 130, 이거는 비율로 맞춰야 될 듯.
-                        decoration: BoxDecoration(
-                            color: gray01,
-                            borderRadius: BorderRadius.circular(30),
-                            border: Border.all(
-                              color: gray03,
-                            )),
-                        child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Expanded(
-                                  child: Text(
-                                      '${ref.watch(searchSettingViewModelProvider).radius}km',
-                                      style: TextStyle(
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w600,
-                                        color: gray06,
-                                      ))),
-                              FaIcon(FontAwesomeIcons.chevronDown,
-                                  size: 10, color: gray05),
-                            ]))),
+                // GestureDetector(
+                //     onTap: () => _onTapDistance(context),
+                //     child: Container(
+                //         padding: const EdgeInsets.all(16),
+                //         height: 53,
+                //         width: MediaQuery.of(context).size.width * 130 / 390,
+                //         // 130, 이거는 비율로 맞춰야 될 듯.
+                //         decoration: BoxDecoration(
+                //             color: gray01,
+                //             borderRadius: BorderRadius.circular(30),
+                //             border: Border.all(
+                //               color: gray03,
+                //             )),
+                //         child: Row(
+                //             crossAxisAlignment: CrossAxisAlignment.center,
+                //             children: [
+                //               Expanded(
+                //                   child: Text(
+                //                       '${ref.watch(searchSettingViewModelProvider).radius}km',
+                //                       style: TextStyle(
+                //                         fontSize: 14,
+                //                         fontWeight: FontWeight.w600,
+                //                         color: gray06,
+                //                       ))),
+                //               FaIcon(FontAwesomeIcons.chevronDown,
+                //                   size: 10, color: gray05),
+                //             ]))),
               ]),
               const SizedBox(height: 10),
               GestureDetector(

@@ -2,13 +2,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:go_router/go_router.dart';
+// import 'package:go_router/go_router.dart';
+// import 'package:kezzle/features/profile/view_models/profile_vm.dart';
 // import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:kezzle/screens/detail_cake_screen.dart';
 import 'package:kezzle/utils/colors.dart';
+import 'package:kezzle/view_models/home_cake_view_model.dart';
 import 'package:kezzle/view_models/home_store_view_model.dart';
 import 'package:kezzle/view_models/search_setting_vm.dart';
 import 'package:kezzle/widgets/distance_setting_widget.dart';
+import 'package:kezzle/widgets/home_cake_widget.dart';
 // import 'package:kezzle/widgets/calendar_widget.dart';
 // import 'package:kezzle/widgets/curation_box_widget.dart';
 import 'package:kezzle/widgets/location_setting_widget.dart';
@@ -109,8 +112,17 @@ class HomeScreenState extends ConsumerState<HomeScreen>
   //   print(result);
   // }
 
+  // void profileExists() {
+  //   ref.watch(profileProvider).whenData((value) {
+  //     if (value.isEmpty) {
+  //       context.go('/make_user');
+  //     }
+  //   });
+  // }
+
   @override
   Widget build(BuildContext context) {
+    // profileExists();
     return Stack(children: [
       Scaffold(
         appBar: AppBar(
@@ -127,15 +139,15 @@ class HomeScreenState extends ConsumerState<HomeScreen>
                   SvgPicture.asset('assets/icons/arrow-down.svg',
                       colorFilter: ColorFilter.mode(gray07, BlendMode.srcIn))
                 ])),
-            GestureDetector(
-                onTap: () => _onTapDistance(context),
-                child: Row(children: [
-                  Text('${ref.watch(searchSettingViewModelProvider).radius}km',
-                      style: const TextStyle(
-                          fontSize: 14, fontWeight: FontWeight.w600)),
-                  SvgPicture.asset('assets/icons/arrow-down.svg',
-                      colorFilter: ColorFilter.mode(gray07, BlendMode.srcIn)),
-                ])),
+            // GestureDetector(
+            //     onTap: () => _onTapDistance(context),
+            //     child: Row(children: [
+            //       Text('${ref.watch(searchSettingViewModelProvider).radius}km',
+            //           style: const TextStyle(
+            //               fontSize: 14, fontWeight: FontWeight.w600)),
+            //       SvgPicture.asset('assets/icons/arrow-down.svg',
+            //           colorFilter: ColorFilter.mode(gray07, BlendMode.srcIn)),
+            //     ])),
             // 픽업 시간
             // const SizedBox(width: 10),
             // Expanded(child: Container()),
@@ -370,71 +382,71 @@ class HomeScreenState extends ConsumerState<HomeScreen>
   }
 }
 
-class CakeTabBarView extends StatefulWidget {
+class CakeTabBarView extends ConsumerStatefulWidget {
   const CakeTabBarView({
     super.key,
   });
 
   @override
-  State<CakeTabBarView> createState() => _CakeTabBarViewState();
+  CakeTabBarViewState createState() => CakeTabBarViewState();
 }
 
-class _CakeTabBarViewState extends State<CakeTabBarView>
+class CakeTabBarViewState extends ConsumerState<CakeTabBarView>
     with AutomaticKeepAliveClientMixin {
-  void onTapCake(BuildContext context, String imageUrl) {
-    //print('image tapped');
-    //이미지 상세보기 화면으로 이동
-    Navigator.of(context).push(MaterialPageRoute(
-      builder: (context) => DetailCakeScreen(imageUrl: imageUrl),
-    ));
+  @override
+  bool get wantKeepAlive => true;
+
+  // void onTapCake(BuildContext context, String imageUrl) {
+  //   //print('image tapped');
+  //   //이미지 상세보기 화면으로 이동
+  //   Navigator.of(context).push(MaterialPageRoute(
+  //     builder: (context) => DetailCakeScreen(imageUrl: imageUrl),
+  //   ));
+  // }
+
+  Future<void> onRefresh() async {
+    // 위도 경도, 리프레시 일어나면 실행되게.
+    // await Future.delayed(const Duration(seconds: 1));
+    return ref.read(homeCakeProvider.notifier).refresh();
   }
 
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    return RefreshIndicator(
-      onRefresh: () async {
-        await Future.delayed(const Duration(seconds: 1));
-      },
-      child: GridView.builder(
-          itemCount: 20,
-          padding: const EdgeInsets.only(top: 30, left: 20, right: 20),
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 3,
-              crossAxisSpacing: 6,
-              mainAxisSpacing: 6,
-              childAspectRatio: 1),
-          itemBuilder: (context, index) => GestureDetector(
-                onTap: () => onTapCake(context, 'assets/heart_cake.png'),
-                child: Container(
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(16),
-                        boxShadow: [shadow01]),
-                    clipBehavior: Clip.hardEdge,
-                    child: Stack(alignment: Alignment.bottomRight, children: [
-                      Image.asset('assets/heart_cake.png', fit: BoxFit.cover),
-                      Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Stack(children: [
-                            SvgPicture.asset(
-                              'assets/icons/like=on_in.svg',
-                              colorFilter: ColorFilter.mode(
-                                coral01,
-                                BlendMode.srcATop,
-                              ),
-                            ),
-                            SvgPicture.asset('assets/icons/like=off.svg',
-                                colorFilter: const ColorFilter.mode(
-                                    Colors.white, BlendMode.srcATop)),
-                          ])),
-                    ])),
-              )),
-    );
-  }
 
-  @override
-  // TODO: implement wantKeepAlive
-  bool get wantKeepAlive => true;
+    // 반경이나, 위도 경도 변경되면 실행되는 리스너
+    ref.listen(searchSettingViewModelProvider, (previous, next) {
+      // print(previous!.radius);
+      // print(next!.radius);
+      if (previous != next) {
+        ref.read(homeCakeProvider.notifier).refresh();
+      }
+    });
+
+    return ref.watch(homeCakeProvider).when(
+        loading: () => Center(child: CircularProgressIndicator(color: coral01)),
+        error: (error, stackTrace) =>
+            Center(child: Text('스토어 목록 불러오기 실패, $error')),
+        data: (cakes) {
+          return RefreshIndicator(
+            onRefresh: () async {
+              await Future.delayed(const Duration(seconds: 1));
+            },
+            child: GridView.builder(
+                padding: const EdgeInsets.only(top: 30, left: 20, right: 20),
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 3,
+                    crossAxisSpacing: 6,
+                    mainAxisSpacing: 6,
+                    childAspectRatio: 1),
+                itemCount: cakes.length,
+                itemBuilder: (context, index) {
+                  final cakeData = cakes[index];
+                  return HomeCakeWidget(cakeData: cakeData);
+                }),
+          );
+        });
+  }
 }
 
 class StoreTabBarView extends ConsumerStatefulWidget {
@@ -454,15 +466,15 @@ class StoreTabBarViewState extends ConsumerState<StoreTabBarView>
   int _storeCount = 0;
   bool isMore = false;
 
-  void onTapStore() {
-    //print('store tapped');
-    //스토어 상세보기 화면으로 이동
-    context.push('/detail_store/1');
-  }
+  // void onTapStore() {
+  //   //print('store tapped');
+  //   //스토어 상세보기 화면으로 이동
+  //   context.push('/detail_store/1');
+  // }
 
   Future<void> onRefresh() async {
     // await Future.delayed(const Duration(seconds: 1));
-    return ref.watch(homeStoreProvider.notifier).refresh();
+    return ref.read(homeStoreProvider.notifier).refresh();
   }
 
   Future<void> fetchNextPage() async {
@@ -483,6 +495,7 @@ class StoreTabBarViewState extends ConsumerState<StoreTabBarView>
     ref.listen(searchSettingViewModelProvider, (previous, next) {
       // print(previous!.radius);
       // print(next!.radius);
+      print('이거되냐?');
       if (previous != next) {
         ref.read(homeStoreProvider.notifier).refresh();
       }
@@ -490,12 +503,12 @@ class StoreTabBarViewState extends ConsumerState<StoreTabBarView>
 
     // async니까 빌드베서드 끝나도록 기다려야됨. -> when 사용
     return ref.watch(homeStoreProvider).when(
-        loading: () => Center(
-              child: CircularProgressIndicator(color: coral01),
-            ),
-        error: (error, stackTrace) => Center(
-              child: Text('스토어 목록 불러오기 실패, $error'),
-            ),
+        loading: () {
+          // return Center(child: CircularProgressIndicator(color: coral01));
+          return Container();
+        },
+        error: (error, stackTrace) =>
+            Center(child: Text('스토어 목록 불러오기 실패, $error')),
         data: (stores) {
           // _storeCount를 굳이 써야되나? stores.length만으로도 조건을 세울수 있을거같음.
           _storeCount = stores.length;
@@ -511,6 +524,8 @@ class StoreTabBarViewState extends ConsumerState<StoreTabBarView>
                 return true;
               },
               child: RefreshIndicator(
+                color: coral01,
+                backgroundColor: Colors.white,
                 onRefresh: onRefresh,
                 child: ListView.separated(
                     padding: const EdgeInsets.symmetric(
@@ -522,9 +537,7 @@ class StoreTabBarViewState extends ConsumerState<StoreTabBarView>
                       final storeData = stores[index];
 
                       return Column(children: [
-                        GestureDetector(
-                            onTap: onTapStore,
-                            child: StoreWidget1(storeData: storeData)),
+                        StoreWidget1(storeData: storeData),
                         if (isMore && index == stores.length - 1) ...[
                           const SizedBox(height: 12),
                           Center(

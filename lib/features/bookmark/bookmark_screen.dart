@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:kezzle/features/bookmark/view_models/bookmark_vm.dart';
-import 'package:kezzle/models/home_store_model.dart';
+import 'package:kezzle/features/bookmark/view_models/bookmarked_store_vm.dart';
+// import 'package:kezzle/models/home_store_model.dart';
 import 'package:kezzle/utils/colors.dart';
 import 'package:kezzle/view_models/search_setting_vm.dart';
 // import 'package:kezzle/widgets/store_widget.dart';
@@ -68,7 +68,7 @@ class CakeBookmarkScreen extends StatelessWidget {
             decoration: BoxDecoration(borderRadius: BorderRadius.circular(16)),
             clipBehavior: Clip.hardEdge,
             child: Stack(alignment: Alignment.bottomRight, children: [
-              Image.asset('assets/heart_cake.png', fit: BoxFit.cover),
+              // Image.asset('assets/heart_cake.png', fit: BoxFit.cover),
               Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Stack(children: [

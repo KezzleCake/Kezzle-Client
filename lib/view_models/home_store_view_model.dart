@@ -1,92 +1,33 @@
 import 'dart:async';
 
 // import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:kezzle/features/authentication/repos/authentication_repo.dart';
 import 'package:kezzle/models/home_store_model.dart';
 import 'package:kezzle/repo/stores_repo.dart';
 import 'package:kezzle/view_models/search_setting_vm.dart';
 
 class HomeStoreViewModel extends AsyncNotifier<List<HomeStoreModel>> {
-  late final StoreRepo _repository;
-  // 더미 데이터!!
-  List<HomeStoreModel> _homeStoreList = [
-    HomeStoreModel(
-      id: '1',
-      name: '본비케이크',
-      thumbnail: 'assets/heart_cake.png',
-      address: '서울 강남구 역삼동',
-      distance: '0.3km',
-      iamges: [
-        'assets/heart_cake.png',
-        'assets/heart_cake.png',
-        'assets/heart_cake.png',
-      ],
-      like: true,
-    ),
-    HomeStoreModel(
-      id: '2',
-      name: '블리스케이크',
-      thumbnail: 'assets/heart_cake.png',
-      address: '서울 강남구 역삼동',
-      distance: '0.3km',
-      iamges: [
-        'assets/heart_cake.png',
-        'assets/heart_cake.png',
-        'assets/heart_cake.png',
-      ],
-      like: true,
-    ),
-    HomeStoreModel(
-      id: '3',
-      name: '베니케이크',
-      thumbnail: 'assets/heart_cake.png',
-      address: '서울 강남구 역삼동',
-      distance: '0.3km',
-      iamges: [
-        'assets/heart_cake.png',
-        'assets/heart_cake.png',
-        'assets/heart_cake.png',
-      ],
-      like: true,
-    ),
-    HomeStoreModel(
-      id: '4',
-      name: '케이쿠',
-      thumbnail: 'assets/heart_cake.png',
-      address: '서울 강남구 역삼동',
-      distance: '0.3km',
-      iamges: [
-        'assets/heart_cake.png',
-        'assets/heart_cake.png',
-        'assets/heart_cake.png',
-      ],
-      like: true,
-    ),
-    HomeStoreModel(
-      id: '5',
-      name: '밀쿠',
-      thumbnail: 'assets/heart_cake.png',
-      address: '서울 강남구 역삼동',
-      distance: '0.3km',
-      iamges: [
-        'assets/heart_cake.png',
-        'assets/heart_cake.png',
-        'assets/heart_cake.png',
-      ],
-      like: true,
-    ),
-  ];
+  late final StoreRepo _storeRepo;
+  late final AuthRepo _authRepo;
+  List<HomeStoreModel> _homeStoreList = [];
 
   @override
   FutureOr<List<HomeStoreModel>> build() async {
-    _repository = ref.read(homeStoreRepo);
+    _storeRepo = ref.read(storeRepo);
+    _authRepo = ref.read(authRepo);
 
     // api 로부터 응답받는데 걸리는 시간을 2초로 가정
-    await Future.delayed(const Duration(seconds: 2));
+    // await Future.delayed(const Duration(seconds: 2));
     // throw Exception("데이터 fetch 실패");
-    // final lat = ref.watch(searchSettingViewModelProvider).latitude;
-    // final lon = ref.watch(searchSettingViewModelProvider).longitude;
+    // ref.read(storeRepo).fetchStores(user: user!, lat: lat, lng: lon);
 
+    // 처음 데이터는 1페이지로 가져오기
+    // List<HomeStoreModel> stores = [];
+    final stores = await _fetchStores(page: null);
+    // final response = await _fetchStores(page: null);
+    _homeStoreList = stores;
     // 일단 첫번째 페이지로 데이터 가져오기
     // _homeStoreList = await _fetchStores(page: null);
 
@@ -94,11 +35,25 @@ class HomeStoreViewModel extends AsyncNotifier<List<HomeStoreModel>> {
   }
 
   Future<List<HomeStoreModel>> _fetchStores({int? page}) async {
-    final result = await _repository.fetchStores(page: page);
-    final List<HomeStoreModel> stores = [];
-    // 받아온정보 map으로 각 스토어를 HomeStoreModel로 변환해서 리스트 만들기
-    // final newList = [];
-    return stores;
+    // 위도, 경도, 유저 가져와서 api 요청
+    final lat = ref.watch(searchSettingViewModelProvider).latitude;
+    final lon = ref.watch(searchSettingViewModelProvider).longitude;
+    User? user = _authRepo.user;
+
+    final List<dynamic>? result = await _storeRepo.fetchStores(
+      user: user!,
+      lat: lat,
+      lng: lon,
+      page: page,
+    );
+    // print(result);
+    if (result == null) {
+      return [];
+    } else {
+      final List<HomeStoreModel> fetcedStores =
+          result.map((e) => HomeStoreModel.fromJson(e)).toList();
+      return fetcedStores;
+    }
   }
 
   // 다음 페이지 요청
@@ -114,16 +69,13 @@ class HomeStoreViewModel extends AsyncNotifier<List<HomeStoreModel>> {
 
   // 반경이나, 위치 변환시, 새로고침시에 새 스토어 리스트 가져와서 갱신해주는 메서드
   Future<void> refresh() async {
-    // final lat = ref.watch(searchSettingViewModelProvider).latitude;
-    // final lon = ref.watch(searchSettingViewModelProvider).longitude;
+    // state = const AsyncValue.loading();
     // 데이터 새로 가져오고, 갱신
-    // final stores = await _fetchStores(page: null);
-    // _list = stores; -> 복사본 유지..
-    await Future.delayed(const Duration(seconds: 2));
-    // throw Exception("데이터 fetch 실패");
-    print('되기는 하는거냐고..');
+    final fetchedStores = await _fetchStores(page: null);
+    // 복사본 유지
+    _homeStoreList = fetchedStores;
     // 아예 새로운 리스트로 갱신
-    state = const AsyncValue.data([]);
+    state = AsyncValue.data(_homeStoreList);
   }
 }
 

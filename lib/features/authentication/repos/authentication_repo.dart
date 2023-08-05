@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 // import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -9,6 +10,9 @@ import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 class AuthRepo {
   // FirebaseAuth 인스턴스 생성
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
+
+  // 디비에 유저가 있는지 없는지 확인하는 변수
+  // bool dbUserExists = false;
 
   // getter -> property 처럼 쓸 수 있게 됨
   // 현재 로그인한 유저 정보 가져오기
@@ -52,6 +56,8 @@ class AuthRepo {
       accessToken: googleAuth?.accessToken,
       idToken: googleAuth?.idToken,
     );
+
+    // oauthCredential = credential;
 
     // idTokenChanges();
 
@@ -104,7 +110,40 @@ class AuthRepo {
       accessToken: appleCredential.authorizationCode,
     );
 
+    // this.oauthCredential = oauthCredential;
+
     return await FirebaseAuth.instance.signInWithCredential(oauthCredential);
+  }
+
+  // 로그인한 유저(이미 있는 유저) 정보 가져오기 + db에 있는 유저인지 확인하기
+  Future<Map<String, dynamic>?> fetchProfile(User user) async {
+    // 서버에 요청해서 프로필 정보 가져오기
+    // https://a3vz1ytse9.execute-api.ap-northeast-2.amazonaws.com/dev/
+    var options = BaseOptions(
+        baseUrl:
+            'https://a3vz1ytse9.execute-api.ap-northeast-2.amazonaws.com/dev/',
+        connectTimeout: const Duration(seconds: 5),
+        receiveTimeout: const Duration(seconds: 5),
+        headers: {
+          'Authorization': 'Bearer ${await user.getIdToken()}',
+        });
+    Dio dio = Dio(options);
+    try {
+      final response = await dio.get('users/${user.uid}');
+      if (response.statusCode == 200) {
+        // print(response.data);
+        return response.data;
+      } else {
+        print('로그인 실패');
+        return null;
+      }
+    } catch (e) {
+      print(e);
+      print('로그인 실패');
+      return null;
+    } finally {
+      dio.close();
+    }
   }
 }
 

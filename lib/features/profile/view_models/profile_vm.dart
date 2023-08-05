@@ -1,12 +1,15 @@
 import 'dart:async';
 
 // import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:kezzle/features/authentication/login_screen.dart';
 import 'package:kezzle/features/authentication/repos/authentication_repo.dart';
 import 'package:kezzle/features/profile/models/user_model.dart';
 import 'package:kezzle/features/profile/repos/user_repo.dart';
+import 'package:kezzle/router.dart';
 
-class ProfileVM extends AsyncNotifier<UserModel> {
+class ProfileVM extends AutoDisposeAsyncNotifier<UserModel> {
   late final UserRepo _userRepo;
   late final AuthRepo _authRepo;
 
@@ -20,19 +23,26 @@ class ProfileVM extends AsyncNotifier<UserModel> {
 
     // 로그인된 상태면 서버에 요청해서 데이터 가져오기.
     if (_authRepo.isLoggedIn) {
+      // print('로그인된상태');
       // 토큰을 가져오기.
       // final String? token = await _authRepo.user!.getIdToken();
       // 서버에 요청해서 프로필 정보  json으로 가져오기
       final Map<String, dynamic>? profile =
           await _userRepo.fetchProfile(_authRepo.user!);
       if (profile != null) {
-        return UserModel.fromJson(profile);
-        // return UserModel(
-        //   uid: '1',
-        //   email: 'vvvv@nate.com',
-        //   nickname: '으응?',
-        //   oathProvider: 'nate.com',
-        // );
+        // print('프로필 있음');
+        print(profile);
+        // ref.watch(authRepo).dbUserExists = true;
+        // return UserModel.fromJson(profile);
+        return UserModel(
+          uid: _authRepo.user!.uid,
+          email: _authRepo.user!.email!,
+          nickname: profile['nickname'] as String,
+          oathProvider: _authRepo.user!.providerData[0].providerId,
+        );
+      } else {
+        print('프로필 없음');
+        return UserModel.empty();
       }
     }
 
@@ -78,7 +88,7 @@ class ProfileVM extends AsyncNotifier<UserModel> {
       oathProvider: _authRepo.user!.providerData[0].providerId,
     );
     // 서버에 저장 후, state 변경
-    await _userRepo.createProfile(profile, _authRepo.user!);
+    // await _userRepo.createProfile(profile, _authRepo.user!);
     state = AsyncValue.data(profile);
   }
 
@@ -92,14 +102,38 @@ class ProfileVM extends AsyncNotifier<UserModel> {
     //   oathProvider: state.value!.oathProvider,
     // );
     // 서버에 업데이트
-    await _userRepo.updateProfile(_authRepo.user!, nickname);
+    final response = await _userRepo.updateProfile(_authRepo.user!, nickname);
 
     // state 변경
     // state = AsyncValue.data(profile);
-    state = AsyncValue.data(state.value!.copyWith(nickname: nickname));
+    if (response != null) {
+      // 업데이트 성공 시, state 변경
+      state = AsyncValue.data(state.value!.copyWith(nickname: nickname));
+    } else {
+      // 업데이트 실패 시, 그냥 두기
+    }
+  }
+
+  Future<void> deleteProfile() async {
+    // 서버에서 삭제
+    final response = await _userRepo.deleteProfile(_authRepo.user!);
+
+    // 파이어베이스에서 삭제 겁나 어려움 미친
+    if (response != null && response.statusCode == 200) {
+      // 서버에서 삭제 성공 시, 파이어베이스도 회원탈퇴
+      // credential을 받아서
+      // 로그아웃
+      ref.read(authRepo).signOut();
+
+      // await _authRepo.user!
+      //     .reauthenticateWithCredential(_authRepo.oauthCredential);
+      // await _authRepo.user!.delete();
+    } else {
+      // 서버에서 삭제 실패 시, 그냥 두기
+    }
   }
 }
 
-final profileProvider = AsyncNotifierProvider<ProfileVM, UserModel>(
+final profileProvider = AsyncNotifierProvider.autoDispose<ProfileVM, UserModel>(
   () => ProfileVM(),
 );

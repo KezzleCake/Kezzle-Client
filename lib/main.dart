@@ -52,6 +52,7 @@ class KezzleApp extends ConsumerWidget {
       routerConfig: ref.watch(routerProvider),
       title: 'Kezzle',
       theme: ThemeData(
+        progressIndicatorTheme: ProgressIndicatorThemeData(color: coral01),
         fontFamily: 'Pretendard',
         useMaterial3: true,
         primaryColor: const Color(0xffFDDA81),

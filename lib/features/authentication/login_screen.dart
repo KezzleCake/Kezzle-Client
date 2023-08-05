@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
@@ -7,6 +8,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kezzle/features/authentication/repos/authentication_repo.dart';
 import 'package:kezzle/features/authentication/make_user_screen.dart';
+import 'package:kezzle/features/profile/repos/user_repo.dart';
 // import 'package:kezzle/screens/home_screen.dart';
 import 'package:kezzle/utils/colors.dart';
 
@@ -25,28 +27,53 @@ class LoginScreenState extends ConsumerState<LoginScreen> {
     context.pushNamed(MakeUserScreen.routeName);
   }
 
-  void onTapGoogleBtn() {
-    ref.read(authRepo).signInWithGoogle().then((value) {
-      print(value);
+  void onTapGoogleBtn() async {
+    ref.read(authRepo).signInWithGoogle().then((value) async {
+      // print(value);
       // 로그인하고, 새 유저면 MakeUserScreen으로, 기존 유저면 HomeScreen으로
       // if (ref.read(authRepo).isNewUser) {
       //   context.go(MakeUserScreen.routeURL);
       // } else {
       //   context.go('/home');
       // }
-      context.pushNamed(MakeUserScreen.routeName);
+      User user = ref.read(authRepo).user!;
+      final response = await ref.read(userRepo).fetchProfile(user);
+      // print('로그인 후 프로필 정보');
+      // print(response);
+      if (!mounted) return;
+      if (response == null) {
+        context.pushNamed(MakeUserScreen.routeName);
+        // ref.read(authRepo).dbUserExists = false;
+      } else {
+        // 이미 있는 유저니까 true로 바꿔주기
+        // ref.read(authRepo).dbUserExists = true;
+        context.go('/home');
+      }
     });
   }
 
-  void onTapAppleBtn() {
+  void onTapAppleBtn() async {
     // print('apple');
-    ref.read(authRepo).signInWithApple().then((value) {
-      print(value);
-      // 로그인하고, 새 유저면 MakeUserScreen으로, 기존 유저면 HomeScreen으로
-      if (ref.read(authRepo).isNewUser) {
-        // context.pushNamed(MakeUserScreen.routeName);
-        context.go(MakeUserScreen.routeURL);
+    ref.read(authRepo).signInWithApple().then((value) async {
+      // print(value);
+      // // 로그인하고, 새 유저면 MakeUserScreen으로, 기존 유저면 HomeScreen으로
+      // if (ref.read(authRepo).isNewUser) {
+      //   // context.pushNamed(MakeUserScreen.routeName);
+      //   context.go(MakeUserScreen.routeURL);
+      // } else {
+      //   context.go('/home');
+      // }
+      User user = ref.read(authRepo).user!;
+      final response = await ref.read(userRepo).fetchProfile(user);
+      // print('로그인 후 프로필 정보');
+      // print(response);
+      if (!mounted) return;
+      if (response == null) {
+        context.pushNamed(MakeUserScreen.routeName);
+        // ref.read(authRepo).dbUserExists = false;
       } else {
+        // 이미 있는 유저니까 true로 바꿔주기
+        // ref.read(authRepo).dbUserExists = true;
         context.go('/home');
       }
     });

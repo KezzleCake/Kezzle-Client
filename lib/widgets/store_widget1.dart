@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:kezzle/features/bookmark/view_models/bookmark_vm.dart';
+import 'package:kezzle/features/bookmark/view_models/bookmarked_store_vm.dart';
 import 'package:kezzle/models/home_store_model.dart';
 import 'package:kezzle/utils/colors.dart';
 import 'package:kezzle/view_models/store_view_model.dart';
+// Image 패키지 별칭 짓기
 
 class StoreWidget1 extends ConsumerStatefulWidget {
   // bool liked = false;
@@ -20,6 +21,13 @@ class StoreWidget1 extends ConsumerStatefulWidget {
 }
 
 class StoreWidget1State extends ConsumerState<StoreWidget1> {
+  @override
+  void initState() {
+    super.initState();
+    // ref.read(storeProvider(widget.storeData.id)).asData()?.value =
+    //     widget.storeData.isLiked;
+  }
+
   void onTapLikes() async {
     ref.watch(storeProvider(widget.storeData.id)).whenData((value) {
       if (value == true) {
@@ -65,7 +73,8 @@ class StoreWidget1State extends ConsumerState<StoreWidget1> {
             padding: const EdgeInsets.only(top: 16, left: 16, right: 16),
             child: Row(children: [
               CircleAvatar(
-                  backgroundImage: AssetImage(widget.storeData.thumbnail),
+                  // backgroundImage: AssetImage(widget.storeData.thumbnail),
+                  backgroundImage: NetworkImage(widget.storeData.logo.s3Url),
                   radius: 63 / 2),
               const SizedBox(width: 8),
               Expanded(
@@ -107,7 +116,7 @@ class StoreWidget1State extends ConsumerState<StoreWidget1> {
                         ]),
                     const SizedBox(height: 1),
                     Text(
-                        '${widget.storeData.distance}ㆍ${widget.storeData.address}',
+                        '${(widget.storeData.distance / 1000).toStringAsFixed(1)}kmㆍ${widget.storeData.address}',
                         style: TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.w400,
@@ -116,23 +125,32 @@ class StoreWidget1State extends ConsumerState<StoreWidget1> {
             ]),
           ),
           const SizedBox(height: 10),
-          SizedBox(
-              height: 90 + 16,
-              child: ListView.separated(
-                  padding:
-                      const EdgeInsets.only(left: 16, right: 16, bottom: 16),
-                  itemCount: widget.storeData.iamges.length,
-                  scrollDirection: Axis.horizontal,
-                  separatorBuilder: (context, index) =>
-                      const SizedBox(width: 6),
-                  itemBuilder: (context, index) => Container(
+          widget.storeData.cakes.isEmpty
+              ? const SizedBox()
+              : SizedBox(
+                  height: 90 + 16,
+                  child: ListView.separated(
+                    padding:
+                        const EdgeInsets.only(left: 16, right: 16, bottom: 16),
+                    itemCount: widget.storeData.cakes.length,
+                    scrollDirection: Axis.horizontal,
+                    separatorBuilder: (context, index) =>
+                        const SizedBox(width: 6),
+                    itemBuilder: (context, index) => Container(
                       width: 90,
                       height: 90,
                       decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(16)),
                       clipBehavior: Clip.hardEdge,
-                      child: Image.asset(widget.storeData.iamges[index],
-                          fit: BoxFit.cover)))),
+                      child: Image.network(
+                          widget.storeData.cakes[index].image.s3Url,
+                          fit: BoxFit.cover),
+                      // NetworkImage(widget.storeData.cakes[index].image.s3Url)
+                      //     as Widget,
+                      // Image.asset('assets/heart_cake.png'),
+                    ),
+                  ),
+                ),
         ]));
   }
 }

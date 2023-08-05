@@ -19,7 +19,7 @@ class _TimeSettingWidgetState extends State<TimeSettingWidget> {
   }
 
   void _onTimeChanged(DateTime newTime) {
-    print(newTime);
+    // print(newTime);
     setState(() {
       _selectedTime = newTime;
     });

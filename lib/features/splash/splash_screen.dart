@@ -14,8 +14,9 @@ class SplashScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     Timer(Duration(seconds: 2), () {
-      context.go('/home'); // '/home' 경로로 이동
+      // context.go('/home'); // '/home' 경로로 이동
       // ref.watch(routerProvider);
+      context.go('/authorization_check_screen');
     });
     // 다른 기종에서도 중앙에 위치하게 하려면 어떻게 해야되지... 기준점을 잘 잡는게 중요할 거같음.
     return SvgPicture.asset('assets/splash_screen.svg', fit: BoxFit.cover);
