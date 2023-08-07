@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:kezzle/models/cake_model.dart';
+import 'package:go_router/go_router.dart';
+import 'package:kezzle/models/home_store_model.dart';
 import 'package:kezzle/utils/colors.dart';
 
 class HomeCakeWidget extends StatelessWidget {
-  final CakeModel cakeData;
+  final Cake cakeData;
 
   const HomeCakeWidget({
     super.key,
@@ -13,13 +14,17 @@ class HomeCakeWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      // onTap: () => onTapCake(context, 'assets/heart_cake.png'),
+      onTap: () {
+        print('케이크 상세보기 페이지로 이동');
+        context.push("/detail_cake/${cakeData.id}/${cakeData.ownerStoreId}");
+      },
       child: Container(
           decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(16), boxShadow: [shadow01]),
           clipBehavior: Clip.hardEdge,
           child: Stack(alignment: Alignment.bottomRight, children: [
-            Image.asset(cakeData.url, fit: BoxFit.cover),
+            Image.network(cakeData.image.s3Url, fit: BoxFit.cover),
+            // Image.asset(cakeData.url, fit: BoxFit.cover),
             // Padding(
             //     padding: const EdgeInsets.all(8.0),
             //     child: Stack(children: [

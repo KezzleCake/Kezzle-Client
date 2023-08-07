@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:kezzle/models/detail_store_model.dart';
 import 'package:kezzle/utils/colors.dart';
 import 'package:kezzle/widgets/my_divider_widget.dart';
 import 'package:photo_view/photo_view.dart';
 
 class IntroduceStore extends StatefulWidget {
-  const IntroduceStore({super.key});
+  final DetailStoreModel store;
+  const IntroduceStore({super.key, required this.store});
 
   @override
   State<IntroduceStore> createState() => _IntroduceStoreState();
@@ -67,19 +69,19 @@ class _IntroduceStoreState extends State<IntroduceStore> {
       const SizedBox(height: 16),
       Padding(
           padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
-          child: Text(
-              '안녕하세요~\n\n블리스 케이크 입니다. \n\n'
-              '저희매장은 소중한날 행복할 수 있도록 정성스럽게\n제작해드리겠습니다. :)\n\n'
-              '레터링 케이크의 제작은 '
-              '픽업 당일 약속시간에 맞춰서 준비됩니다.\n'
-              '너무 빨리 만들어놓는 경우 색번짐, 미세한 갈라짐,'
-              '색변색등 있어 디자인은 미리해둘 수 없습니다!\n'
-              '픽업시간보다 일찍 오시는 경우는 디자인이 되어있지'
-              '않는 경우 또는 되어있더라도 냉각이 덜 되어 가져가시면'
-              '케이크의 디자인이 변형 가능성이 높습니다!'
-              '\n\n너무 늦게오시면 쇼케이스에 공간이 부족,'
-              '다음 작업의 속도가 밀리게됩니다\n'
-              '조금 늦으시는 경우는 꼭 카톡으로 남겨주세요!',
+          child: Text(widget.store.storeDescription,
+              // '안녕하세요~\n\n블리스 케이크 입니다. \n\n'
+              // '저희매장은 소중한날 행복할 수 있도록 정성스럽게\n제작해드리겠습니다. :)\n\n'
+              // '레터링 케이크의 제작은 '
+              // '픽업 당일 약속시간에 맞춰서 준비됩니다.\n'
+              // '너무 빨리 만들어놓는 경우 색번짐, 미세한 갈라짐,'
+              // '색변색등 있어 디자인은 미리해둘 수 없습니다!\n'
+              // '픽업시간보다 일찍 오시는 경우는 디자인이 되어있지'
+              // '않는 경우 또는 되어있더라도 냉각이 덜 되어 가져가시면'
+              // '케이크의 디자인이 변형 가능성이 높습니다!'
+              // '\n\n너무 늦게오시면 쇼케이스에 공간이 부족,'
+              // '다음 작업의 속도가 밀리게됩니다\n'
+              // '조금 늦으시는 경우는 꼭 카톡으로 남겨주세요!',
               style: TextStyle(
                   fontSize: 12, color: gray07, fontWeight: FontWeight.w400))),
       const MyDivider(),
@@ -128,13 +130,15 @@ class _IntroduceStoreState extends State<IntroduceStore> {
                         //         color: gray05,
                         //         fontWeight: FontWeight.w600)),
                         // const SizedBox(height: 6),
-                        Text('평일 12시~19시, 주말 12~18시',
+                        Text(widget.store.operatingTime.join('\n'),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                             style: TextStyle(
                                 fontSize: 12,
                                 color: gray05,
                                 fontWeight: FontWeight.w600)),
                         const SizedBox(height: 6),
-                        Text('010-1234-5678',
+                        Text(widget.store.phoneNumber,
                             style: TextStyle(
                                 fontSize: 12,
                                 color: gray05,

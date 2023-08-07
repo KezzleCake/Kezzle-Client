@@ -1,18 +1,19 @@
 import 'dart:io';
 
-import 'package:firebase_auth/firebase_auth.dart';
+// import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kezzle/features/authentication/login_screen.dart';
 import 'package:kezzle/features/authentication/make_user_screen.dart';
-import 'package:kezzle/features/authentication/repos/authentication_repo.dart';
+// import 'package:kezzle/features/authentication/repos/authentication_repo.dart';
 // import 'package:kezzle/features/onboarding/current_location_screen.dart';
 // import 'package:kezzle/features/onboarding/initail_setting_screen.dart';
 import 'package:kezzle/features/profile/change_profile_screen.dart';
-import 'package:kezzle/features/profile/repos/user_repo.dart';
+// import 'package:kezzle/features/profile/repos/user_repo.dart';
 import 'package:kezzle/features/splash/splash_screen.dart';
 import 'package:kezzle/responsive/mobile_screen_layout.dart';
 import 'package:kezzle/screens/authorization_check_screen.dart';
+import 'package:kezzle/screens/detail_cake_screen.dart';
 import 'package:kezzle/screens/store/detail_store_screen.dart';
 
 final dbExistProvider = StateProvider<bool>((ref) {
@@ -137,8 +138,18 @@ final routerProvider = Provider((ref) {
         path: "/detail_store/:id",
         name: DetailStoreScreen.routeName,
         builder: (context, state) {
-          final id = state.pathParameters['id']!;
-          return DetailStoreScreen(storeId: int.parse(id));
+          final String id = state.pathParameters['id']!;
+          return DetailStoreScreen(storeId: id);
+        },
+      ),
+      // 케이크 상세 화면 라우팅 설정
+      GoRoute(
+        path: "/detail_cake/:id/:store_id",
+        name: DetailCakeScreen.routeName,
+        builder: (context, state) {
+          final String id = state.pathParameters['id']!;
+          final String storeId = state.pathParameters['store_id']!;
+          return DetailCakeScreen(cakeId: id, storeId: storeId);
         },
       ),
     ],

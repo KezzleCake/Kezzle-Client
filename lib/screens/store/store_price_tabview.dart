@@ -91,13 +91,9 @@ class _StorePriceState extends State<StorePrice> {
           ),
           clipBehavior: Clip.hardEdge,
           child: Text(
-            '${NumberFormat.decimalPattern().format(totalPrice)}원 주문하기',
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w700,
-              color: gray01,
-            ),
-          ),
+              '${NumberFormat.decimalPattern().format(totalPrice)}원 주문하기',
+              style: TextStyle(
+                  fontSize: 16, fontWeight: FontWeight.w700, color: gray01)),
         ),
       ),
       body: SingleChildScrollView(

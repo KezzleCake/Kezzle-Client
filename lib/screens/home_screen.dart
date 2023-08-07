@@ -54,15 +54,15 @@ class HomeScreenState extends ConsumerState<HomeScreen>
     super.dispose();
   }
 
-  void imageTapped(BuildContext context, String imageUrl) {
-    //print('image tapped');
-    //이미지 상세보기 화면으로 이동
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) => DetailCakeScreen(imageUrl: imageUrl),
-      ),
-    );
-  }
+  // void imageTapped(BuildContext context, String imageUrl) {
+  //   //print('image tapped');
+  //   //이미지 상세보기 화면으로 이동
+  //   Navigator.of(context).push(
+  //     MaterialPageRoute(
+  //       builder: (context) => DetailCakeScreen(imageUrl: imageUrl),
+  //     ),
+  //   );
+  // }
 
   // void onPageChanged(int index, CarouselPageChangedReason reason) {
   //   setState(() {
@@ -429,9 +429,7 @@ class CakeTabBarViewState extends ConsumerState<CakeTabBarView>
             Center(child: Text('스토어 목록 불러오기 실패, $error')),
         data: (cakes) {
           return RefreshIndicator(
-            onRefresh: () async {
-              await Future.delayed(const Duration(seconds: 1));
-            },
+            onRefresh: onRefresh,
             child: GridView.builder(
                 padding: const EdgeInsets.only(top: 30, left: 20, right: 20),
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
@@ -502,51 +500,49 @@ class StoreTabBarViewState extends ConsumerState<StoreTabBarView>
     });
 
     // async니까 빌드베서드 끝나도록 기다려야됨. -> when 사용
-    return ref.watch(homeStoreProvider).when(
-        loading: () {
-          // return Center(child: CircularProgressIndicator(color: coral01));
-          return Container();
-        },
-        error: (error, stackTrace) =>
-            Center(child: Text('스토어 목록 불러오기 실패, $error')),
-        data: (stores) {
-          // _storeCount를 굳이 써야되나? stores.length만으로도 조건을 세울수 있을거같음.
-          _storeCount = stores.length;
-          return NotificationListener<ScrollUpdateNotification>(
-              onNotification: (notification) {
-                if (notification.metrics.pixels >
-                    notification.metrics.maxScrollExtent * 0.85) {
-                  // 다음 거 가져오는 조건?
-                  if (!isMore && _storeCount % 10 == 0) {
-                    fetchNextPage();
-                  }
-                }
-                return true;
-              },
-              child: RefreshIndicator(
-                color: coral01,
-                backgroundColor: Colors.white,
-                onRefresh: onRefresh,
-                child: ListView.separated(
-                    padding: const EdgeInsets.symmetric(
-                        vertical: 30, horizontal: 20),
-                    itemCount: stores.length,
-                    separatorBuilder: (context, index) =>
-                        const SizedBox(height: 12),
-                    itemBuilder: (context, index) {
-                      final storeData = stores[index];
+    return ref.watch(homeStoreProvider).when(loading: () {
+      return Center(child: CircularProgressIndicator(color: coral01));
+      // return Container();
+    }, error: (error, stackTrace) {
+      return Center(child: CircularProgressIndicator(color: coral01));
+      // Center(child: Text('스토어 목록 불러오기 실패, $error')),
+    }, data: (stores) {
+      // _storeCount를 굳이 써야되나? stores.length만으로도 조건을 세울수 있을거같음.
+      _storeCount = stores.length;
+      return NotificationListener<ScrollUpdateNotification>(
+          onNotification: (notification) {
+            if (notification.metrics.pixels >
+                notification.metrics.maxScrollExtent * 0.85) {
+              // 다음 거 가져오는 조건?
+              if (!isMore && _storeCount % 10 == 0) {
+                fetchNextPage();
+              }
+            }
+            return true;
+          },
+          child: RefreshIndicator(
+            color: coral01,
+            backgroundColor: Colors.white,
+            onRefresh: onRefresh,
+            child: ListView.separated(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 30, horizontal: 20),
+                itemCount: stores.length,
+                separatorBuilder: (context, index) =>
+                    const SizedBox(height: 12),
+                itemBuilder: (context, index) {
+                  final storeData = stores[index];
 
-                      return Column(children: [
-                        StoreWidget1(storeData: storeData),
-                        if (isMore && index == stores.length - 1) ...[
-                          const SizedBox(height: 12),
-                          Center(
-                              child: CircularProgressIndicator(color: coral01)),
-                        ]
-                      ]);
-                    }),
-              ));
-        });
+                  return Column(children: [
+                    StoreWidget1(storeData: storeData),
+                    if (isMore && index == stores.length - 1) ...[
+                      const SizedBox(height: 12),
+                      Center(child: CircularProgressIndicator(color: coral01)),
+                    ]
+                  ]);
+                }),
+          ));
+    });
   }
 }
 

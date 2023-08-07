@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:kezzle/features/bookmark/view_models/bookmarked_cake_vm.dart';
 import 'package:kezzle/features/bookmark/view_models/bookmarked_store_vm.dart';
 // import 'package:kezzle/models/home_store_model.dart';
 import 'package:kezzle/utils/colors.dart';
 import 'package:kezzle/view_models/search_setting_vm.dart';
+import 'package:kezzle/widgets/bookmark_cake_widget.dart';
 // import 'package:kezzle/widgets/store_widget.dart';
 import 'package:kezzle/widgets/store_widget1.dart';
 // import 'package:kezzle/features/store_search/search_store_screen.dart';
@@ -49,37 +51,99 @@ class BookmarkScreen extends StatelessWidget {
   }
 }
 
-class CakeBookmarkScreen extends StatelessWidget {
+class CakeBookmarkScreen extends ConsumerWidget {
   const CakeBookmarkScreen({
     super.key,
   });
 
   @override
-  Widget build(BuildContext context) {
-    return GridView.builder(
-        itemCount: 20,
-        padding: const EdgeInsets.only(top: 30, left: 20, right: 20),
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 3,
-            crossAxisSpacing: 6,
-            mainAxisSpacing: 6,
-            childAspectRatio: 1),
-        itemBuilder: (context, index) => Container(
-            decoration: BoxDecoration(borderRadius: BorderRadius.circular(16)),
-            clipBehavior: Clip.hardEdge,
-            child: Stack(alignment: Alignment.bottomRight, children: [
-              // Image.asset('assets/heart_cake.png', fit: BoxFit.cover),
-              Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Stack(children: [
-                    SvgPicture.asset('assets/icons/like=on_in.svg',
-                        colorFilter:
-                            ColorFilter.mode(coral01, BlendMode.srcATop)),
-                    SvgPicture.asset('assets/icons/like=off.svg',
-                        colorFilter: const ColorFilter.mode(
-                            Colors.white, BlendMode.srcATop)),
-                  ])),
-            ])));
+  Widget build(BuildContext context, WidgetRef ref) {
+    // 위도 경도 변경되면 실행되는 리스너
+    // ref.listen(searchSettingViewModelProvider, (previous, next) {
+    //   if (previous!.latitude != next.latitude ||
+    //       previous.longitude != next.longitude) {
+    //     ref.read(bookmarkedCakeProvider.notifier).refresh();
+    //   }
+    // });
+
+    return ref.watch(bookmarkedCakeProvider).when(
+        loading: () => Center(
+              child: CircularProgressIndicator(color: coral01),
+            ),
+        error: (error, stackTrace) => Center(
+              child: Text('찜 목록 불러오기 실패, $error'),
+            ),
+        data: (cakes) {
+          ref.listen(searchSettingViewModelProvider, (previous, next) {
+            if (previous!.latitude != next.latitude ||
+                previous.longitude != next.longitude) {
+              ref.read(bookmarkedCakeProvider.notifier).refresh();
+            }
+          });
+          if (cakes.isEmpty) {
+            return const NoItemScreen(text: "찜한 디자인이 없어요");
+          }
+          return GridView.builder(
+              itemCount: cakes.length,
+              padding: const EdgeInsets.only(top: 30, left: 20, right: 20),
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 3,
+                  crossAxisSpacing: 6,
+                  mainAxisSpacing: 6,
+                  childAspectRatio: 1),
+              itemBuilder: (context, index) {
+                return BookmarkCakeWidget(cakeData: cakes[index]);
+                // Container(
+                //   decoration:
+                //       BoxDecoration(borderRadius: BorderRadius.circular(16)),
+                //   clipBehavior: Clip.hardEdge,
+                //   child: Stack(alignment: Alignment.bottomRight, children: [
+                //     // Image.asset('assets/heart_cake.png', fit: BoxFit.cover),
+                //     Padding(
+                //         padding: const EdgeInsets.all(8.0),
+                //         child: Stack(children: [
+                //           cakes[index].isLiked
+                //               ? SvgPicture.asset('assets/icons/like=on_in.svg',
+                //                   colorFilter: ColorFilter.mode(
+                //                       coral01, BlendMode.srcATop))
+                //               : SvgPicture.asset('assets/icons/like=off.svg',
+                //                   colorFilter: const ColorFilter.mode(
+                //                       Colors.white, BlendMode.srcATop)),
+                //           // SvgPicture.asset('assets/icons/like=on_in.svg',
+                //           //     colorFilter:
+                //           //         ColorFilter.mode(coral01, BlendMode.srcATop)),
+                //           // SvgPicture.asset('assets/icons/like=off.svg',
+                //           //     colorFilter: const ColorFilter.mode(
+                //           //         Colors.white, BlendMode.srcATop)),
+                //         ])),
+                //   ]));
+              });
+        });
+
+    // return GridView.builder(
+    //     itemCount: 20,
+    //     padding: const EdgeInsets.only(top: 30, left: 20, right: 20),
+    //     gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+    //         crossAxisCount: 3,
+    //         crossAxisSpacing: 6,
+    //         mainAxisSpacing: 6,
+    //         childAspectRatio: 1),
+    //     itemBuilder: (context, index) => Container(
+    //         decoration: BoxDecoration(borderRadius: BorderRadius.circular(16)),
+    //         clipBehavior: Clip.hardEdge,
+    //         child: Stack(alignment: Alignment.bottomRight, children: [
+    //           // Image.asset('assets/heart_cake.png', fit: BoxFit.cover),
+    //           Padding(
+    //               padding: const EdgeInsets.all(8.0),
+    //               child: Stack(children: [
+    //                 SvgPicture.asset('assets/icons/like=on_in.svg',
+    //                     colorFilter:
+    //                         ColorFilter.mode(coral01, BlendMode.srcATop)),
+    //                 SvgPicture.asset('assets/icons/like=off.svg',
+    //                     colorFilter: const ColorFilter.mode(
+    //                         Colors.white, BlendMode.srcATop)),
+    //               ])),
+    //         ])));
   }
 }
 

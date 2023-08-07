@@ -1,55 +1,46 @@
 import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:kezzle/models/cake_model.dart';
+import 'package:kezzle/models/home_store_model.dart';
 import 'package:kezzle/repo/cakes_repo.dart';
+import 'package:kezzle/view_models/id_token_provider.dart';
 import 'package:kezzle/view_models/search_setting_vm.dart';
 
-class HomeCakeViewModel extends AsyncNotifier<List<CakeModel>> {
+class HomeCakeViewModel extends AsyncNotifier<List<Cake>> {
   late final CakesRepo _repository;
-
-  // 더미 데이터!!
-  List<CakeModel> _cakeList = [
-    CakeModel(
-      id: '1',
-      url: 'assets/heart_cake.png',
-      storeId: '1',
-      liked: true,
-    ),
-    CakeModel(
-      id: '2',
-      url: 'assets/smile_cake.png',
-      storeId: '2',
-      liked: true,
-    ),
-    CakeModel(
-      id: '3',
-      url: 'assets/heart_cake.png',
-      storeId: '3',
-      liked: true,
-    ),
-  ];
+  List<Cake> _cakeList = [];
 
   @override
-  FutureOr<List<CakeModel>> build() async {
+  FutureOr<List<Cake>> build() async {
     _repository = ref.read(cakesRepo);
-    // api 응답 3초로 가정
-    await Future.delayed(const Duration(seconds: 3));
-    // final lat = ref.read(searchSettingViewModelProvider).latitude;
-    // final lng = ref.read(searchSettingViewModelProvider).longitude;
 
     // 일단 첫번째 페이지로 데이터 가져오기
-    // _cakeList = await _fetchCakes(page: null);
+    final cakes = await _fetchCakes(page: null);
+    _cakeList = cakes;
 
     return _cakeList;
   }
 
-  Future<List<CakeModel>> _fetchCakes({int? page}) async {
-    final result = await _repository.fetchCakes(page: page);
-    final List<CakeModel> cakes = [];
+  Future<List<Cake>> _fetchCakes({int? page}) async {
+    // 위도, 경도, 토큰 가져와서 api 요청
+    final lat = ref.read(searchSettingViewModelProvider).latitude;
+    final lng = ref.read(searchSettingViewModelProvider).longitude;
+    final token = await ref.read(tokenProvider.notifier).getIdToken();
+
+    final List<dynamic>? result = await _repository.fetchCakes(
+      token: token,
+      lat: lat,
+      lng: lng,
+      page: page,
+    );
+    // print(result);
     // 받아온정보 map으로 각 스토어를 CakeModel로 변환해서 리스트 만들기
-    // final newList = [];
-    return cakes;
+    if (result == null) {
+      return [];
+    } else {
+      final List<Cake> cakes = result.map((e) => Cake.fromJson(e)).toList();
+      return cakes;
+    }
   }
 
   // 다음 페이지 요청
@@ -63,21 +54,17 @@ class HomeCakeViewModel extends AsyncNotifier<List<CakeModel>> {
 
   // 반경이나, 위치 변환시, 새로고침시에 새 스토어 리스트 가져와서 갱신해주는 메서드
   Future<void> refresh() async {
-    // final lat = ref.read(searchSettingViewModelProvider).latitude;
-    // final lon = ref.read(searchSettingViewModelProvider).longitude;
+    state = const AsyncValue.loading();
     // 데이터 새로 가져오고, 갱신
-    // final cakes = await _fetchCakes(page: null);
-    // _list = cakes; -> 복사본 유지..
-    await Future.delayed(const Duration(seconds: 2));
-    // throw Exception("데이터 fetch 실패");
-
+    final cakes = await _fetchCakes(page: null);
+    // 복사본 유지
+    _cakeList = cakes;
     // 아예 새로운 리스트로 갱신
-    state = const AsyncValue.data([]);
+    state = AsyncValue.data(_cakeList);
   }
 }
 
 // notifier를 expose , 뷰모델 초기화.
-final homeCakeProvider =
-    AsyncNotifierProvider<HomeCakeViewModel, List<CakeModel>>(
+final homeCakeProvider = AsyncNotifierProvider<HomeCakeViewModel, List<Cake>>(
   () => HomeCakeViewModel(),
 );

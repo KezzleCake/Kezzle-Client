@@ -49,37 +49,68 @@ class StoreRepo {
   }
 
   // 스토어 좋아요
-  Future<Response<dynamic>?> likeStore(String storeId, User user) async {
+  Future<String> likeStore(String storeId, String token) async {
     // 스토어 아이디랑 유저정보 받아서 좋아요 처리
+    // 여기서 정보 보내기!!
+    var options = BaseOptions(
+      baseUrl: dotenv.env['SERVER_ENDPOINT']!,
+      connectTimeout: const Duration(seconds: 20),
+      receiveTimeout: const Duration(seconds: 20),
+      headers: {
+        'Authorization': 'Bearer $token',
+      },
+    );
+    Dio dio = Dio(options);
+
+    try {
+      // 시간재기
+      final startTime = DateTime.now();
+      final response = await dio.post('stores/$storeId/likes');
+      print(response.statusCode);
+      if (response.statusCode == 201) {
+        print('스토어 좋아요 성공');
+        // print(response.data);
+        // final endTime = DateTime.now();
+        // final difference = endTime.difference(startTime);
+        // print('시간차이 : ${difference.inMilliseconds}ms');
+        return response.data;
+      }
+    } catch (e) {
+      print(e);
+      print('스토어 좋아요 실패');
+      return 'false';
+    } finally {
+      dio.close();
+    }
+    return 'false';
+  }
+
+  // 스토어 좋아요 취소
+  Future<Response<dynamic>?> dislikeStore(String storeId, String token) async {
+    // 스토어 아이디랑 유저정보 받아서 좋아요 취소 처리
     // 여기서 정보 보내기!!
     var options = BaseOptions(
         baseUrl: dotenv.env['SERVER_ENDPOINT']!,
         connectTimeout: const Duration(seconds: 20),
         receiveTimeout: const Duration(seconds: 20),
         headers: {
-          'Authorization': 'Bearer ${await user.getIdToken()}',
+          'Authorization': 'Bearer $token',
         });
     Dio dio = Dio(options);
     try {
-      final response = await dio.post('stores/$storeId/likes');
+      final response = await dio.delete('stores/$storeId/likes');
       if (response.statusCode == 200) {
+        print('스토어 좋아요 취소 성공');
         print(response.data);
         return response;
       }
     } catch (e) {
       print(e);
-      print('스토어 좋아요 실패');
+      print('스토어 좋아요 취소 실패');
       return null;
     } finally {
       dio.close();
     }
-    return null;
-  }
-
-  // 스토어 좋아요 취소
-  Future<void> dislikeStore(String storeId, User user) async {
-    // 스토어 아이디랑 유저정보 받아서 좋아요 취소 처리
-    // 여기서 정보 보내기!!
   }
 
   // 사용자가 찜한 스토어 리스트 가져오기
@@ -125,6 +156,34 @@ class StoreRepo {
       // 특정(다음) 페이지 가져오기
       return [{}];
     }
+  }
+
+  // 스토어 상세 정보 가져오기
+  Future<Map<String, dynamic>?> fetchDetailStore(
+      {required String storeId, required String token}) async {
+    var options = BaseOptions(
+        baseUrl: dotenv.env['SERVER_ENDPOINT']!,
+        connectTimeout: const Duration(seconds: 20),
+        receiveTimeout: const Duration(seconds: 20),
+        headers: {
+          'Authorization': 'Bearer $token',
+        });
+    Dio dio = Dio(options);
+    try {
+      final response = await dio.get('stores/$storeId');
+      if (response.statusCode == 200) {
+        print('스토어 상세 정보 가져오기 성공');
+        // print(response.data);
+        return response.data;
+      }
+    } catch (e) {
+      print(e);
+      print('스토어 상세 정보 가져오기 실패');
+      // return null;
+    } finally {
+      dio.close();
+    }
+    return null;
   }
 }
 

@@ -1,11 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:kezzle/models/detail_store_model.dart';
+import 'package:kezzle/models/home_store_model.dart';
+import 'package:kezzle/repo/cakes_repo.dart';
+import 'package:kezzle/repo/stores_repo.dart';
 import 'package:kezzle/screens/store/introduce_store_tabview.dart';
 import 'package:kezzle/screens/store/store_location_screen.dart';
 // import 'package:kezzle/screens/store/store_price_tabview.dart';
 // import 'package:kezzle/screens/store/store_review_screen.dart';
 import 'package:kezzle/utils/colors.dart';
+import 'package:kezzle/view_models/id_token_provider.dart';
+import 'package:kezzle/view_models/store_view_model.dart';
+import 'package:kezzle/widgets/bookmark_cake_widget.dart';
+// import 'package:url_launcher/url_launcher.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 
 final tabs = [
   // '가격',
@@ -15,29 +25,75 @@ final tabs = [
   // '리뷰',
 ];
 
-class DetailStoreScreen extends StatelessWidget {
-  static const routeURL = '/detail_store';
+class DetailStoreScreen extends ConsumerWidget {
+  // static const routeURL = '/detail_store';
   static const routeName = 'detail_store';
-  final int storeId;
+  final String storeId;
+  // final HomeStoreModel store;
 
   const DetailStoreScreen({super.key, required this.storeId});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    Future<DetailStoreModel?> fetchDetailStoreData() async {
+      final String token = await ref.read(tokenProvider.notifier).getIdToken();
+      final response = await ref
+          .read(storeRepo)
+          .fetchDetailStore(storeId: storeId, token: token);
+      if (response != null) {
+        // print(response);
+        // response를 DetailStoreModel로 변환
+        final fetched = DetailStoreModel.fromJson(response);
+        // print(fetched);
+        return fetched;
+      }
+      return null;
+    }
+
+    Future<List<Cake>?> fetchCakesData() async {
+      final String token = await ref.read(tokenProvider.notifier).getIdToken();
+      final response = await ref
+          .read(cakesRepo)
+          .fetchCakesByStoreId(storeId: storeId, token: token);
+      if (response != null) {
+        // response를 Cake로 변환
+        final fetched = response.map((e) => Cake.fromJson(e)).toList();
+        // print(fetched);
+        return fetched;
+      }
+      return null;
+    }
+
     return Scaffold(
-        appBar: AppBar(title: const Text('스토어'), actions: [
-          IconButton(
-            onPressed: () {},
-            icon: SvgPicture.asset('assets/icons/share.svg'),
-          ),
-        ]),
+        appBar: AppBar(
+          title: const Text('스토어'),
+          // actions: [
+          //   // IconButton(
+          //   //   onPressed: () {},
+          //   //   icon: SvgPicture.asset('assets/icons/share.svg'),
+          //   // ),
+          // ],
+        ),
         body: DefaultTabController(
             length: tabs.length,
-            child: Column(children: [
-              _defaultStoreInfo(),
-              _tabBar(),
-              Expanded(child: _tabBarView()),
-            ])));
+            child: FutureBuilder<List<dynamic>>(
+                future: Future.wait([fetchDetailStoreData(), fetchCakesData()]),
+                builder: (context, data) {
+                  if (data.connectionState == ConnectionState.waiting) {
+                    return Center(
+                        child: CircularProgressIndicator(color: coral01));
+                  } else if (data.hasData) {
+                    return Column(children: [
+                      _defaultStoreInfo(data.data![0] as DetailStoreModel),
+                      _tabBar(),
+                      Expanded(
+                          child: _tabBarView(data.data![0] as DetailStoreModel,
+                              data.data![1] as List<Cake>)),
+                    ]);
+                  } else {
+                    return const Center(child: Text('데이터를 불러오는데 실패했습니다.'));
+                  }
+                })));
   }
 
   Widget _tabBar() => TabBar(
@@ -52,77 +108,122 @@ class DetailStoreScreen extends StatelessWidget {
           border: Border(bottom: BorderSide(color: coral01, width: 2))),
       tabs: [for (var tab in tabs) Tab(text: tab)]);
 
-  Widget _tabBarView() =>
+  Widget _tabBarView(DetailStoreModel store, List<Cake> cakes) =>
       TabBarView(physics: const NeverScrollableScrollPhysics(), children: [
         // const StorePrice(),
-        StoreCakes(),
-        const IntroduceStore(),
-        StoreLocation(),
+        StoreCakes(cakes: cakes),
+        IntroduceStore(store: store),
+        StoreLocation(store: store),
         // StoreReview(),
       ]);
 
-  Widget _defaultStoreInfo() => Padding(
-      padding: const EdgeInsets.all(20),
-      child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        const CircleAvatar(
-            radius: 63 / 2,
-            backgroundImage: AssetImage('assets/heart_cake.png')),
-        const SizedBox(width: 8),
-        Expanded(
-            child:
-                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text('블리스 케이크',
-              style: TextStyle(
-                fontSize: 16,
-                color: gray08,
-                fontWeight: FontWeight.w600,
-              )),
-          const SizedBox(height: 3),
-          Row(children: [
-            FaIcon(FontAwesomeIcons.solidStar, size: 14, color: orange01),
-            const SizedBox(width: 3),
-            Text('4.5(100+)',
-                style: TextStyle(
-                  fontSize: 12,
-                  color: gray07,
-                  fontWeight: FontWeight.w600,
-                )),
-          ]),
-          const SizedBox(height: 8),
-          Text('블리스 케이크 만의 무드를 담은 케이크로 소중한 날을 더욱 특별하게 만들어드려요 :)',
-              maxLines: 2,
-              overflow: TextOverflow.clip,
-              style: TextStyle(
-                  fontSize: 12, color: gray06, fontWeight: FontWeight.w400)),
-          const SizedBox(height: 16),
-          const Row(children: [
-            FaIcon(FontAwesomeIcons.instagram),
-            SizedBox(width: 13),
-            FaIcon(FontAwesomeIcons.comment),
-          ]),
-        ])),
-        Padding(
-            padding: const EdgeInsets.only(left: 5),
-            child: Column(children: [
-              SvgPicture.asset('assets/icons/like=on.svg'),
-              Text('55',
-                  style: TextStyle(
-                      fontSize: 12,
-                      color: coral01,
-                      fontWeight: FontWeight.w600)),
-            ])),
-      ]));
+  ConsumerWidget _defaultStoreInfo(DetailStoreModel store) {
+    final likeCntProvider = StateProvider<int>((ref) => store.likeCnt);
+    return Consumer(
+      builder: (context, ref, child) {
+        return Padding(
+            padding: const EdgeInsets.all(20),
+            child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              CircleAvatar(
+                radius: 63 / 2,
+                foregroundImage: NetworkImage(store.logo.s3Url),
+                onForegroundImageError: (exception, stackTrace) =>
+                    const SizedBox(),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                  child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                    Text(store.name,
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: gray08,
+                          fontWeight: FontWeight.w600,
+                        )),
+                    const SizedBox(height: 3),
+                    // Row(children: [
+                    //   FaIcon(FontAwesomeIcons.solidStar, size: 14, color: orange01),
+                    //   const SizedBox(width: 3),
+                    //   Text('4.5(100+)',
+                    //       style: TextStyle(
+                    //         fontSize: 12,
+                    //         color: gray07,
+                    //         fontWeight: FontWeight.w600,
+                    //       )),
+                    // ]),
+                    const SizedBox(height: 8),
+                    if (store.storeFeature.isNotEmpty) ...[
+                      Text(store.storeFeature,
+                          maxLines: 2,
+                          overflow: TextOverflow.clip,
+                          style: TextStyle(
+                              fontSize: 12,
+                              color: gray06,
+                              fontWeight: FontWeight.w400)),
+                    ],
+                    const SizedBox(height: 16),
+                    Row(children: [
+                      GestureDetector(
+                        onTap: () async {
+                          // print(store.instaURL);
+                          await launchUrlString(store.instaURL);
+                        },
+                        child: const FaIcon(FontAwesomeIcons.instagram),
+                      ),
+                      const SizedBox(width: 13),
+                      GestureDetector(
+                        onTap: () async {
+                          // print(store.instaURL);
+                          await launchUrlString(store.kakaoURL);
+                        },
+                        child: const FaIcon(FontAwesomeIcons.comment),
+                      ),
+                    ]),
+                  ])),
+              GestureDetector(
+                onTap: () {
+                  ref.read(storeProvider(store.id)).whenData((value) {
+                    if (value == true) {
+                      ref.read(likeCntProvider.notifier).state -= 1;
+                    } else {
+                      ref.read(likeCntProvider.notifier).state += 1;
+                    }
+                  });
+                  ref.read(storeProvider(store.id).notifier).toggleLike();
+                },
+                child: Padding(
+                    padding: const EdgeInsets.only(left: 5),
+                    child: Column(children: [
+                      SvgPicture.asset(ref.watch(storeProvider(store.id)).when(
+                          data: (data) => data == true
+                              ? 'assets/icons/like=on.svg'
+                              : 'assets/icons/like=off.svg',
+                          loading: () => 'assets/icons/like=off.svg',
+                          error: (e, s) => 'assets/icons/like=off.svg')),
+                      Text(ref.watch(likeCntProvider).toString(),
+                          style: TextStyle(
+                              fontSize: 12,
+                              color: coral01,
+                              fontWeight: FontWeight.w600)),
+                    ])),
+              ),
+            ]));
+      },
+    );
+  }
 }
 
 class StoreCakes extends StatefulWidget {
-  StoreCakes({super.key});
+  final List<Cake> cakes;
+  const StoreCakes({super.key, required this.cakes});
 
   @override
   State<StoreCakes> createState() => _StoreCakesState();
 }
 
 class _StoreCakesState extends State<StoreCakes> {
-  bool isLike = false;
+  // bool isLike = false;
   // int selectedKeywordIndex = 0;
   // final List<String> keywords = [
   //   '전체',
@@ -143,11 +244,11 @@ class _StoreCakesState extends State<StoreCakes> {
   //   });
   // }
 
-  void onTapLike() {
-    setState(() {
-      isLike = !isLike;
-    });
-  }
+  // void onTapLike() {
+  //   setState(() {
+  //     isLike = !isLike;
+  //   });
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -184,7 +285,7 @@ class _StoreCakesState extends State<StoreCakes> {
       // const SizedBox(height: 16),
       Flexible(
           child: GridView.builder(
-        itemCount: 20,
+        itemCount: widget.cakes.length,
         padding: const EdgeInsets.only(
           top: 16,
           left: 20,
@@ -197,28 +298,8 @@ class _StoreCakesState extends State<StoreCakes> {
           mainAxisSpacing: 6,
           childAspectRatio: 1,
         ),
-        itemBuilder: (context, index) => Container(
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(16), boxShadow: [shadow01]),
-            clipBehavior: Clip.hardEdge,
-            child: Stack(alignment: Alignment.bottomRight, children: [
-              Image.asset('assets/heart_cake.png', fit: BoxFit.cover),
-              Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: GestureDetector(
-                    onTap: onTapLike,
-                    child: Stack(children: [
-                      isLike
-                          ? SvgPicture.asset('assets/icons/like=on_in.svg')
-                          : SvgPicture.asset('assets/icons/like=off_in.svg'),
-                      SvgPicture.asset('assets/icons/like=off.svg',
-                          colorFilter: const ColorFilter.mode(
-                            Colors.white,
-                            BlendMode.srcATop,
-                          )),
-                    ]),
-                  )),
-            ])),
+        itemBuilder: (context, index) =>
+            BookmarkCakeWidget(cakeData: widget.cakes[index]),
       )),
     ]);
   }

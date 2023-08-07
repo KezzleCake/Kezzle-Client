@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kezzle/features/authentication/repos/authentication_repo.dart';
-import 'package:kezzle/features/profile/repos/user_repo.dart';
+// import 'package:kezzle/features/profile/repos/user_repo.dart';
 import 'package:kezzle/models/home_store_model.dart';
 import 'package:kezzle/repo/stores_repo.dart';
 import 'package:kezzle/view_models/search_setting_vm.dart';
@@ -22,14 +22,14 @@ class BookmarkedStoreViewModel extends AsyncNotifier<List<HomeStoreModel>> {
     _authRepo = ref.read(authRepo);
 
     // 사용자가 찜한 스토어목록 가져오기
-    final result = await _fetchBookmarkedStores(page: null);
-    // final List<HomeStoreModel> bookmarkedStores = [];
+    final result = await fetchBookmarkedStores(page: null);
+    _bookmarkedStoreList = result;
     return result;
     // return [];
   }
 
   // 좋아요한 스토어 목록 가져오는 메서드
-  Future<List<HomeStoreModel>> _fetchBookmarkedStores({int? page}) async {
+  Future<List<HomeStoreModel>> fetchBookmarkedStores({int? page}) async {
     // 위도, 경도, 유저 가져와서 api 요청
     final lat = ref.watch(searchSettingViewModelProvider).latitude;
     final lon = ref.watch(searchSettingViewModelProvider).longitude;
@@ -57,7 +57,7 @@ class BookmarkedStoreViewModel extends AsyncNotifier<List<HomeStoreModel>> {
   Future<void> refresh() async {
     // 데이터 새로 가져오고, 갱신
     // 사용자가 찜한 스토어목록 가져오기
-    final stores = await _fetchBookmarkedStores(page: null);
+    final stores = await fetchBookmarkedStores(page: null);
     // 복사본 유지
     _bookmarkedStoreList = stores;
     // 아예 새로운 리스트로 갱신
@@ -65,18 +65,28 @@ class BookmarkedStoreViewModel extends AsyncNotifier<List<HomeStoreModel>> {
   }
 
   void addBookmarkedStore(HomeStoreModel store) {
+    store.isLiked = true;
     _bookmarkedStoreList.add(store);
     state = AsyncValue.data(_bookmarkedStoreList);
   }
 
-  // void dislikesStore(String storeId) {
-  //   _bookmarkedStoreList.removeWhere((element) => element.id == storeId);
-  //   state = AsyncValue.data(_bookmarkedStoreList);
-  // }
+  void deleteBookmarkedStore(String storeId) {
+    _bookmarkedStoreList.removeWhere((element) => element.id == storeId);
+    state = AsyncValue.data(_bookmarkedStoreList);
+  }
 }
 
 // notifier를 expose , 뷰모델 초기화.
+// final bookmarkedStoreProvider =
+//     AsyncNotifierProvider<BookmarkedStoreViewModel, List<HomeStoreModel>>(
+//   () {
+//     return BookmarkedStoreViewModel();
+//   },
+// );
+
 final bookmarkedStoreProvider =
     AsyncNotifierProvider<BookmarkedStoreViewModel, List<HomeStoreModel>>(
-  () => BookmarkedStoreViewModel(),
+  () {
+    return BookmarkedStoreViewModel();
+  },
 );

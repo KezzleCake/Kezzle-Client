@@ -101,6 +101,7 @@ class ProfileVM extends AutoDisposeAsyncNotifier<UserModel> {
     //   email: state.value!.email,
     //   oathProvider: state.value!.oathProvider,
     // );
+    state = const AsyncValue.loading();
     // 서버에 업데이트
     final response = await _userRepo.updateProfile(_authRepo.user!, nickname);
 

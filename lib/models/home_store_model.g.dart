@@ -6,9 +6,9 @@ part of 'home_store_model.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-ImageModel _$ImageModelFromJson(Map<String, dynamic>? json) => ImageModel(
-      json?['name'] ?? "",
-      json?['s3Url'] ?? "",
+ImageModel _$ImageModelFromJson(Map<String?, dynamic>? json) => ImageModel(
+      json?['name'] ?? '',
+      json?['s3Url'] ?? '',
     );
 
 Map<String, dynamic> _$ImageModelToJson(ImageModel instance) =>
@@ -33,12 +33,12 @@ Map<String, dynamic> _$CakeToJson(Cake instance) => <String, dynamic>{
 
 HomeStoreModel _$HomeStoreModelFromJson(Map<String, dynamic> json) =>
     HomeStoreModel(
-      json['_id'] as String,
+      json['id'] as String,
       json['name'] as String,
-      ImageModel.fromJson(json['logo']),
+      ImageModel.fromJson(json['logo'] as Map<String, dynamic>?),
       json['address'] as String,
       json['isLiked'] as bool,
-      json['distance'] as double,
+      (json['distance'] as num).toDouble(),
       (json['cakes'] as List<dynamic>)
           .map((e) => Cake.fromJson(e as Map<String, dynamic>))
           .toList(),

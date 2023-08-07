@@ -8,7 +8,8 @@ import 'package:kezzle/models/home_store_model.dart';
 import 'package:kezzle/repo/stores_repo.dart';
 import 'package:kezzle/view_models/search_setting_vm.dart';
 
-class HomeStoreViewModel extends AsyncNotifier<List<HomeStoreModel>> {
+class HomeStoreViewModel
+    extends AutoDisposeAsyncNotifier<List<HomeStoreModel>> {
   late final StoreRepo _storeRepo;
   late final AuthRepo _authRepo;
   List<HomeStoreModel> _homeStoreList = [];
@@ -17,11 +18,6 @@ class HomeStoreViewModel extends AsyncNotifier<List<HomeStoreModel>> {
   FutureOr<List<HomeStoreModel>> build() async {
     _storeRepo = ref.read(storeRepo);
     _authRepo = ref.read(authRepo);
-
-    // api 로부터 응답받는데 걸리는 시간을 2초로 가정
-    // await Future.delayed(const Duration(seconds: 2));
-    // throw Exception("데이터 fetch 실패");
-    // ref.read(storeRepo).fetchStores(user: user!, lat: lat, lng: lon);
 
     // 처음 데이터는 1페이지로 가져오기
     // List<HomeStoreModel> stores = [];
@@ -50,9 +46,9 @@ class HomeStoreViewModel extends AsyncNotifier<List<HomeStoreModel>> {
     if (result == null) {
       return [];
     } else {
-      final List<HomeStoreModel> fetcedStores =
+      final List<HomeStoreModel> fetchedStores =
           result.map((e) => HomeStoreModel.fromJson(e)).toList();
-      return fetcedStores;
+      return fetchedStores;
     }
   }
 
@@ -69,7 +65,7 @@ class HomeStoreViewModel extends AsyncNotifier<List<HomeStoreModel>> {
 
   // 반경이나, 위치 변환시, 새로고침시에 새 스토어 리스트 가져와서 갱신해주는 메서드
   Future<void> refresh() async {
-    // state = const AsyncValue.loading();
+    state = const AsyncValue.loading();
     // 데이터 새로 가져오고, 갱신
     final fetchedStores = await _fetchStores(page: null);
     // 복사본 유지
@@ -81,6 +77,7 @@ class HomeStoreViewModel extends AsyncNotifier<List<HomeStoreModel>> {
 
 // notifier를 expose , 뷰모델 초기화.
 final homeStoreProvider =
-    AsyncNotifierProvider<HomeStoreViewModel, List<HomeStoreModel>>(
+    AsyncNotifierProvider.autoDispose<HomeStoreViewModel, List<HomeStoreModel>>(
   () => HomeStoreViewModel(),
+  // dependencies: [searchSettingViewModelProvider],
 );

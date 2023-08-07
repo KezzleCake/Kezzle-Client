@@ -114,11 +114,12 @@ class ChangeProfileScreenState extends ConsumerState<ChangeProfileScreen> {
                                   borderSide: BorderSide(
                                     color: gray03,
                                   )),
-                              suffix: Text('${_nickname.length}/10',
+                              suffix: Text('${newNickname.length}/10',
                                   style: TextStyle(
-                                      color: _nickname.isNotEmpty
-                                          ? gray05
-                                          : gray04)))),
+                                      color:
+                                          _textEditingController.text.isNotEmpty
+                                              ? gray05
+                                              : gray04)))),
                     ])),
             bottomNavigationBar: BottomAppBar(
                 color: Colors.transparent,

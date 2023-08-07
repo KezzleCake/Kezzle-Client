@@ -85,8 +85,7 @@ class UserScreenState extends ConsumerState<UserScreen> {
   Widget build(BuildContext context) {
     return ref.watch(profileProvider).when(
         error: (error, stackTrace) => Center(child: Text(error.toString())),
-        loading: () =>
-            const Center(child: CircularProgressIndicator.adaptive()),
+        loading: () => Center(child: CircularProgressIndicator(color: coral01)),
         data: (data) => Scaffold(
             appBar: AppBar(title: const Text('마이페이지'), elevation: 0, actions: [
               // IconButton(
