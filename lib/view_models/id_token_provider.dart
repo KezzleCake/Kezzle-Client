@@ -45,4 +45,5 @@ final tokenProvider = AsyncNotifierProvider<IdTokenProvider, IdTokenResult>(
   () {
     return IdTokenProvider();
   },
+  dependencies: [authState],
 );

@@ -17,7 +17,7 @@ class StoreRepo {
   Future<Map<String, dynamic>?> fetchStores({
     // String? afterId,
     double? afterDistance,
-    required count,
+    required int count,
     required double lat,
     required double lng,
   }) async {
@@ -33,7 +33,7 @@ class StoreRepo {
       try {
         final response = await dio.get('stores', queryParameters: queryParams);
         if (response.statusCode == 200) {
-          print('홈화면 스토어 목록 가져오기 성공');
+          // print('홈화면 스토어 목록 가져오기 성공');
           // print(response.data);
           return response.data;
         }
@@ -57,7 +57,7 @@ class StoreRepo {
         final response = await dio.get('stores', queryParameters: queryParams);
         if (response.statusCode == 200) {
           print('스토어 정보 가져오기 성공');
-          print(response.data);
+          // print(response.data);
           return response.data;
         }
       } catch (e) {
@@ -167,7 +167,7 @@ class StoreRepo {
         }
       } catch (e) {
         print(e);
-        print('유저가 좋아요한 스토어 정보 가져오기 실패');
+        // print('유저가 좋아요한 스토어 정보 가져오기 실패');
         return null;
       } finally {
         // dio.close();

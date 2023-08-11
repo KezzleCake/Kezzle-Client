@@ -10,8 +10,7 @@ import 'package:kezzle/repo/search_setting_repo.dart';
 import 'package:kezzle/repo/searched_address_repo.dart';
 import 'package:kezzle/router.dart';
 import 'package:kezzle/utils/colors.dart';
-// import 'package:kezzle/utils/provider_observer.dart';
-// import 'package:kezzle/utils/provider_observer.dart';
+import 'package:kezzle/utils/provider_observer.dart';
 import 'package:kezzle/view_models/search_setting_vm.dart';
 import 'package:kezzle/view_models/searched_address_view_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -19,7 +18,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 class MyHttpOverrides extends HttpOverrides {
   @override
   HttpClient createHttpClient(SecurityContext? context) {
-    return super.createHttpClient(context)..maxConnectionsPerHost = 5;
+    return super.createHttpClient(context)..maxConnectionsPerHost = 20;
   }
 }
 
@@ -44,19 +43,70 @@ void main() async {
     DeviceOrientation.portraitUp,
   ]);
 
-  runApp(ProviderScope(
-    // observers: [
-    //   Logger(),
-    // ],
-    key: UniqueKey(),
-    overrides: [
-      searchSettingViewModelProvider
-          .overrideWith(() => SearchSettingViewModel(repository)),
-      searchedHistoryAddressVMProvider
-          .overrideWith(() => SearchedAddressVM(repository2)),
-    ],
-    child: KezzleApp(),
+  // final globalProviderContainer = Provider(
+  //   (ref) => ProviderContainer(
+  //     overrides: [
+  //       searchSettingViewModelProvider
+  //           .overrideWith(() => SearchSettingViewModel(repository)),
+  //       searchedHistoryAddressVMProvider
+  //           .overrideWith(() => SearchedAddressVM(repository2)),
+  //     ],
+  //   ),
+  // );
+
+  runApp(RestartApp(
+    child: ProviderScope(
+      // parent: globalProviderContainer.,
+      observers: [
+        Logger(),
+      ],
+      // key: ObjectKey(identifier),
+      overrides: [
+        searchSettingViewModelProvider
+            .overrideWith(() => SearchSettingViewModel(repository)),
+        searchedHistoryAddressVMProvider
+            .overrideWith(() => SearchedAddressVM(repository2)),
+      ],
+      child: KezzleApp(
+          // key: GlobalObjectKey(context),
+          ),
+    ),
   ));
+}
+//import 'package:get_it/get_it.dart';
+
+class RestartApp extends StatefulWidget {
+  final Widget child;
+
+  const RestartApp({Key? key, required this.child}) : super(key: key);
+
+  static void restart(BuildContext context) {
+    context.findRootAncestorStateOfType<_RestartAppState>()!._restart();
+  }
+
+  @override
+  State<RestartApp> createState() => _RestartAppState();
+}
+
+class _RestartAppState extends State<RestartApp> {
+  var _key = UniqueKey();
+
+  void _restart() async {
+    // await GetIt.I.reset(); // reset all the app dependencies
+    // await init(); // init the app dependencies.
+
+    setState(() {
+      _key = UniqueKey();
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      key: _key,
+      child: widget.child,
+    );
+  }
 }
 
 class KezzleApp extends ConsumerWidget {

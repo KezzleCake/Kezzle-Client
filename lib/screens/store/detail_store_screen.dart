@@ -295,6 +295,37 @@ class _StoreCakesState extends ConsumerState<StoreCakes> {
   //     isLike = !isLike;
   //   });
   // }
+  bool isLoading = false;
+  final ScrollController controller = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+    controller.addListener(scrollListener);
+  }
+
+  void scrollListener() async {
+    // 현재 위치가 최대 길이보다 조금 덜 되는 위치까지 왔으면 새로운 데이터 추가요청
+    if (controller.offset > controller.position.maxScrollExtent - 300 &&
+        !isLoading &&
+        ref
+                .read(storeCakesViewModelProvider(widget.storeId).notifier)
+                .fetchMore ==
+            true) {
+      print('fetchMore');
+      setState(() {
+        isLoading = true;
+      });
+      await ref
+          .read(storeCakesViewModelProvider(widget.storeId).notifier)
+          .fetchNextPage();
+      setState(() {
+        isLoading = false;
+      });
+    } else {
+      return;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -303,7 +334,7 @@ class _StoreCakesState extends ConsumerState<StoreCakes> {
         return Column(children: [
           Flexible(
               child: GridView.builder(
-            itemCount: cakes.length,
+            itemCount: cakes.length + (isLoading ? 3 : 0),
             padding: const EdgeInsets.only(
               top: 16,
               left: 20,
@@ -316,8 +347,17 @@ class _StoreCakesState extends ConsumerState<StoreCakes> {
               mainAxisSpacing: 6,
               childAspectRatio: 1,
             ),
-            itemBuilder: (context, index) =>
-                BookmarkCakeWidget(cakeData: cakes[index]),
+            itemBuilder: (context, index) {
+              if (index == cakes.length && isLoading) {
+                return Container();
+              } else if (index == cakes.length + 1 && isLoading) {
+                return const Center(child: CircularProgressIndicator());
+              } else if (index == cakes.length + 2 && isLoading) {
+                return Container();
+              } else if (index != cakes.length) {
+                return BookmarkCakeWidget(cakeData: cakes[index]);
+              }
+            },
           )),
         ]);
       },

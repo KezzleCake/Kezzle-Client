@@ -63,5 +63,5 @@ class BookmarkedCakeViewModel extends AsyncNotifier<List<Cake>> {
 final bookmarkedCakeProvider =
     AsyncNotifierProvider<BookmarkedCakeViewModel, List<Cake>>(
   () => BookmarkedCakeViewModel(),
-  dependencies: [searchSettingViewModelProvider, authState],
+  dependencies: [searchSettingViewModelProvider],
 );

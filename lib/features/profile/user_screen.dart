@@ -4,14 +4,15 @@ import 'package:flutter_svg/svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kezzle/features/authentication/repos/authentication_repo.dart';
+import 'package:kezzle/features/bookmark/view_models/bookmarked_store_vm.dart';
 import 'package:kezzle/features/profile/change_profile_screen.dart';
 import 'package:kezzle/features/profile/view_models/profile_vm.dart';
+import 'package:kezzle/main.dart';
 import 'package:kezzle/router.dart';
 // import 'package:kezzle/features/profile/review_screen.dart';
 import 'package:kezzle/utils/colors.dart';
 
 // import 'package:kezzle/widgets/my_divider_widget.dart';
-final globalProviderContainer = ProviderContainer();
 
 class UserScreen extends ConsumerStatefulWidget {
   const UserScreen({super.key});
@@ -58,9 +59,10 @@ class UserScreenState extends ConsumerState<UserScreen> {
                 // 등록된 모든 프로바이더 삭제
                 // dbExistProvider 초기화 하기
                 //TODO: 이거 이제 굳이 안필요할거같은데?
-                ref.read(dbExistProvider.notifier).state = false;
+                // ref.read(dbExistProvider.notifier).state = false;
                 context.go("/");
-                globalProviderContainer.dispose();
+                // restart(context);
+                RestartApp.restart(context);
               });
         });
   }

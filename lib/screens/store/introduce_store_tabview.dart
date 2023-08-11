@@ -267,7 +267,8 @@ class _FullScreenImageState extends State<FullScreenImage> {
               return Hero(
                 tag: 'image$index',
                 child: PhotoView(
-                    imageProvider: AssetImage(widget.imageURLs[index]),
+                    // imageProvider: AssetImage(widget.imageURLs[index]),
+                    imageProvider: NetworkImage(widget.imageURLs[index]),
                     minScale: PhotoViewComputedScale.contained,
                     maxScale: PhotoViewComputedScale.covered * 2.0
                     // child: AspectRatio(

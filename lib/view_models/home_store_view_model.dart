@@ -10,7 +10,7 @@ import 'package:kezzle/view_models/search_setting_vm.dart';
 
 class HomeStoreViewModel extends AsyncNotifier<List<HomeStoreModel>> {
   StoreRepo? _storeRepo;
-  AuthRepo? _authRepo;
+  // AuthRepo? _authRepo;
   List<HomeStoreModel> _homeStoreList = [];
   bool fetchMore = false;
 
@@ -18,7 +18,7 @@ class HomeStoreViewModel extends AsyncNotifier<List<HomeStoreModel>> {
   FutureOr<List<HomeStoreModel>> build() async {
     // print('ddddddddddddddd');
     _storeRepo = ref.read(storeRepo);
-    _authRepo = ref.read(authRepo);
+    // _authRepo = ref.read(authRepo);
 
     // 처음 데이터는 1페이지로 가져오기
     // List<HomeStoreModel> stores = [];
@@ -60,7 +60,7 @@ class HomeStoreViewModel extends AsyncNotifier<List<HomeStoreModel>> {
     if (result == null) {
       return [];
     } else {
-      print(result['stores']);
+      // print(result['stores']);
       // final List<HomeStoreModel> fetchedStores = result['stores']
       //     .map((e) => HomeStoreModel.fromJson(e))
       //     .toList() as List<HomeStoreModel>;
@@ -74,7 +74,7 @@ class HomeStoreViewModel extends AsyncNotifier<List<HomeStoreModel>> {
       // ).toList();
       final List<HomeStoreModel> fetchedStores = [];
       result['stores'].forEach((e) {
-        print(e);
+        // print(e);
         fetchedStores.add(HomeStoreModel.fromJson(e));
       });
       fetchMore = result['hasMore'] as bool;

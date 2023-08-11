@@ -9,33 +9,24 @@ class CakesRepo {
   CakesRepo(this.ref);
 
   // 위도 경도에 맞는 모든 케이크 리스트 가져오기.
-  Future<List<dynamic>?> fetchCakes({
-    required String token,
-    required double lat,
-    required double lng,
-    int? page,
+  Future<Map<String, dynamic>?> fetchCakes({
+    required int count,
+    String? afterId,
   }) async {
-    if (page == null) {
-      // 첫번째 페이지 가져오기
-      // print(token);
-      // var options = BaseOptions(
-      //     baseUrl: dotenv.env['SERVER_ENDPOINT']!,
-      //     connectTimeout: const Duration(seconds: 20),
-      //     receiveTimeout: const Duration(seconds: 20),
-      //     headers: {
-      //       'Authorization': 'Bearer $token',
-      //     });
-      // Dio dio = Dio(options);
-      Dio dio = ref.watch(dioProvider);
+    Dio dio = ref.watch(dioProvider);
+    if (afterId == null) {
       final queryParams = {
-        'latitude': lat,
-        'longitude': lng,
-        'page': 1,
+        // 'latitude': lat,
+        // 'longitude': lng,
+        // 'after': ,
+        'count': 18,
       };
       try {
         final response = await dio.get('cakes', queryParameters: queryParams);
         if (response.statusCode == 200) {
-          return response.data['docs'];
+          // print(response);
+          return response.data;
+          // return response.data['docs'];
         }
       } catch (e) {
         print(e);
@@ -44,10 +35,28 @@ class CakesRepo {
       } finally {
         // dio.close();
       }
-      return [{}];
+      // return [{}];
+      return {};
     } else {
-      // Page에 맞는거 가져오기
-      return [{}];
+      final queryParams = {
+        // 'latitude': lat,
+        // 'longitude': lng,
+        'after': afterId,
+        'count': 18,
+      };
+      try {
+        final response = await dio.get('cakes', queryParameters: queryParams);
+        if (response.statusCode == 200) {
+          // print(response);
+          return response.data;
+          // return response.data['docs'];
+        }
+      } catch (e) {
+        print(e);
+        print('홈화면 케이크 리스트 가져오기 실패');
+        return null;
+      } finally {}
+      return {};
     }
   }
 
@@ -157,33 +166,53 @@ class CakesRepo {
     }
   }
 
-  Future<List<dynamic>?> fetchCakesByStoreId(
-      {required String storeId /*, required String token*/}) async {
+  Future<Map<String, dynamic>?> fetchCakesByStoreId({
+    required String storeId,
+    required int count,
+    String? afterId,
+  }) async {
     // 스토어 아이디 받아서 해당 스토어의 케이크 리스트 가져오기
-    // var options = BaseOptions(
-    //   baseUrl: dotenv.env['SERVER_ENDPOINT']!,
-    //   connectTimeout: const Duration(seconds: 20),
-    //   receiveTimeout: const Duration(seconds: 20),
-    //   headers: {
-    //     'Authorization': 'Bearer $token',
-    //   },
-    // );
-    // Dio dio = Dio(options);
     Dio dio = ref.watch(dioProvider);
-    try {
-      final response = await dio.get('stores/$storeId/cakes');
-      if (response.statusCode == 200) {
-        print('매장의 케이크 정보 불러오기 성공');
-        return response.data;
+    if (afterId == null) {
+      final queryParams = {
+        'count': 18,
+      };
+      try {
+        final response = await dio.get('stores/$storeId/cakes',
+            queryParameters: queryParams);
+        if (response.statusCode == 200) {
+          print('매장의 케이크 정보 불러오기 성공');
+          return response.data;
+        }
+      } catch (e) {
+        print(e);
+        print('매장의 케이크 정보 불러오기 실패');
+        return null;
+      } finally {
+        // dio.close();
       }
-    } catch (e) {
-      print(e);
-      print('매장의 케이크 정보 불러오기 실패');
       return null;
-    } finally {
-      // dio.close();
+    } else {
+      final queryParams = {
+        'count': 18,
+        'afterId': afterId,
+      };
+      try {
+        final response = await dio.get('stores/$storeId/cakes',
+            queryParameters: queryParams);
+        if (response.statusCode == 200) {
+          print('매장의 케이크 정보 불러오기 성공');
+          return response.data;
+        }
+      } catch (e) {
+        print(e);
+        print('매장의 케이크 정보 불러오기 실패');
+        return null;
+      } finally {
+        // dio.close();
+      }
+      return null;
     }
-    return null;
   }
 
   // ID로 케이크 정보 가져오기
@@ -232,9 +261,10 @@ class CakesRepo {
     Dio dio = ref.watch(dioProvider);
     try {
       final response = await dio.get('stores/$storeId/cakes');
+      // print(response.data);
       if (response.statusCode == 200) {
         print('스토어 아이디로 스토어의 다른 케이크들 불러오기 성공');
-        return response.data;
+        return response.data['cakes'];
       }
     } catch (e) {
       print(e);

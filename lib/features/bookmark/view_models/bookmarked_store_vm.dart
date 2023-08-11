@@ -22,10 +22,10 @@ class BookmarkedStoreViewModel extends AsyncNotifier<List<HomeStoreModel>> {
     _authRepo = ref.read(authRepo);
 
     //사용자가 찜한 스토어목록 가져오기
-    // final result = await fetchBookmarkedStores(page: null);
-    // _bookmarkedStoreList = result;
-    // return result;
-    return [];
+    final result = await fetchBookmarkedStores(page: null);
+    _bookmarkedStoreList = result;
+    return result;
+    // return [];
   }
 
   // 좋아요한 스토어 목록 가져오는 메서드
@@ -45,8 +45,13 @@ class BookmarkedStoreViewModel extends AsyncNotifier<List<HomeStoreModel>> {
     if (result == null) {
       return [];
     } else {
-      final List<HomeStoreModel> fetcedBookmarkedStores =
-          result.map((e) => HomeStoreModel.fromJson(e)).toList();
+      final List<HomeStoreModel> fetcedBookmarkedStores = [];
+      for (int i = 0; i < result.length; i++) {
+        fetcedBookmarkedStores.add(HomeStoreModel.fromJson(result[i]));
+      }
+
+      // final List<HomeStoreModel> fetcedBookmarkedStores =
+      //     result.map((e) => HomeStoreModel.fromJson(e)).toList();
       return fetcedBookmarkedStores;
     }
   }
@@ -89,5 +94,5 @@ final bookmarkedStoreProvider =
   () {
     return BookmarkedStoreViewModel();
   },
-  dependencies: [searchSettingViewModelProvider, authState],
+  dependencies: [searchSettingViewModelProvider, authRepo],
 );

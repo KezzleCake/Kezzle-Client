@@ -5,7 +5,7 @@ import 'package:kezzle/models/home_store_model.dart';
 import 'package:kezzle/repo/cakes_repo.dart';
 
 class StoreCakesViewModel extends FamilyAsyncNotifier<List<Cake>, String> {
-  late final _storeId;
+  late final String _storeId;
   late final CakesRepo _cakeRepo;
   List<Cake> _storeCakes = [];
   bool fetchMore = false;
@@ -16,35 +16,43 @@ class StoreCakesViewModel extends FamilyAsyncNotifier<List<Cake>, String> {
     _cakeRepo = ref.read(cakesRepo);
 
     // 처음 데이터는 무조건 가져와야함
-    final cakes = await _fetchStoreCakes(page: null);
+    final cakes = await _fetchStoreCakes(afterId: null);
     _storeCakes = cakes;
 
     // 처음 빌드 때 가져오기
-    fetchMore = false;
+    // fetchMore = false;
     return _storeCakes;
   }
 
-  Future<List<Cake>> _fetchStoreCakes({int? page}) async {
+  Future<List<Cake>> _fetchStoreCakes({String? afterId}) async {
     // 스토어 아이디로 케이크 리스트 가져오기
-    final List<dynamic>? result =
-        await _cakeRepo.fetchCakesByStoreId(storeId: _storeId);
+    final Map<String, dynamic>? result = await _cakeRepo.fetchCakesByStoreId(
+      storeId: _storeId,
+      count: 18,
+    );
 
     if (result == null) {
       return [];
     } else {
-      final List<Cake> cakes = result.map((e) => Cake.fromJson(e)).toList();
-      return cakes;
+      final List<Cake> fetchedCakes = [];
+      result['cakes'].forEach((cake) {
+        fetchedCakes.add(Cake.fromJson(cake));
+      });
+      fetchMore = result['hasMore'] as bool;
+      return fetchedCakes;
     }
   }
 
   Future<void> fetchNextPage() async {
     if (fetchMore == true) {
       fetchMore = false;
-      await Future.delayed(Duration(seconds: 1));
-      _storeCakes = [];
-      state = AsyncValue.data([..._storeCakes, ..._storeCakes]);
-      // 가져온걸로 t/f 맞춰서 넣기
-      fetchMore = false;
+      // await Future.delayed(Duration(seconds: 1));
+      List<Cake> newCakesList = [];
+      final result = await _fetchStoreCakes(afterId: _storeCakes.last.id);
+      newCakesList = result;
+
+      _storeCakes = [..._storeCakes, ...newCakesList];
+      state = AsyncValue.data(_storeCakes);
     } else {
       return;
     }

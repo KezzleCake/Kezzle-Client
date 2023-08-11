@@ -373,6 +373,33 @@ class CakeTabBarViewState extends ConsumerState<CakeTabBarView>
   @override
   bool get wantKeepAlive => true;
 
+  bool isLoading = false;
+  final ScrollController controller = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+    controller.addListener(scrollListener);
+  }
+
+  void scrollListener() async {
+    // 현재 위치가 최대 길이보다 조금 덜 되는 위치까지 왔으면 새로운 데이터 추가요청
+    if (controller.offset > controller.position.maxScrollExtent - 300 &&
+        !isLoading &&
+        ref.read(homeCakeProvider.notifier).fetchMore == true) {
+      print('fetchMore');
+      setState(() {
+        isLoading = true;
+      });
+      await ref.read(homeCakeProvider.notifier).fetchNextPage();
+      setState(() {
+        isLoading = false;
+      });
+    } else {
+      return;
+    }
+  }
+
   Future<void> onRefresh() async {
     // 위도 경도, 리프레시 일어나면 실행되게.
     // await Future.delayed(const Duration(seconds: 1));
@@ -393,21 +420,32 @@ class CakeTabBarViewState extends ConsumerState<CakeTabBarView>
     return ref.watch(homeCakeProvider).when(
         loading: () => Center(child: CircularProgressIndicator(color: coral01)),
         error: (error, stackTrace) =>
-            Center(child: Text('스토어 목록 불러오기 실패, $error')),
+            Center(child: Text('케이크 목록 불러오기 실패, $error')),
         data: (cakes) {
           return RefreshIndicator(
             onRefresh: onRefresh,
             child: GridView.builder(
+                controller: controller,
                 padding: const EdgeInsets.only(top: 30, left: 20, right: 20),
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 3,
                     crossAxisSpacing: 6,
                     mainAxisSpacing: 6,
                     childAspectRatio: 1),
-                itemCount: cakes.length,
+                itemCount: cakes.length + (isLoading ? 3 : 0),
                 itemBuilder: (context, index) {
-                  final cakeData = cakes[index];
-                  return HomeCakeWidget(cakeData: cakeData);
+                  if (index == cakes.length && isLoading) {
+                    return Container();
+                  } else if (index == cakes.length + 1 && isLoading) {
+                    return Center(
+                        child: CircularProgressIndicator(color: coral01));
+                  } else if (index == cakes.length + 2 && isLoading) {
+                    return Container();
+                  } else if (index != cakes.length) {
+                    final cakeData = cakes[index];
+                    return HomeCakeWidget(cakeData: cakeData);
+                  }
+                  // } else {}
                 }),
           );
         });
@@ -429,7 +467,7 @@ class StoreTabBarViewState extends ConsumerState<StoreTabBarView>
   bool get wantKeepAlive => true;
 
   // int _storeCount = 0;
-  bool isMore = false;
+  // bool isMore = false;
   bool isLoading = false;
 
   // 스크롤 컨트롤러로 데이터 불러올 때 사용
@@ -521,13 +559,12 @@ class StoreTabBarViewState extends ConsumerState<StoreTabBarView>
                 return Center(child: CircularProgressIndicator(color: coral01));
               } else if (index != stores.length) {
                 final storeData = stores[index];
-
                 return Column(children: [
                   StoreWidget1(storeData: storeData),
-                  if (isMore && index == stores.length - 1) ...[
-                    const SizedBox(height: 12),
-                    Center(child: CircularProgressIndicator(color: coral01)),
-                  ]
+                  // if (isLoading && index == stores.length /*- 1*/) ...[
+                  const SizedBox(height: 12),
+                  // Center(child: CircularProgressIndicator(color: coral01)),
+                  // ]
                 ]);
               }
             }),

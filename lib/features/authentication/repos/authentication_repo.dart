@@ -5,11 +5,17 @@ import 'package:firebase_auth/firebase_auth.dart';
 // import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+// import 'package:kezzle/features/bookmark/view_models/bookmarked_cake_vm.dart';
+import 'package:kezzle/utils/dio/dio.dart';
+// import 'package:kezzle/view_models/id_token_provider.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 class AuthRepo {
   // FirebaseAuth 인스턴스 생성
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
+  final ProviderRef ref;
+
+  AuthRepo(this.ref);
 
   // 디비에 유저가 있는지 없는지 확인하는 변수
   // bool dbUserExists = false;
@@ -118,16 +124,18 @@ class AuthRepo {
   // 로그인한 유저(이미 있는 유저) 정보 가져오기 + db에 있는 유저인지 확인하기
   Future<Map<String, dynamic>?> fetchProfile(User user) async {
     // 서버에 요청해서 프로필 정보 가져오기
-    // https://a3vz1ytse9.execute-api.ap-northeast-2.amazonaws.com/dev/
-    var options = BaseOptions(
-        baseUrl:
-            'https://a3vz1ytse9.execute-api.ap-northeast-2.amazonaws.com/dev/',
-        connectTimeout: const Duration(seconds: 5),
-        receiveTimeout: const Duration(seconds: 5),
-        headers: {
-          'Authorization': 'Bearer ${await user.getIdToken()}',
-        });
-    Dio dio = Dio(options);
+    // var options = BaseOptions(
+    //     baseUrl:
+    //         'https://a3vz1ytse9.execute-api.ap-northeast-2.amazonaws.com/dev/',
+    //     connectTimeout: const Duration(seconds: 5),
+    //     receiveTimeout: const Duration(seconds: 5),
+    //     headers: {
+    //       'Authorization': 'Bearer ${await user.getIdToken()}',
+    //     });
+    // IdTokenResult tokenResult = await user.getIdTokenResult();
+    // ref.watch(tokenProvider.notifier).state = AsyncValue.data(tokenResult);
+
+    Dio dio = ref.watch(dioProvider);
     try {
       final response = await dio.get('users/${user.uid}');
       if (response.statusCode == 200) {
@@ -142,15 +150,17 @@ class AuthRepo {
       print('로그인 실패');
       return null;
     } finally {
-      dio.close();
+      // dio.close();
     }
   }
 }
 
-final authRepo = Provider((ref) => AuthRepo());
+final authRepo = Provider((ref) => AuthRepo(ref));
 
 // 유저의 인증상태를 감지하는 스트림을 expose
-final authState = StreamProvider((ref) {
-  final repo = ref.read(authRepo);
-  return repo.authStateChanges();
-});
+final authState = StreamProvider(
+  (ref) {
+    final repo = ref.watch(authRepo);
+    return repo.authStateChanges();
+  },
+);
