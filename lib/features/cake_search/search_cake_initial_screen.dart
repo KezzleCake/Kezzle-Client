@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+// import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:kezzle/features/cake_search/search_cake_screen.dart';
 import 'package:kezzle/features/cake_search/widgets/keyword_widget.dart';
 import 'package:kezzle/utils/colors.dart';

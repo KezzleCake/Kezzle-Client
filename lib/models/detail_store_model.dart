@@ -8,22 +8,22 @@ class DetailStoreModel {
   @JsonKey(name: '_id')
   String id;
   String name;
-  ImageModel logo;
+  ImageModel? logo;
   String address;
   @JsonKey(name: 'insta_url')
-  String instaURL;
+  String? instaURL;
   @JsonKey(name: 'kakako_url')
-  String kakaoURL;
+  String? kakaoURL;
   @JsonKey(name: 'storeFeature')
-  String storeFeature;
+  String? storeFeature;
   @JsonKey(name: 'store_description')
-  String storeDescription;
+  String? storeDescription;
   @JsonKey(name: 'phone_number')
-  String phoneNumber;
-  // @JsonKey(name: 'detail_images')
-  // List<ImageModel> detailImages;
+  String? phoneNumber;
+  @JsonKey(name: 'detail_images')
+  List<ImageModel>? detailImages;
   @JsonKey(name: 'operating_time')
-  List<String> operatingTime;
+  List<String>? operatingTime;
   List<String> taste;
   @JsonKey(name: 'is_liked')
   bool isLiked;
@@ -32,29 +32,31 @@ class DetailStoreModel {
   double latitude;
   double longitude;
   @JsonKey(name: 'kakao_map_url')
-  String kakaoMapURL;
+  String? kakaoMapURL;
+  double distance;
 
   // List<Cake> cakes;
 
-  DetailStoreModel(
-    this.id,
-    this.name,
+  DetailStoreModel({
+    required this.id,
+    required this.name,
     this.logo,
-    this.address,
+    required this.address,
     this.instaURL,
     this.kakaoURL,
     this.storeFeature,
     this.storeDescription,
     this.phoneNumber,
-    // this.detailImages,
+    this.detailImages,
     this.operatingTime,
-    this.taste,
-    this.isLiked,
-    this.likeCnt,
-    this.latitude,
-    this.longitude,
+    required this.taste,
+    required this.isLiked,
+    required this.likeCnt,
+    required this.latitude,
+    required this.longitude,
     this.kakaoMapURL,
-  );
+    required this.distance,
+  });
 
   factory DetailStoreModel.fromJson(Map<String, dynamic> json) =>
       _$DetailStoreModelFromJson(json);

@@ -54,7 +54,7 @@ class StoreLocation extends StatelessWidget {
           const SizedBox(height: 16),
           GestureDetector(
             onTap: () async {
-              await launchUrlString(store.kakaoMapURL);
+              await launchUrlString(store.kakaoMapURL!);
             },
             child: Container(
                 padding:

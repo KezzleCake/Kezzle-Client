@@ -17,17 +17,27 @@ class IdTokenProvider extends AsyncNotifier<IdTokenResult> {
   }
 
   // id토큰값을 읽어오는 함수, 만료된 토큰인지 확인하고 만료된 경우에는 새로운 토큰을 발급받아서 반환함.
-  Future<String> getIdToken() async {
-    tokenData ??= await _authRepo.user!.getIdTokenResult(true);
-    // 저장된 토큰이 만료되었는지 확인
-    if (tokenData!.expirationTime!.isBefore(DateTime.now())) {
-      // 만료되었으면 새로운 토큰 발급받기
+  Future<String> getIdToken({bool? newtoken}) async {
+    if (tokenData == null || newtoken == true) {
+      // 값 캐싱
       tokenData = await _authRepo.user!.getIdTokenResult(true);
+      // state 변경
+      state = AsyncValue.data(tokenData!);
       return tokenData!.token!;
     } else {
-      // 만료되지 않았으면 그냥 토큰 반환
       return tokenData!.token!;
     }
+
+    // tokenData ??= await _authRepo.user!.getIdTokenResult(true);
+    // 저장된 토큰이 만료되었는지 확인
+    // if (tokenData!.expirationTime!.isBefore(DateTime.now())) {
+    //   // 만료되었으면 새로운 토큰 발급받기
+    //   tokenData = await _authRepo.user!.getIdTokenResult(true);
+    //   return tokenData!.token!;
+    // } else {
+    //   // 만료되지 않았으면 그냥 토큰 반환
+    //   return tokenData!.token!;
+    // }
   }
 }
 

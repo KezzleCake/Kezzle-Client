@@ -8,6 +8,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kezzle/features/authentication/repos/authentication_repo.dart';
 import 'package:kezzle/features/authentication/make_user_screen.dart';
+import 'package:kezzle/features/bookmark/view_models/bookmarked_cake_vm.dart';
 import 'package:kezzle/features/profile/repos/user_repo.dart';
 // import 'package:kezzle/screens/home_screen.dart';
 import 'package:kezzle/utils/colors.dart';
@@ -47,6 +48,9 @@ class LoginScreenState extends ConsumerState<LoginScreen> {
       } else {
         // 이미 있는 유저니까 true로 바꿔주기
         // ref.read(authRepo).dbUserExists = true;
+
+        // Invalidate 도 시도해보자.
+        // ref.invalidate(bookmarkedCakeProvider);
         context.go('/home');
       }
     });

@@ -2,21 +2,27 @@ import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:kezzle/features/profile/models/user_model.dart';
+import 'package:kezzle/utils/dio/dio.dart';
+// import 'package:kezzle/features/profile/models/user_model.dart';
 
 class UserRepo {
+  final ProviderRef ref;
+  UserRepo(this.ref);
+
   // 유저 만들기(닉네임 정보를 토대로 데이터 저장)
   Future<Map<String, dynamic>?> createProfile(
       String nickname, User user) async {
     // 헤더에 토큰 넣어서 서버로 보내기??
     var options = BaseOptions(
-        baseUrl: dotenv.env['SERVER_ENDPOINT']!,
-        connectTimeout: const Duration(seconds: 10),
-        receiveTimeout: const Duration(seconds: 10),
-        headers: {
-          'Authorization': 'Bearer ${await user.getIdToken()}',
-        });
+      baseUrl: dotenv.env['SERVER_ENDPOINT']!,
+      connectTimeout: const Duration(seconds: 10),
+      receiveTimeout: const Duration(seconds: 10),
+      // headers: {
+      //   'Authorization': 'Bearer ${await user.getIdToken(true)}',
+      // },
+    );
     Dio dio = Dio(options);
+    // Dio dio = ref.watch(dioProvider);
     // 정의할 바디 데이터 (Map 형태로 정의)
     final Map<String, dynamic> postData = {
       'nickname': nickname,
@@ -36,10 +42,10 @@ class UserRepo {
       // }
     } catch (e) {
       print(e);
-      print('회원가입 실패');
+      // print('회원가입 실패');
       return null;
     } finally {
-      dio.close();
+      // dio.close();
     }
   }
 
@@ -60,12 +66,12 @@ class UserRepo {
         // print(response.data);
         return response.data;
       } else {
-        print('로그인 실패');
+        // print('로그인 실패');
         return null;
       }
     } catch (e) {
       print(e);
-      print('로그인 실패');
+      // print('로그인 실패');
       return null;
     } finally {
       dio.close();
@@ -142,5 +148,5 @@ class UserRepo {
 }
 
 final userRepo = Provider(
-  (ref) => UserRepo(),
+  (ref) => UserRepo(ref),
 );

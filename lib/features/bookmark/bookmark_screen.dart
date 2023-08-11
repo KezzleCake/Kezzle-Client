@@ -155,12 +155,12 @@ class StoreBookmarkScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     // 위도 경도 변경되면 실행되는 리스너
-    ref.listen(searchSettingViewModelProvider, (previous, next) {
-      if (previous!.latitude != next.latitude ||
-          previous.longitude != next.longitude) {
-        ref.read(bookmarkedStoreProvider.notifier).refresh();
-      }
-    });
+    // ref.listen(searchSettingViewModelProvider, (previous, next) {
+    //   if (previous!.latitude != next.latitude ||
+    //       previous.longitude != next.longitude) {
+    //     ref.read(bookmarkedStoreProvider.notifier).refresh();
+    //   }
+    // });
 
     return ref.watch(bookmarkedStoreProvider).when(
         loading: () => Center(

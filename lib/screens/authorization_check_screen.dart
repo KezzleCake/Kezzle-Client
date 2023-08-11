@@ -7,7 +7,7 @@ import 'package:kezzle/features/authentication/repos/authentication_repo.dart';
 import 'package:kezzle/features/profile/repos/user_repo.dart';
 import 'package:kezzle/responsive/mobile_screen_layout.dart';
 // import 'package:kezzle/screens/home_screen.dart';
-import 'package:kezzle/utils/colors.dart';
+// import 'package:kezzle/utils/colors.dart';
 
 class AuthorizationCheckScreen extends ConsumerStatefulWidget {
   static const routeURL = '/authorization_check_screen';

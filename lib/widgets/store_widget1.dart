@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
-import 'package:kezzle/features/bookmark/view_models/bookmarked_store_vm.dart';
+// import 'package:kezzle/features/bookmark/view_models/bookmarked_store_vm.dart';
 import 'package:kezzle/models/home_store_model.dart';
-import 'package:kezzle/screens/store/detail_store_screen.dart';
+// import 'package:kezzle/screens/store/detail_store_screen.dart';
 import 'package:kezzle/utils/colors.dart';
 import 'package:kezzle/view_models/store_view_model.dart';
 // Image 패키지 별칭 짓기
@@ -34,9 +34,14 @@ class StoreWidget1State extends ConsumerState<StoreWidget1> {
     });
   }
 
-  void onTapLikes() async {
+  void onTapLikes(bool initialLike, WidgetRef ref) async {
+    if (ref.read(storeProvider(widget.storeData.id)) == null) {
+      ref.read(storeProvider(widget.storeData.id).notifier).init(initialLike);
+    }
     ref.read(storeProvider(widget.storeData.id).notifier).toggleLike(
         /*widget.storeData*/);
+    // ref.read(storeProvider(widget.storeData.id).notifier).toggleLike(
+    // /*widget.storeData*/);
   }
 
   @override
@@ -60,7 +65,10 @@ class StoreWidget1State extends ConsumerState<StoreWidget1> {
               padding: const EdgeInsets.only(top: 16, left: 16, right: 16),
               child: Row(children: [
                 CircleAvatar(
-                    foregroundImage: NetworkImage(widget.storeData.logo.s3Url),
+                    // foregroundImage: NetworkImage(widget.storeData.logo!.s3Url),
+                    foregroundImage: NetworkImage(widget.storeData.logo == null
+                        ? ''
+                        : widget.storeData.logo!.s3Url),
                     onForegroundImageError: (exception, stackTrace) {
                       return;
                     },
@@ -81,7 +89,8 @@ class StoreWidget1State extends ConsumerState<StoreWidget1> {
                                     fontWeight: FontWeight.w600,
                                     color: gray08)),
                             GestureDetector(
-                              onTap: onTapLikes,
+                              onTap: () =>
+                                  onTapLikes(widget.storeData.isLiked, ref),
                               // child: SvgPicture.asset(
                               //     widget.storeData.like
                               //         ? 'assets/icons/like=on_in.svg'
@@ -90,21 +99,26 @@ class StoreWidget1State extends ConsumerState<StoreWidget1> {
                               child: Padding(
                                 padding: const EdgeInsets.all(8.0),
                                 child: SvgPicture.asset(
-                                  ref
-                                      .watch(storeProvider(widget.storeData.id))
-                                      .when(
-                                        data: (data) {
-                                          if (data == true) {
-                                            return 'assets/icons/like=on_in.svg';
-                                          } else {
-                                            return 'assets/icons/like=off_in.svg';
-                                          }
-                                        },
-                                        loading: () =>
-                                            'assets/icons/like=off_in.svg',
-                                        error: (err, stack) =>
-                                            'assets/icons/like=off_in.svg',
-                                      ),
+                                  ref.watch(storeProvider(
+                                              widget.storeData.id)) ??
+                                          widget.storeData.isLiked
+                                      ? 'assets/icons/like=on_in.svg'
+                                      : 'assets/icons/like=off_in.svg',
+                                  // ref
+                                  //     .watch(storeProvider(widget.storeData.id))
+                                  //     .when(
+                                  //       data: (data) {
+                                  //         if (data == true) {
+                                  //           return 'assets/icons/like=on_in.svg';
+                                  //         } else {
+                                  //           return 'assets/icons/like=off_in.svg';
+                                  //         }
+                                  //       },
+                                  //       loading: () =>
+                                  //           'assets/icons/like=off_in.svg',
+                                  //       error: (err, stack) =>
+                                  //           'assets/icons/like=off_in.svg',
+                                  //     ),
                                 ),
                               ),
                             ),
@@ -120,14 +134,14 @@ class StoreWidget1State extends ConsumerState<StoreWidget1> {
               ]),
             ),
             const SizedBox(height: 10),
-            widget.storeData.cakes.isEmpty
+            widget.storeData.cakes!.isEmpty
                 ? const SizedBox()
                 : SizedBox(
                     height: 90 + 16,
                     child: ListView.separated(
                       padding: const EdgeInsets.only(
                           left: 16, right: 16, bottom: 16),
-                      itemCount: widget.storeData.cakes.length,
+                      itemCount: widget.storeData.cakes!.length,
                       scrollDirection: Axis.horizontal,
                       separatorBuilder: (context, index) =>
                           const SizedBox(width: 6),
@@ -138,7 +152,7 @@ class StoreWidget1State extends ConsumerState<StoreWidget1> {
                             borderRadius: BorderRadius.circular(16)),
                         clipBehavior: Clip.hardEdge,
                         child: Image.network(
-                            widget.storeData.cakes[index].image.s3Url,
+                            widget.storeData.cakes![index].image.s3Url,
                             fit: BoxFit.cover),
                         // NetworkImage(widget.storeData.cakes[index].image.s3Url)
                         //     as Widget,

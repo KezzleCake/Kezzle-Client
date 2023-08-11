@@ -7,10 +7,11 @@ import 'package:kezzle/features/authentication/repos/authentication_repo.dart';
 import 'package:kezzle/models/home_store_model.dart';
 import 'package:kezzle/repo/cakes_repo.dart';
 import 'package:kezzle/view_models/id_token_provider.dart';
+import 'package:kezzle/view_models/search_setting_vm.dart';
 
 class BookmarkedCakeViewModel extends AsyncNotifier<List<Cake>> {
-  late final CakesRepo _cakeRepo;
-  late final AuthRepo _authRepository;
+  CakesRepo? _cakeRepo;
+  AuthRepo? _authRepository;
 
   // 더미 데이터!!
   late List<Cake> _bookmarkedCakeList;
@@ -28,10 +29,10 @@ class BookmarkedCakeViewModel extends AsyncNotifier<List<Cake>> {
 
   // 좋아요한 케이크 목록 가져오는 메서드
   Future<List<Cake>> _fetchBookmarkedCakes({int? page}) async {
-    final User user = _authRepository.user!;
+    final User user = _authRepository!.user!;
     final String token = await ref.read(tokenProvider.notifier).getIdToken();
 
-    final List<dynamic>? result = await _cakeRepo.fetchBookmarkedCakes(
+    final List<dynamic>? result = await _cakeRepo!.fetchBookmarkedCakes(
       token: token,
       user: user,
     );
@@ -62,4 +63,5 @@ class BookmarkedCakeViewModel extends AsyncNotifier<List<Cake>> {
 final bookmarkedCakeProvider =
     AsyncNotifierProvider<BookmarkedCakeViewModel, List<Cake>>(
   () => BookmarkedCakeViewModel(),
+  dependencies: [searchSettingViewModelProvider, authState],
 );

@@ -1,44 +1,3 @@
-// class HomeStoreModel {
-//   String _id;
-//   String name;
-//   String thumbnail;
-//   String address;
-//   double distance;
-//   List<String> iamges;
-//   bool isLiked;
-
-//   HomeStoreModel({
-//     required this.id,
-//     required this.name,
-//     required this.thumbnail,
-//     required this.address,
-//     required this.distance,
-//     required this.iamges,
-//     required this.like,
-//   });
-
-//   HomeStoreModel.fromJson(Map<String, dynamic> json)
-//       : id = json['_id'],
-//         name = json['name'],
-//         address = json['address'],
-//         thumbnail = json['thumbnail'],
-//         distance = json['distance'],
-//         iamges = json['iamges'],
-//         like = json['isLiked'];
-
-//   Map<String, dynamic> toJson() {
-//     return {
-//       'id': id,
-//       'name': name,
-//       'thumbnail': thumbnail,
-//       'address': address,
-//       'distance': distance,
-//       'iamges': iamges,
-//       'like': like,
-//     };
-//   }
-// }
-
 import 'package:json_annotation/json_annotation.dart';
 part 'home_store_model.g.dart';
 
@@ -51,7 +10,7 @@ class ImageModel {
     this.name,
     this.s3Url,
   );
-  factory ImageModel.fromJson(Map<String, dynamic>? json) =>
+  factory ImageModel.fromJson(Map<String, dynamic> json) =>
       _$ImageModelFromJson(json);
 
   Map<String, dynamic> toJson() => _$ImageModelToJson(this);
@@ -83,21 +42,21 @@ class HomeStoreModel {
   @JsonKey(name: '_id')
   String id;
   String name;
-  ImageModel logo;
+  ImageModel? logo;
   String address;
   bool isLiked;
   double distance;
-  List<Cake> cakes;
+  List<Cake>? cakes;
 
-  HomeStoreModel(
-    this.id,
-    this.name,
+  HomeStoreModel({
+    required this.id,
+    required this.name,
     this.logo,
-    this.address,
-    this.isLiked,
-    this.distance,
+    required this.address,
+    required this.isLiked,
+    required this.distance,
     this.cakes,
-  );
+  });
 
   factory HomeStoreModel.fromJson(Map<String, dynamic> json) =>
       _$HomeStoreModelFromJson(json);

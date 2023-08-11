@@ -10,8 +10,8 @@ import 'package:kezzle/view_models/search_setting_vm.dart';
 
 // 스토어 모델명 그냥 바꿀까..?
 class BookmarkedStoreViewModel extends AsyncNotifier<List<HomeStoreModel>> {
-  late final StoreRepo _storeRepo;
-  late final AuthRepo _authRepo;
+  StoreRepo? _storeRepo;
+  AuthRepo? _authRepo;
 
   // 더미 데이터!!
   late List<HomeStoreModel> _bookmarkedStoreList;
@@ -21,11 +21,11 @@ class BookmarkedStoreViewModel extends AsyncNotifier<List<HomeStoreModel>> {
     _storeRepo = ref.read(storeRepo);
     _authRepo = ref.read(authRepo);
 
-    // 사용자가 찜한 스토어목록 가져오기
-    final result = await fetchBookmarkedStores(page: null);
-    _bookmarkedStoreList = result;
-    return result;
-    // return [];
+    //사용자가 찜한 스토어목록 가져오기
+    // final result = await fetchBookmarkedStores(page: null);
+    // _bookmarkedStoreList = result;
+    // return result;
+    return [];
   }
 
   // 좋아요한 스토어 목록 가져오는 메서드
@@ -33,9 +33,9 @@ class BookmarkedStoreViewModel extends AsyncNotifier<List<HomeStoreModel>> {
     // 위도, 경도, 유저 가져와서 api 요청
     final lat = ref.watch(searchSettingViewModelProvider).latitude;
     final lon = ref.watch(searchSettingViewModelProvider).longitude;
-    User? user = _authRepo.user;
+    User? user = _authRepo!.user;
 
-    final List<dynamic>? result = await _storeRepo.fetchBookmarkedStores(
+    final List<dynamic>? result = await _storeRepo!.fetchBookmarkedStores(
       user: user!,
       lat: lat,
       lng: lon,
@@ -89,4 +89,5 @@ final bookmarkedStoreProvider =
   () {
     return BookmarkedStoreViewModel();
   },
+  dependencies: [searchSettingViewModelProvider, authState],
 );

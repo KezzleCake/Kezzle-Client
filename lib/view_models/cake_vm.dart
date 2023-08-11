@@ -1,22 +1,23 @@
-import 'package:firebase_auth/firebase_auth.dart';
+// import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kezzle/features/authentication/repos/authentication_repo.dart';
+// import 'package:kezzle/features/authentication/repos/authentication_repo.dart';
 import 'package:kezzle/repo/cakes_repo.dart';
 import 'package:kezzle/view_models/id_token_provider.dart';
 
 import '../features/bookmark/view_models/bookmarked_cake_vm.dart';
 
-class CakeVM extends AutoDisposeFamilyNotifier<bool?, String> {
+class CakeVM extends FamilyNotifier<bool?, String> {
   late String _cakeId;
   bool? like;
   late CakesRepo _cakesRepo;
-  late AuthRepo _authRepo;
+  // late AuthRepo _authRepo;
 
   @override
   bool? build(String arg) {
     _cakeId = arg;
     _cakesRepo = ref.read(cakesRepo);
-    _authRepo = ref.read(authRepo);
+    // _authRepo = ref.read(authRepo);
     return null;
   }
 
@@ -54,7 +55,7 @@ class CakeVM extends AutoDisposeFamilyNotifier<bool?, String> {
 
   Future<void> dislikeCake() async {
     // 현재 로그인한 사용자 정보 읽기
-    final User user = _authRepo.user!;
+    // final User user = _authRepo.user!;
     String token = await ref.read(tokenProvider.notifier).getIdToken();
 
     // 케이크 좋아요 취소 시, 케이크 아이디와 유저 정보, 토큰을 넘겨준다.
@@ -70,7 +71,9 @@ class CakeVM extends AutoDisposeFamilyNotifier<bool?, String> {
   }
 }
 
-final cakeProvider =
-    NotifierProvider.family.autoDispose<CakeVM, bool?, String>(() {
-  return CakeVM();
-});
+final cakeProvider = NotifierProvider.family<CakeVM, bool?, String>(
+  () {
+    return CakeVM();
+  },
+  dependencies: [authState],
+);

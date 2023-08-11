@@ -15,13 +15,17 @@ class StoreWidget extends ConsumerWidget {
     required this.storeData,
   });
 
+  void onTapLikes(bool initialLike, WidgetRef ref) async {
+    if (ref.read(storeProvider(storeData.id)) == null) {
+      ref.read(storeProvider(storeData.id).notifier).init(initialLike);
+    }
+    ref.read(storeProvider(storeData.id).notifier).toggleLike();
+    // ref.read(storeProvider(storeData.id).notifier).toggleLike(
+    // /*widget.storeData*/);
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    void onTapLikes() async {
-      ref.read(storeProvider(storeData.id).notifier).toggleLike(
-          /*widget.storeData*/);
-    }
-
     return GestureDetector(
         onTap: () {
           print('스토어 상세보기 페이지로 이동');
@@ -36,10 +40,11 @@ class StoreWidget extends ConsumerWidget {
             ),
             child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
               CircleAvatar(
-                foregroundImage: NetworkImage(storeData.logo.s3Url),
+                foregroundImage: NetworkImage(
+                    storeData.logo == null ? '' : storeData.logo!.s3Url),
                 // backgroundImage: AssetImage('assets/heart_cake.png'),
                 radius: 63 / 2,
-                onForegroundImageError: (exception, stackTrace) => null,
+                onForegroundImageError: (exception, stackTrace) {},
               ),
               const SizedBox(width: 8),
               Expanded(
@@ -55,23 +60,27 @@ class StoreWidget extends ConsumerWidget {
                                   fontWeight: FontWeight.w600,
                                   color: gray08)),
                           GestureDetector(
-                            onTap: onTapLikes,
+                            onTap: () => onTapLikes(storeData.isLiked, ref),
                             child: Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: SvgPicture.asset(
-                                  ref.watch(storeProvider(storeData.id)).when(
-                                        data: (data) {
-                                          if (data == true) {
-                                            return 'assets/icons/like=on_in.svg';
-                                          } else {
-                                            return 'assets/icons/like=off_in.svg';
-                                          }
-                                        },
-                                        loading: () =>
-                                            'assets/icons/like=off_in.svg',
-                                        error: (err, stack) =>
-                                            'assets/icons/like=off_in.svg',
-                                      ),
+                                  ref.watch(storeProvider(storeData.id)) ??
+                                          storeData.isLiked
+                                      ? 'assets/icons/like=on_in.svg'
+                                      : 'assets/icons/like=off_in.svg',
+                                  // ref.watch(storeProvider(storeData.id)).when(
+                                  //       data: (data) {
+                                  //         if (data == true) {
+                                  //           return 'assets/icons/like=on_in.svg';
+                                  //         } else {
+                                  //           return 'assets/icons/like=off_in.svg';
+                                  //         }
+                                  //       },
+                                  //       loading: () =>
+                                  //           'assets/icons/like=off_in.svg',
+                                  //       error: (err, stack) =>
+                                  //           'assets/icons/like=off_in.svg',
+                                  //     ),
                                   width: 22),
                             ),
                           ),
@@ -96,7 +105,7 @@ class StoreWidget extends ConsumerWidget {
                     //   ],
                     // ),
                     // const SizedBox(height: 4),
-                    Text('0.3km 이거 받는거 깜빡했어요..',
+                    Text('${(storeData.distance / 1000).toStringAsFixed(1)}km',
                         // '0.3km · 20,000원~40,000원',
                         style: TextStyle(
                             fontSize: 12,

@@ -1,13 +1,15 @@
 import 'dart:async';
 
 // import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/widgets.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+// import 'package:firebase_core/firebase_core.dart';
+// import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:kezzle/features/authentication/login_screen.dart';
+// import 'package:kezzle/features/authentication/login_screen.dart';
 import 'package:kezzle/features/authentication/repos/authentication_repo.dart';
 import 'package:kezzle/features/profile/models/user_model.dart';
 import 'package:kezzle/features/profile/repos/user_repo.dart';
-import 'package:kezzle/router.dart';
+// import 'package:kezzle/router.dart';
 
 class ProfileVM extends AutoDisposeAsyncNotifier<UserModel> {
   late final UserRepo _userRepo;
@@ -30,8 +32,8 @@ class ProfileVM extends AutoDisposeAsyncNotifier<UserModel> {
       final Map<String, dynamic>? profile =
           await _userRepo.fetchProfile(_authRepo.user!);
       if (profile != null) {
-        // print('프로필 있음');
-        print(profile);
+        print('프로필 있음');
+        // print(profile);
         // ref.watch(authRepo).dbUserExists = true;
         // return UserModel.fromJson(profile);
         return UserModel(
@@ -124,13 +126,15 @@ class ProfileVM extends AutoDisposeAsyncNotifier<UserModel> {
       // 서버에서 삭제 성공 시, 파이어베이스도 회원탈퇴
       // credential을 받아서
       // 로그아웃
-      ref.read(authRepo).signOut();
+      //ref.read(authRepo).signOut();
 
       // await _authRepo.user!
       //     .reauthenticateWithCredential(_authRepo.oauthCredential);
-      // await _authRepo.user!.delete();
-    } else {
-      // 서버에서 삭제 실패 시, 그냥 두기
+      if (FirebaseAuth.instance.currentUser != null) {
+        await _authRepo.user!.delete();
+      } else {
+        // 서버에서 삭제 실패 시, 그냥 두기
+      }
     }
   }
 }

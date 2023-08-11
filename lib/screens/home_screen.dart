@@ -5,7 +5,7 @@ import 'package:flutter_svg/svg.dart';
 // import 'package:go_router/go_router.dart';
 // import 'package:kezzle/features/profile/view_models/profile_vm.dart';
 // import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:kezzle/screens/detail_cake_screen.dart';
+// import 'package:kezzle/screens/detail_cake_screen.dart';
 import 'package:kezzle/utils/colors.dart';
 import 'package:kezzle/view_models/home_cake_view_model.dart';
 import 'package:kezzle/view_models/home_store_view_model.dart';
@@ -53,16 +53,6 @@ class HomeScreenState extends ConsumerState<HomeScreen>
   void dispose() {
     super.dispose();
   }
-
-  // void imageTapped(BuildContext context, String imageUrl) {
-  //   //print('image tapped');
-  //   //이미지 상세보기 화면으로 이동
-  //   Navigator.of(context).push(
-  //     MaterialPageRoute(
-  //       builder: (context) => DetailCakeScreen(imageUrl: imageUrl),
-  //     ),
-  //   );
-  // }
 
   // void onPageChanged(int index, CarouselPageChangedReason reason) {
   //   setState(() {
@@ -112,17 +102,8 @@ class HomeScreenState extends ConsumerState<HomeScreen>
   //   print(result);
   // }
 
-  // void profileExists() {
-  //   ref.watch(profileProvider).whenData((value) {
-  //     if (value.isEmpty) {
-  //       context.go('/make_user');
-  //     }
-  //   });
-  // }
-
   @override
   Widget build(BuildContext context) {
-    // profileExists();
     return Stack(children: [
       Scaffold(
         appBar: AppBar(
@@ -374,10 +355,6 @@ class HomeScreenState extends ConsumerState<HomeScreen>
         //   const SizedBox(height: 40),
         // ]),
       ),
-      // ModalBarrier(
-      //   color: Colors.black.withOpacity(0.5),
-      //   dismissible: true,
-      // ),
     ]);
   }
 }
@@ -396,14 +373,6 @@ class CakeTabBarViewState extends ConsumerState<CakeTabBarView>
   @override
   bool get wantKeepAlive => true;
 
-  // void onTapCake(BuildContext context, String imageUrl) {
-  //   //print('image tapped');
-  //   //이미지 상세보기 화면으로 이동
-  //   Navigator.of(context).push(MaterialPageRoute(
-  //     builder: (context) => DetailCakeScreen(imageUrl: imageUrl),
-  //   ));
-  // }
-
   Future<void> onRefresh() async {
     // 위도 경도, 리프레시 일어나면 실행되게.
     // await Future.delayed(const Duration(seconds: 1));
@@ -415,13 +384,11 @@ class CakeTabBarViewState extends ConsumerState<CakeTabBarView>
     super.build(context);
 
     // 반경이나, 위도 경도 변경되면 실행되는 리스너
-    ref.listen(searchSettingViewModelProvider, (previous, next) {
-      // print(previous!.radius);
-      // print(next!.radius);
-      if (previous != next) {
-        ref.read(homeCakeProvider.notifier).refresh();
-      }
-    });
+    // ref.listen(searchSettingViewModelProvider, (previous, next) {
+    //   if (previous != next) {
+    //     ref.read(homeCakeProvider.notifier).refresh();
+    //   }
+    // });
 
     return ref.watch(homeCakeProvider).when(
         loading: () => Center(child: CircularProgressIndicator(color: coral01)),
@@ -461,87 +428,110 @@ class StoreTabBarViewState extends ConsumerState<StoreTabBarView>
   @override
   bool get wantKeepAlive => true;
 
-  int _storeCount = 0;
+  // int _storeCount = 0;
   bool isMore = false;
+  bool isLoading = false;
 
-  // void onTapStore() {
-  //   //print('store tapped');
-  //   //스토어 상세보기 화면으로 이동
-  //   context.push('/detail_store/1');
-  // }
+  // 스크롤 컨트롤러로 데이터 불러올 때 사용
+  final ScrollController controller = ScrollController();
+
+  // TODO: 더 가져올거 있는지, 가져오고 있는중인지 체크하는 bool 변수 있어야할듯?
+
+  @override
+  void initState() {
+    super.initState();
+    controller.addListener(scrollListener);
+  }
+
+  void scrollListener() async {
+    // 현재 위치가 최대 길이보다 조금 덜 되는 위치까지 왔으면 새로운 데이터 추가요청
+    if (controller.offset > controller.position.maxScrollExtent - 300 &&
+        !isLoading &&
+        ref.read(homeStoreProvider.notifier).fetchMore == true) {
+      print('fetchMore');
+      setState(() {
+        isLoading = true;
+      });
+      await ref.read(homeStoreProvider.notifier).fetchNextPage();
+      setState(() {
+        isLoading = false;
+      });
+    } else {
+      return;
+    }
+  }
 
   Future<void> onRefresh() async {
     // await Future.delayed(const Duration(seconds: 1));
-    return ref.read(homeStoreProvider.notifier).refresh();
+    return await ref.read(homeStoreProvider.notifier).refresh();
   }
 
-  Future<void> fetchNextPage() async {
-    isMore = true;
-    setState(() {});
-    await ref.read(homeStoreProvider.notifier).fetchNextPage();
-    isMore = false;
-    setState(() {});
-  }
+  // Future<void> fetchNextPage() async {
+  // 더 가져올게 있으면...
+
+  // if (ref.read(homeStoreProvider.notifier).fetchMore == true && !isLoading) {
+  //   setState(() {
+  //     isLoading = true;
+  //   });
+  //   await ref.read(homeStoreProvider.notifier).fetchNextPage();
+  //   setState(() {
+  //     isLoading = false;
+  //   });
+  // } else {
+  //   return;
+  // }
+  // }
 
   @override
   Widget build(BuildContext context) {
     super.build(context);
-
-    print('build');
-
-    // 반경이나, 위도 경도 변경되면 실행되는 리스너
-    ref.listen(searchSettingViewModelProvider, (previous, next) {
-      // print(previous!.radius);
-      // print(next!.radius);
-      print('이거되냐?');
-      if (previous != next) {
-        ref.read(homeStoreProvider.notifier).refresh();
-      }
-    });
 
     // async니까 빌드베서드 끝나도록 기다려야됨. -> when 사용
     return ref.watch(homeStoreProvider).when(loading: () {
       return Center(child: CircularProgressIndicator(color: coral01));
       // return Container();
     }, error: (error, stackTrace) {
-      return Center(child: CircularProgressIndicator(color: coral01));
-      // Center(child: Text('스토어 목록 불러오기 실패, $error')),
+      // return Center(child: CircularProgressIndicator(color: coral01));
+      return Center(child: Text('스토어 목록 불러오기 실패, $error'));
     }, data: (stores) {
       // _storeCount를 굳이 써야되나? stores.length만으로도 조건을 세울수 있을거같음.
-      _storeCount = stores.length;
+      // _storeCount = stores.length;
       return NotificationListener<ScrollUpdateNotification>(
-          onNotification: (notification) {
-            if (notification.metrics.pixels >
-                notification.metrics.maxScrollExtent * 0.85) {
-              // 다음 거 가져오는 조건?
-              if (!isMore && _storeCount % 10 == 0) {
-                fetchNextPage();
-              }
-            }
-            return true;
-          },
+          // onNotification: (notification) {
+          //   if (notification.metrics.pixels >
+          //       notification.metrics.maxScrollExtent * 0.85) {
+          //     // 다음 거 가져오는 조건?
+          //     if (!isMore && _storeCount % 10 == 0) {
+          //       fetchNextPage();
+          //     }
+          //   }
+          //   return true;
+          // },
           child: RefreshIndicator(
-            color: coral01,
-            backgroundColor: Colors.white,
-            onRefresh: onRefresh,
-            child: ListView.separated(
-                padding:
-                    const EdgeInsets.symmetric(vertical: 30, horizontal: 20),
-                itemCount: stores.length,
-                separatorBuilder: (context, index) =>
-                    const SizedBox(height: 12),
-                itemBuilder: (context, index) {
-                  final storeData = stores[index];
+        color: coral01,
+        backgroundColor: Colors.white,
+        onRefresh: onRefresh,
+        child: ListView.separated(
+            controller: controller,
+            padding: const EdgeInsets.symmetric(vertical: 30, horizontal: 20),
+            itemCount: stores.length + 1,
+            separatorBuilder: (context, index) => const SizedBox(height: 12),
+            itemBuilder: (context, index) {
+              if (index == stores.length && isLoading) {
+                return Center(child: CircularProgressIndicator(color: coral01));
+              } else if (index != stores.length) {
+                final storeData = stores[index];
 
-                  return Column(children: [
-                    StoreWidget1(storeData: storeData),
-                    if (isMore && index == stores.length - 1) ...[
-                      const SizedBox(height: 12),
-                      Center(child: CircularProgressIndicator(color: coral01)),
-                    ]
-                  ]);
-                }),
-          ));
+                return Column(children: [
+                  StoreWidget1(storeData: storeData),
+                  if (isMore && index == stores.length - 1) ...[
+                    const SizedBox(height: 12),
+                    Center(child: CircularProgressIndicator(color: coral01)),
+                  ]
+                ]);
+              }
+            }),
+      ));
     });
   }
 }

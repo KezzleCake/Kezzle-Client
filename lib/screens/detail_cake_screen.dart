@@ -10,8 +10,10 @@ import 'package:kezzle/repo/stores_repo.dart';
 // import 'package:kezzle/screens/store/detail_store_screen.dart';
 // import 'package:kezzle/screens/more_review_screen.dart';
 import 'package:kezzle/utils/colors.dart';
+import 'package:kezzle/utils/toast.dart';
 import 'package:kezzle/view_models/cake_vm.dart';
 import 'package:kezzle/view_models/id_token_provider.dart';
+import 'package:kezzle/view_models/search_setting_vm.dart';
 // import 'package:kezzle/widgets/keyword_widget.dart';
 import 'package:kezzle/widgets/store_widget.dart';
 import 'package:url_launcher/url_launcher_string.dart';
@@ -90,7 +92,12 @@ class DetailCakeScreen extends ConsumerWidget {
                   const SizedBox(height: 25),
                   ListTile(
                       onTap: () async {
-                        await launchUrlString(kakaoURL);
+                        if (kakaoURL.isNotEmpty) {
+                          await launchUrlString(kakaoURL,
+                              mode: LaunchMode.externalApplication);
+                        } else {
+                          Toast.toast(context, '해당 링크가 존재하지 않습니다. 😅');
+                        }
                       },
                       leading: const FaIcon(FontAwesomeIcons.comment),
                       title: Text('스토어 카카오 채널로 이동',
@@ -100,9 +107,16 @@ class DetailCakeScreen extends ConsumerWidget {
                               color: gray08))),
                   ListTile(
                       onTap: () async {
-                        await launchUrlString(instaURL);
+                        if (instaURL.isNotEmpty) {
+                          await launchUrlString(instaURL,
+                              mode: LaunchMode.externalApplication);
+                        } else {
+                          Toast.toast(context, '해당 링크가 존재하지 않습니다. 😅');
+                        }
                       },
-                      leading: const FaIcon(FontAwesomeIcons.instagram),
+                      leading: const FaIcon(
+                        FontAwesomeIcons.instagram,
+                      ),
                       title: Text('스토어 인스타그램으로 이동',
                           style: TextStyle(
                               fontSize: 14,
@@ -133,9 +147,11 @@ class DetailCakeScreen extends ConsumerWidget {
     Future<DetailStoreModel?> fetchStore() async {
       //스토어 정보 가져오기
       final String token = await ref.read(tokenProvider.notifier).getIdToken();
+      final double lat = ref.watch(searchSettingViewModelProvider).latitude;
+      final double lng = ref.watch(searchSettingViewModelProvider).longitude;
       final response = await ref
           .read(storeRepo)
-          .fetchDetailStore(storeId: storeId, token: token);
+          .fetchDetailStore(storeId: storeId, lat: lat, lng: lng);
       if (response != null) {
         // print(response);
         // response를 DetailStoreModel로 변환
@@ -618,7 +634,7 @@ class DetailCakeScreen extends ConsumerWidget {
                     elevation: 0,
                     child: GestureDetector(
                       onTap: () => onTapOrderBtn(
-                          context, storeData.kakaoURL, storeData.instaURL),
+                          context, storeData.kakaoURL!, storeData.instaURL!),
                       child: Container(
                           alignment: Alignment.center,
                           decoration: BoxDecoration(

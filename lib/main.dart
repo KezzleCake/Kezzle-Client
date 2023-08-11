@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -8,11 +10,22 @@ import 'package:kezzle/repo/search_setting_repo.dart';
 import 'package:kezzle/repo/searched_address_repo.dart';
 import 'package:kezzle/router.dart';
 import 'package:kezzle/utils/colors.dart';
+// import 'package:kezzle/utils/provider_observer.dart';
+// import 'package:kezzle/utils/provider_observer.dart';
 import 'package:kezzle/view_models/search_setting_vm.dart';
 import 'package:kezzle/view_models/searched_address_view_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+class MyHttpOverrides extends HttpOverrides {
+  @override
+  HttpClient createHttpClient(SecurityContext? context) {
+    return super.createHttpClient(context)..maxConnectionsPerHost = 5;
+  }
+}
+
 void main() async {
+  HttpOverrides.global = MyHttpOverrides();
+
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     name: 'Kezzle',
@@ -32,6 +45,10 @@ void main() async {
   ]);
 
   runApp(ProviderScope(
+    // observers: [
+    //   Logger(),
+    // ],
+    key: UniqueKey(),
     overrides: [
       searchSettingViewModelProvider
           .overrideWith(() => SearchSettingViewModel(repository)),
@@ -49,6 +66,7 @@ class KezzleApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return MaterialApp.router(
+      debugShowCheckedModeBanner: false,
       routerConfig: ref.watch(routerProvider),
       title: 'Kezzle',
       theme: ThemeData(

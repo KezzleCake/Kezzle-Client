@@ -15,11 +15,11 @@ class IntroduceStore extends StatefulWidget {
 
 class _IntroduceStoreState extends State<IntroduceStore> {
   final scrollController = ScrollController();
-  final List<String> imageURLs = [
-    'assets/heart_cake.png',
-    'assets/heart_cake.png',
-    'assets/heart_cake.png',
-  ];
+  // final List<String> imageURLs = [
+  //   'assets/heart_cake.png',
+  //   'assets/heart_cake.png',
+  //   'assets/heart_cake.png',
+  // ];
 
   final double horizontalPadding = 18;
 
@@ -28,7 +28,9 @@ class _IntroduceStoreState extends State<IntroduceStore> {
         context,
         MaterialPageRoute(
             builder: (context) => FullScreenImage(
-                  imageURLs: imageURLs,
+                  // imageURLs: imageURLs,
+                  imageURLs:
+                      widget.store.detailImages!.map((e) => e.s3Url).toList(),
                   initialIndex: index,
                 )));
   }
@@ -36,52 +38,48 @@ class _IntroduceStoreState extends State<IntroduceStore> {
   @override
   Widget build(BuildContext context) {
     return ListView(children: [
-      const SizedBox(height: 30),
-      Scrollbar(
-          controller: scrollController,
-          child: SizedBox(
-              height: 168,
-              child: ListView.separated(
-                  controller: scrollController,
-                  padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
-                  separatorBuilder: (context, index) =>
-                      const SizedBox(width: 12),
-                  scrollDirection: Axis.horizontal,
-                  itemCount: imageURLs.length,
-                  itemBuilder: (context, index) {
-                    return GestureDetector(
-                      onTap: () {
-                        onTapImage(index);
-                      },
-                      child: Hero(
-                        tag: 'image$index',
-                        child: Container(
-                          margin: const EdgeInsets.only(bottom: 8),
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(16)),
-                          clipBehavior: Clip.hardEdge,
-                          child: Image.asset(imageURLs[index],
-                              fit: BoxFit.fitHeight),
-                        ),
-                      ),
-                    );
-                  }))),
+      widget.store.detailImages == null
+          ? const SizedBox(height: 16)
+          : const SizedBox(height: 30),
+      widget.store.detailImages == null
+          ? const SizedBox()
+          : Scrollbar(
+              controller: scrollController,
+              child: SizedBox(
+                  height: 168,
+                  child: ListView.separated(
+                      controller: scrollController,
+                      padding:
+                          EdgeInsets.symmetric(horizontal: horizontalPadding),
+                      separatorBuilder: (context, index) =>
+                          const SizedBox(width: 12),
+                      scrollDirection: Axis.horizontal,
+                      itemCount: widget.store.detailImages != null
+                          ? widget.store.detailImages!.length
+                          : 0,
+                      itemBuilder: (context, index) {
+                        return GestureDetector(
+                          onTap: () {
+                            onTapImage(index);
+                          },
+                          child: Hero(
+                            tag: 'image$index',
+                            child: Container(
+                              margin: const EdgeInsets.only(bottom: 8),
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(16)),
+                              clipBehavior: Clip.hardEdge,
+                              child: Image.network(
+                                  widget.store.detailImages![index].s3Url,
+                                  fit: BoxFit.fitHeight),
+                            ),
+                          ),
+                        );
+                      }))),
       const SizedBox(height: 16),
       Padding(
           padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
-          child: Text(widget.store.storeDescription,
-              // '안녕하세요~\n\n블리스 케이크 입니다. \n\n'
-              // '저희매장은 소중한날 행복할 수 있도록 정성스럽게\n제작해드리겠습니다. :)\n\n'
-              // '레터링 케이크의 제작은 '
-              // '픽업 당일 약속시간에 맞춰서 준비됩니다.\n'
-              // '너무 빨리 만들어놓는 경우 색번짐, 미세한 갈라짐,'
-              // '색변색등 있어 디자인은 미리해둘 수 없습니다!\n'
-              // '픽업시간보다 일찍 오시는 경우는 디자인이 되어있지'
-              // '않는 경우 또는 되어있더라도 냉각이 덜 되어 가져가시면'
-              // '케이크의 디자인이 변형 가능성이 높습니다!'
-              // '\n\n너무 늦게오시면 쇼케이스에 공간이 부족,'
-              // '다음 작업의 속도가 밀리게됩니다\n'
-              // '조금 늦으시는 경우는 꼭 카톡으로 남겨주세요!',
+          child: Text(widget.store.storeDescription!,
               style: TextStyle(
                   fontSize: 12, color: gray07, fontWeight: FontWeight.w400))),
       const MyDivider(),
@@ -130,7 +128,12 @@ class _IntroduceStoreState extends State<IntroduceStore> {
                         //         color: gray05,
                         //         fontWeight: FontWeight.w600)),
                         // const SizedBox(height: 6),
-                        Text(widget.store.operatingTime.join('\n'),
+                        Text(
+                            // widget.store.operatingTime.join('\n'),
+                            widget.store.operatingTime != null &&
+                                    widget.store.operatingTime!.isNotEmpty
+                                ? widget.store.operatingTime!.join('\n')
+                                : '픽업시간 정보가 없습니다.',
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: TextStyle(
@@ -138,7 +141,11 @@ class _IntroduceStoreState extends State<IntroduceStore> {
                                 color: gray05,
                                 fontWeight: FontWeight.w600)),
                         const SizedBox(height: 6),
-                        Text(widget.store.phoneNumber,
+                        Text(
+                            // widget.store.phoneNumber,
+                            widget.store.phoneNumber != null
+                                ? widget.store.phoneNumber!
+                                : '전화번호 정보가 없습니다.',
                             style: TextStyle(
                                 fontSize: 12,
                                 color: gray05,
