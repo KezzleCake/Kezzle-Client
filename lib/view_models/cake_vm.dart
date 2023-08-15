@@ -7,7 +7,7 @@ import 'package:kezzle/view_models/id_token_provider.dart';
 
 import '../features/bookmark/view_models/bookmarked_cake_vm.dart';
 
-class CakeVM extends FamilyNotifier<bool?, String> {
+class CakeVM extends AutoDisposeFamilyNotifier<bool?, String> {
   late String _cakeId;
   bool? like;
   late CakesRepo _cakesRepo;
@@ -38,40 +38,41 @@ class CakeVM extends FamilyNotifier<bool?, String> {
   }
 
   Future<void> likeCake() async {
-    // 현재 로그인한 사용자 정보 읽기
-    // final User user = _authRepo.user!;
-    String token = await ref.read(tokenProvider.notifier).getIdToken();
+    // 일단 바꾸기
+    like = true;
+    state = like;
 
-    // 케이크 좋아요 시, 케이크 아이디와 유저 정보, 토큰을 넘겨준다.
-    final response = await _cakesRepo.likeCake(cakeId: _cakeId, token: token);
+    final response = await _cakesRepo.likeCake(cakeId: _cakeId);
     if (response == true) {
-      like = true;
-      state = like;
       ref.read(bookmarkedCakeProvider.notifier).refresh();
+      return;
     } else {
+      // 성공 못했으면 다시 바꾸기
+      like = false;
+      state = like;
       return;
     }
   }
 
   Future<void> dislikeCake() async {
-    // 현재 로그인한 사용자 정보 읽기
-    // final User user = _authRepo.user!;
-    String token = await ref.read(tokenProvider.notifier).getIdToken();
+    // 일단 바꾸기
+    like = false;
+    state = like;
 
-    // 케이크 좋아요 취소 시, 케이크 아이디와 유저 정보, 토큰을 넘겨준다.
-    final response =
-        await _cakesRepo.dislikeCake(cakeId: _cakeId, token: token);
+    final response = await _cakesRepo.dislikeCake(cakeId: _cakeId);
     if (response == true) {
-      like = false;
-      state = like;
       ref.read(bookmarkedCakeProvider.notifier).refresh();
+      return;
     } else {
+      // 성공 못했으면 다시 바꾸기
+      like = true;
+      state = like;
       return;
     }
   }
 }
 
-final cakeProvider = NotifierProvider.family<CakeVM, bool?, String>(
+final cakeProvider = NotifierProvider.family.autoDispose<CakeVM, bool?, String>(
   () {
     return CakeVM();
   },

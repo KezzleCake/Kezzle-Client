@@ -100,38 +100,42 @@ class CurrentLocationScreenState extends ConsumerState<CurrentLocationScreen> {
     return Scaffold(
         appBar: AppBar(title: const Text('현재 위치로 설정')),
         bottomNavigationBar: BottomAppBar(
-            height: 55 + 75,
+            height: 140,
             elevation: 0,
             color: Colors.white,
-            child:
-                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Container(
-                  alignment: Alignment.centerLeft,
-                  height: 50,
-                  padding: const EdgeInsets.only(bottom: 10),
-                  // color: Colors.yellow,
-                  child: Text(currentLocation,
-                      style: TextStyle(
-                          fontSize: 16,
-                          color: gray06,
-                          fontWeight: FontWeight.w700))),
-              IgnorePointer(
-                  ignoring: _isMoved,
-                  child: GestureDetector(
-                    onTap: () => {onTapSetLocationButton(context)},
-                    child: Container(
-                        alignment: Alignment.center,
-                        padding: const EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                            color: _isMoved ? gray04 : coral01,
-                            borderRadius: BorderRadius.circular(28)),
-                        child: Text('이 위치로 주소설정',
-                            style: TextStyle(
-                                fontSize: 16,
-                                color: gray01,
-                                fontWeight: FontWeight.w700))),
-                  )),
-            ])),
+            child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                      alignment: Alignment.centerLeft,
+                      height: 50,
+                      // padding: const EdgeInsets.only(bottom: 10),
+                      // color: Colors.yellow,
+                      child: Text(currentLocation,
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                              fontSize: 16,
+                              color: gray06,
+                              fontWeight: FontWeight.w700))),
+                  IgnorePointer(
+                      ignoring: _isMoved,
+                      child: GestureDetector(
+                        onTap: () => {onTapSetLocationButton(context)},
+                        child: Container(
+                            height: 55,
+                            alignment: Alignment.center,
+                            padding: const EdgeInsets.all(16),
+                            decoration: BoxDecoration(
+                                color: _isMoved ? gray04 : coral01,
+                                borderRadius: BorderRadius.circular(28)),
+                            child: Text('이 위치로 주소설정',
+                                style: TextStyle(
+                                    fontSize: 16,
+                                    color: gray01,
+                                    fontWeight: FontWeight.w700))),
+                      )),
+                ])),
         body: Stack(alignment: Alignment.center, children: [
           GoogleMap(
               myLocationButtonEnabled: false,

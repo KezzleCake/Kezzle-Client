@@ -423,6 +423,7 @@ class CakeTabBarViewState extends ConsumerState<CakeTabBarView>
             Center(child: Text('케이크 목록 불러오기 실패, $error')),
         data: (cakes) {
           return RefreshIndicator(
+            color: coral01,
             onRefresh: onRefresh,
             child: GridView.builder(
                 controller: controller,

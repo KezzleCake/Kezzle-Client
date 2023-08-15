@@ -131,7 +131,7 @@ class ProfileVM extends AutoDisposeAsyncNotifier<UserModel> {
       // await _authRepo.user!
       //     .reauthenticateWithCredential(_authRepo.oauthCredential);
       if (FirebaseAuth.instance.currentUser != null) {
-        await _authRepo.user!.delete();
+        await _authRepo.user?.delete();
       } else {
         // 서버에서 삭제 실패 시, 그냥 두기
       }

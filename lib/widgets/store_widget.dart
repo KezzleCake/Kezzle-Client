@@ -41,7 +41,7 @@ class StoreWidget extends ConsumerWidget {
             child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
               CircleAvatar(
                 foregroundImage: NetworkImage(
-                    storeData.logo == null ? '' : storeData.logo!.s3Url),
+                    storeData.logo == null ? '' : storeData.logo!.s3Url.replaceFirst("https", "http")),
                 // backgroundImage: AssetImage('assets/heart_cake.png'),
                 radius: 63 / 2,
                 onForegroundImageError: (exception, stackTrace) {},
@@ -112,22 +112,31 @@ class StoreWidget extends ConsumerWidget {
                             color: gray05,
                             fontWeight: FontWeight.w400)),
                     const SizedBox(height: 8),
-                    Text(storeData.taste[0],
+                    for (int i = 0; i < storeData.taste.length; i++)
+                      Text(
+                        storeData.taste[i],
                         style: TextStyle(
                           fontSize: 12,
                           color: gray06,
                           fontWeight: FontWeight.w400,
-                        )),
-                    Text(storeData.taste[1],
-                        style: TextStyle(
-                            fontSize: 12,
-                            color: gray06,
-                            fontWeight: FontWeight.w400)),
-                    Text(storeData.taste[2],
-                        style: TextStyle(
-                            fontSize: 12,
-                            color: gray06,
-                            fontWeight: FontWeight.w400)),
+                        ),
+                      )
+                    // Text(storeData.taste[0],
+                    //     style: TextStyle(
+                    //       fontSize: 12,
+                    //       color: gray06,
+                    //       fontWeight: FontWeight.w400,
+                    //     )),
+                    // Text(storeData.taste[1],
+                    //     style: TextStyle(
+                    //         fontSize: 12,
+                    //         color: gray06,
+                    //         fontWeight: FontWeight.w400)),
+                    // Text(storeData.taste[2],
+                    //     style: TextStyle(
+                    //         fontSize: 12,
+                    //         color: gray06,
+                    //         fontWeight: FontWeight.w400)),
                   ])),
             ])));
   }

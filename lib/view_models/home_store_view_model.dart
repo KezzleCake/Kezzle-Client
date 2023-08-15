@@ -1,14 +1,15 @@
 import 'dart:async';
 
 // import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+// import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kezzle/features/authentication/repos/authentication_repo.dart';
 import 'package:kezzle/models/home_store_model.dart';
 import 'package:kezzle/repo/stores_repo.dart';
 import 'package:kezzle/view_models/search_setting_vm.dart';
 
-class HomeStoreViewModel extends AsyncNotifier<List<HomeStoreModel>> {
+class HomeStoreViewModel
+    extends AutoDisposeAsyncNotifier<List<HomeStoreModel>> {
   StoreRepo? _storeRepo;
   // AuthRepo? _authRepo;
   List<HomeStoreModel> _homeStoreList = [];
@@ -86,19 +87,8 @@ class HomeStoreViewModel extends AsyncNotifier<List<HomeStoreModel>> {
 
   // 다음 페이지 요청
   Future<void> fetchNextPage() async {
-    // 페이지별로 아이템이 몇개인지 모르겠네.. 페이지 요청을 어케하누!
-    // 현재 리스트에 있는 아이템 개수로 담페이지 계산하구 요청할 수 있으려나?
-    // if (_homeStoreList.length >8 ) {}
-    // final nextPage = await _repository.fetchStores(page: 1);
-    // final newList = [];
-    // 더해진 리스트를 state에 넣어주기
-    // state = AsyncValue.data([..._homeStoreList, ...newList]);
-
-    // 더 가져올것이 있다면 일단 false로 재요청 못하게 막아두고, 요청받아서
-    // 그 결과에 따라 f/t 바꾸기
     if (fetchMore == true) {
       fetchMore = false;
-      // await Future.delayed(Duration(seconds: 2));
       List<HomeStoreModel> newHomeStoreList = [];
 
       final result = await _fetchStores(
@@ -134,7 +124,7 @@ class HomeStoreViewModel extends AsyncNotifier<List<HomeStoreModel>> {
 
 // notifier를 expose , 뷰모델 초기화.
 final homeStoreProvider =
-    AsyncNotifierProvider<HomeStoreViewModel, List<HomeStoreModel>>(
+    AsyncNotifierProvider.autoDispose<HomeStoreViewModel, List<HomeStoreModel>>(
   () => HomeStoreViewModel(),
   dependencies: [searchSettingViewModelProvider, authState],
 );

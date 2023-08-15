@@ -4,10 +4,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kezzle/features/authentication/repos/authentication_repo.dart';
 import 'package:kezzle/models/home_store_model.dart';
 import 'package:kezzle/repo/cakes_repo.dart';
-import 'package:kezzle/view_models/id_token_provider.dart';
-import 'package:kezzle/view_models/search_setting_vm.dart';
+// import 'package:kezzle/view_models/id_token_provider.dart';
+// import 'package:kezzle/view_models/search_setting_vm.dart';
 
-class HomeCakeViewModel extends AsyncNotifier<List<Cake>> {
+class HomeCakeViewModel extends AutoDisposeAsyncNotifier<List<Cake>> {
   late final CakesRepo _repository;
   List<Cake> _cakeList = [];
   bool fetchMore = false;
@@ -15,7 +15,6 @@ class HomeCakeViewModel extends AsyncNotifier<List<Cake>> {
   @override
   FutureOr<List<Cake>> build() async {
     // 이거 위도경도 바뀌면 재실행 되는건지 확인하기
-    // print('재재재재재재재재재재재');
     _repository = ref.read(cakesRepo);
 
     // 일단 첫번째 페이지로 데이터 가져오기
@@ -27,14 +26,10 @@ class HomeCakeViewModel extends AsyncNotifier<List<Cake>> {
 
   Future<List<Cake>> _fetchCakes({String? afterId}) async {
     final Map<String, dynamic>? result = await _repository.fetchCakes(
-      // token: token,
       afterId: afterId,
-      // lat: lat,
-      // lng: lng,
       count: 18,
     );
-    // print(result);
-    // 받아온정보 map으로 각 스토어를 CakeModel로 변환해서 리스트 만들기
+
     if (result == null) {
       return [];
     } else {
@@ -78,10 +73,7 @@ class HomeCakeViewModel extends AsyncNotifier<List<Cake>> {
 }
 
 // notifier를 expose , 뷰모델 초기화.
-final homeCakeProvider = AsyncNotifierProvider<HomeCakeViewModel, List<Cake>>(
+final homeCakeProvider =
+    AsyncNotifierProvider.autoDispose<HomeCakeViewModel, List<Cake>>(
   () => HomeCakeViewModel(),
-  dependencies: [
-    // searchSettingViewModelProvider,
-    authState,
-  ],
 );

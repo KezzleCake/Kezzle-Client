@@ -11,7 +11,7 @@ import 'package:kezzle/features/authentication/repos/authentication_repo.dart';
 import 'package:kezzle/features/onboarding/current_location_screen.dart';
 import 'package:kezzle/features/onboarding/current_location_service.dart';
 import 'package:kezzle/features/profile/repos/user_repo.dart';
-import 'package:kezzle/features/profile/view_models/profile_vm.dart';
+// import 'package:kezzle/features/profile/view_models/profile_vm.dart';
 // import 'package:kezzle/features/onboarding/current_location_vm.dart';
 // import 'package:intl/intl.dart';
 // import 'package:kezzle/responsive/mobile_screen_layout.dart';

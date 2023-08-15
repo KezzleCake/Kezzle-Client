@@ -3,21 +3,15 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:kezzle/models/detail_store_model.dart';
-import 'package:kezzle/models/home_store_model.dart';
-import 'package:kezzle/repo/cakes_repo.dart';
 import 'package:kezzle/repo/stores_repo.dart';
 import 'package:kezzle/screens/store/introduce_store_tabview.dart';
 import 'package:kezzle/screens/store/store_location_screen.dart';
-// import 'package:kezzle/screens/store/store_price_tabview.dart';
-// import 'package:kezzle/screens/store/store_review_screen.dart';
 import 'package:kezzle/utils/colors.dart';
 import 'package:kezzle/utils/toast.dart';
-// import 'package:kezzle/view_models/id_token_provider.dart';
 import 'package:kezzle/view_models/search_setting_vm.dart';
 import 'package:kezzle/view_models/store_cakes_vm.dart';
 import 'package:kezzle/view_models/store_view_model.dart';
 import 'package:kezzle/widgets/bookmark_cake_widget.dart';
-// import 'package:url_launcher/url_launcher.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
 final tabs = [
@@ -29,17 +23,14 @@ final tabs = [
 ];
 
 class DetailStoreScreen extends ConsumerWidget {
-  // static const routeURL = '/detail_store';
   static const routeName = 'detail_store';
   final String storeId;
-  // final HomeStoreModel store;
 
   const DetailStoreScreen({super.key, required this.storeId});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     Future<DetailStoreModel?> fetchDetailStoreData() async {
-      // final String token = await ref.read(tokenProvider.notifier).getIdToken();
       final lat = ref.watch(searchSettingViewModelProvider).latitude;
       final lng = ref.watch(searchSettingViewModelProvider).longitude;
 
@@ -47,37 +38,15 @@ class DetailStoreScreen extends ConsumerWidget {
           .read(storeRepo)
           .fetchDetailStore(storeId: storeId, lat: lat, lng: lng);
       if (response != null) {
-        // print(response);
-        // response를 DetailStoreModel로 변환
         final fetched = DetailStoreModel.fromJson(response);
-        // print(fetched);
         return fetched;
       }
       return null;
     }
 
-    // Future<List<Cake>?> fetchCakesData() async {
-    //   // final String token = await ref.read(tokenProvider.notifier).getIdToken();
-    //   final response =
-    //       await ref.read(cakesRepo).fetchCakesByStoreId(storeId: storeId);
-    //   if (response != null) {
-    //     // response를 Cake로 변환
-    //     final fetched = response.map((e) => Cake.fromJson(e)).toList();
-    //     // print(fetched);
-    //     return fetched;
-    //   }
-    //   return null;
-    // }
-
     return Scaffold(
         appBar: AppBar(
           title: const Text('스토어'),
-          // actions: [
-          //   // IconButton(
-          //   //   onPressed: () {},
-          //   //   icon: SvgPicture.asset('assets/icons/share.svg'),
-          //   // ),
-          // ],
         ),
         body: DefaultTabController(
             length: tabs.length,
@@ -136,8 +105,9 @@ class DetailStoreScreen extends ConsumerWidget {
             child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
               CircleAvatar(
                 radius: 63 / 2,
-                foregroundImage:
-                    NetworkImage(store.logo != null ? store.logo!.s3Url : ''),
+                foregroundImage: NetworkImage(store.logo != null
+                    ? store.logo!.s3Url.replaceFirst("https", "http")
+                    : ''),
                 onForegroundImageError: (exception, stackTrace) =>
                     const SizedBox(),
               ),
@@ -269,32 +239,6 @@ class StoreCakes extends ConsumerStatefulWidget {
 }
 
 class _StoreCakesState extends ConsumerState<StoreCakes> {
-  // bool isLike = false;
-  // int selectedKeywordIndex = 0;
-  // final List<String> keywords = [
-  //   '전체',
-  //   '생일',
-  //   '커플',
-  //   '아이',
-  //   '기념일',
-  //   '기타',
-  //   '곰돌이',
-  //   '레터링',
-  //   '꽃',
-  // ];
-
-  //버튼 누르면 선택된 인덱스를 바꾸는 함수
-  // void onTapKeyword(int index) {
-  //   setState(() {
-  //     selectedKeywordIndex = index;
-  //   });
-  // }
-
-  // void onTapLike() {
-  //   setState(() {
-  //     isLike = !isLike;
-  //   });
-  // }
   bool isLoading = false;
   final ScrollController controller = ScrollController();
 
@@ -306,6 +250,7 @@ class _StoreCakesState extends ConsumerState<StoreCakes> {
 
   void scrollListener() async {
     // 현재 위치가 최대 길이보다 조금 덜 되는 위치까지 왔으면 새로운 데이터 추가요청
+
     if (controller.offset > controller.position.maxScrollExtent - 300 &&
         !isLoading &&
         ref
@@ -319,9 +264,11 @@ class _StoreCakesState extends ConsumerState<StoreCakes> {
       await ref
           .read(storeCakesViewModelProvider(widget.storeId).notifier)
           .fetchNextPage();
-      setState(() {
-        isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          isLoading = false;
+        });
+      }
     } else {
       return;
     }
@@ -334,6 +281,7 @@ class _StoreCakesState extends ConsumerState<StoreCakes> {
         return Column(children: [
           Flexible(
               child: GridView.builder(
+            controller: controller,
             itemCount: cakes.length + (isLoading ? 3 : 0),
             padding: const EdgeInsets.only(
               top: 16,

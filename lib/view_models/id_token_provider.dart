@@ -4,15 +4,19 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kezzle/features/authentication/repos/authentication_repo.dart';
 
-class IdTokenProvider extends AsyncNotifier<IdTokenResult> {
+class IdTokenProvider extends AsyncNotifier<IdTokenResult?> {
   late AuthRepo _authRepo;
   IdTokenResult? tokenData;
 
   @override
-  FutureOr<IdTokenResult> build() async {
+  FutureOr<IdTokenResult?> build() async {
     // 처음 쓸 때는 idToken 가져오기
     _authRepo = ref.read(authRepo);
-    tokenData = await _authRepo.user!.getIdTokenResult(true);
+    if (_authRepo.user == null) {
+      return null;
+    } else {
+      tokenData = await _authRepo.user!.getIdTokenResult(true);
+    }
     return tokenData!;
   }
 
@@ -39,9 +43,15 @@ class IdTokenProvider extends AsyncNotifier<IdTokenResult> {
     //   return tokenData!.token!;
     // }
   }
+
+  // 토큰을 리셋하는 함수 . 토큰에 null 값 넣기
+  void resetToken() {
+    tokenData = null;
+    state = AsyncValue.data(tokenData);
+  }
 }
 
-final tokenProvider = AsyncNotifierProvider<IdTokenProvider, IdTokenResult>(
+final tokenProvider = AsyncNotifierProvider<IdTokenProvider, IdTokenResult?>(
   () {
     return IdTokenProvider();
   },

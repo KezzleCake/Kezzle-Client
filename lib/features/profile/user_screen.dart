@@ -11,6 +11,7 @@ import 'package:kezzle/main.dart';
 import 'package:kezzle/router.dart';
 // import 'package:kezzle/features/profile/review_screen.dart';
 import 'package:kezzle/utils/colors.dart';
+import 'package:kezzle/view_models/id_token_provider.dart';
 
 // import 'package:kezzle/widgets/my_divider_widget.dart';
 
@@ -60,9 +61,9 @@ class UserScreenState extends ConsumerState<UserScreen> {
                 // dbExistProvider 초기화 하기
                 //TODO: 이거 이제 굳이 안필요할거같은데?
                 // ref.read(dbExistProvider.notifier).state = false;
+                ref.read(tokenProvider.notifier).resetToken();
                 context.go("/");
                 // restart(context);
-                RestartApp.restart(context);
               });
         });
   }
@@ -80,6 +81,7 @@ class UserScreenState extends ConsumerState<UserScreen> {
             confirmText: '계속 유지할게요',
             onTapCancel: () {
               ref.read(profileProvider.notifier).deleteProfile();
+              ref.read(tokenProvider.notifier).resetToken();
               context.go("/authorization_check_screen");
             },
             onTapConfirm: () => context.pop(),

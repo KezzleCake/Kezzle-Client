@@ -9,7 +9,8 @@ import 'package:kezzle/repo/stores_repo.dart';
 import 'package:kezzle/view_models/search_setting_vm.dart';
 
 // 스토어 모델명 그냥 바꿀까..?
-class BookmarkedStoreViewModel extends AsyncNotifier<List<HomeStoreModel>> {
+class BookmarkedStoreViewModel
+    extends AutoDisposeAsyncNotifier<List<HomeStoreModel>> {
   StoreRepo? _storeRepo;
   AuthRepo? _authRepo;
 
@@ -89,8 +90,8 @@ class BookmarkedStoreViewModel extends AsyncNotifier<List<HomeStoreModel>> {
 //   },
 // );
 
-final bookmarkedStoreProvider =
-    AsyncNotifierProvider<BookmarkedStoreViewModel, List<HomeStoreModel>>(
+final bookmarkedStoreProvider = AsyncNotifierProvider.autoDispose<
+    BookmarkedStoreViewModel, List<HomeStoreModel>>(
   () {
     return BookmarkedStoreViewModel();
   },

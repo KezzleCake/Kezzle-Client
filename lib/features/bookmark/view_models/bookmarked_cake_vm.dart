@@ -9,7 +9,7 @@ import 'package:kezzle/repo/cakes_repo.dart';
 import 'package:kezzle/view_models/id_token_provider.dart';
 import 'package:kezzle/view_models/search_setting_vm.dart';
 
-class BookmarkedCakeViewModel extends AsyncNotifier<List<Cake>> {
+class BookmarkedCakeViewModel extends AutoDisposeAsyncNotifier<List<Cake>> {
   CakesRepo? _cakeRepo;
   AuthRepo? _authRepository;
 
@@ -30,10 +30,8 @@ class BookmarkedCakeViewModel extends AsyncNotifier<List<Cake>> {
   // 좋아요한 케이크 목록 가져오는 메서드
   Future<List<Cake>> _fetchBookmarkedCakes({int? page}) async {
     final User user = _authRepository!.user!;
-    final String token = await ref.read(tokenProvider.notifier).getIdToken();
 
     final List<dynamic>? result = await _cakeRepo!.fetchBookmarkedCakes(
-      token: token,
       user: user,
     );
     // print(result);
@@ -61,7 +59,7 @@ class BookmarkedCakeViewModel extends AsyncNotifier<List<Cake>> {
 
 // notifier를 expose , 뷰모델 초기화.
 final bookmarkedCakeProvider =
-    AsyncNotifierProvider<BookmarkedCakeViewModel, List<Cake>>(
+    AsyncNotifierProvider.autoDispose<BookmarkedCakeViewModel, List<Cake>>(
   () => BookmarkedCakeViewModel(),
   dependencies: [searchSettingViewModelProvider],
 );

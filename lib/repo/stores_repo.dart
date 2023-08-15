@@ -73,18 +73,7 @@ class StoreRepo {
   }
 
   // 스토어 좋아요
-  Future<String> likeStore(String storeId, String token) async {
-    // 스토어 아이디랑 유저정보 받아서 좋아요 처리
-    // 여기서 정보 보내기!!
-    // var options = BaseOptions(
-    //   baseUrl: dotenv.env['SERVER_ENDPOINT']!,
-    //   connectTimeout: const Duration(seconds: 20),
-    //   receiveTimeout: const Duration(seconds: 20),
-    //   headers: {
-    //     'Authorization': 'Bearer $token',
-    //   },
-    // );
-    // Dio dio = Dio(options);
+  Future<String> likeStore(String storeId) async {
     Dio dio = ref.watch(dioProvider);
 
     try {
@@ -105,17 +94,7 @@ class StoreRepo {
   }
 
   // 스토어 좋아요 취소
-  Future<Response<dynamic>?> dislikeStore(String storeId, String token) async {
-    // 스토어 아이디랑 유저정보 받아서 좋아요 취소 처리
-    // 여기서 정보 보내기!!
-    // var options = BaseOptions(
-    //     baseUrl: dotenv.env['SERVER_ENDPOINT']!,
-    //     connectTimeout: const Duration(seconds: 20),
-    //     receiveTimeout: const Duration(seconds: 20),
-    //     headers: {
-    //       'Authorization': 'Bearer $token',
-    //     });
-    // Dio dio = Dio(options);
+  Future<Response<dynamic>?> dislikeStore(String storeId) async {
     Dio dio = ref.watch(dioProvider);
     try {
       final response = await dio.delete('stores/$storeId/likes');

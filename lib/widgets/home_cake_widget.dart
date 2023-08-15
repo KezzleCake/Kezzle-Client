@@ -26,7 +26,8 @@ class HomeCakeWidget extends StatelessWidget {
             // Stack(
             // alignment: Alignment.bottomRight,
             // children: [
-            Image.network(cakeData.image.s3Url, fit: BoxFit.cover),
+            Image.network(cakeData.image.s3Url.replaceFirst("https", "http"),
+                fit: BoxFit.cover),
         // Image.asset(cakeData.url, fit: BoxFit.cover),
         // Padding(
         //     padding: const EdgeInsets.all(8.0),

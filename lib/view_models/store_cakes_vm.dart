@@ -4,7 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kezzle/models/home_store_model.dart';
 import 'package:kezzle/repo/cakes_repo.dart';
 
-class StoreCakesViewModel extends FamilyAsyncNotifier<List<Cake>, String> {
+class StoreCakesViewModel
+    extends AutoDisposeFamilyAsyncNotifier<List<Cake>, String> {
   late final String _storeId;
   late final CakesRepo _cakeRepo;
   List<Cake> _storeCakes = [];
@@ -27,6 +28,7 @@ class StoreCakesViewModel extends FamilyAsyncNotifier<List<Cake>, String> {
   Future<List<Cake>> _fetchStoreCakes({String? afterId}) async {
     // 스토어 아이디로 케이크 리스트 가져오기
     final Map<String, dynamic>? result = await _cakeRepo.fetchCakesByStoreId(
+      afterId: afterId,
       storeId: _storeId,
       count: 18,
     );
@@ -59,7 +61,7 @@ class StoreCakesViewModel extends FamilyAsyncNotifier<List<Cake>, String> {
   }
 }
 
-final storeCakesViewModelProvider =
-    AsyncNotifierProvider.family<StoreCakesViewModel, List<Cake>, String>(
+final storeCakesViewModelProvider = AsyncNotifierProvider.family
+    .autoDispose<StoreCakesViewModel, List<Cake>, String>(
   () => StoreCakesViewModel(),
 );

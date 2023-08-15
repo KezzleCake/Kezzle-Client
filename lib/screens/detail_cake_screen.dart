@@ -131,9 +131,7 @@ class DetailCakeScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     Future<Cake?> fetchCake() async {
       //케이크 정보 가져오기
-      final String token = await ref.read(tokenProvider.notifier).getIdToken();
-      final response =
-          await ref.read(cakesRepo).fetchCakeById(cakeId: cakeId, token: token);
+      final response = await ref.read(cakesRepo).fetchCakeById(cakeId: cakeId);
       if (response != null) {
         // print(response);
         // response를 Cake로 변환
@@ -146,7 +144,6 @@ class DetailCakeScreen extends ConsumerWidget {
 
     Future<DetailStoreModel?> fetchStore() async {
       //스토어 정보 가져오기
-      final String token = await ref.read(tokenProvider.notifier).getIdToken();
       final double lat = ref.watch(searchSettingViewModelProvider).latitude;
       final double lng = ref.watch(searchSettingViewModelProvider).longitude;
       final response = await ref
@@ -164,10 +161,8 @@ class DetailCakeScreen extends ConsumerWidget {
 
     Future<List<Cake>?> fetchAnoterCake() async {
       //스토어의 다른 케이크 가져오기
-      final String token = await ref.read(tokenProvider.notifier).getIdToken();
-      final response = await ref
-          .read(cakesRepo)
-          .fetchAnotherStoreCakes(storeId: storeId, token: token);
+      final response =
+          await ref.read(cakesRepo).fetchAnotherStoreCakes(storeId: storeId);
 
       if (response != null) {
         final fetched = response.map((e) => Cake.fromJson(e)).toList();
@@ -215,7 +210,7 @@ class DetailCakeScreen extends ConsumerWidget {
                   SizedBox(
                     width: double.infinity,
                     child: Image.network(
-                      data.data![0].image.s3Url,
+                      data.data![0].image.s3Url.replaceFirst("https", "http"),
                       fit: BoxFit.cover,
                     ),
                     // Image(
@@ -538,7 +533,7 @@ class DetailCakeScreen extends ConsumerWidget {
                                               clipBehavior: Clip.hardEdge,
                                               child: Image.network(
                                                   data.data![2]![index].image
-                                                      .s3Url,
+                                                      .s3Url.replaceFirst("https", "http"),
                                                   fit: BoxFit.cover)));
                                     })),
                             // Row(

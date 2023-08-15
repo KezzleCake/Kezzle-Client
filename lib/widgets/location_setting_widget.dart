@@ -207,7 +207,8 @@ class LocationSettingWidgetState extends ConsumerState<LocationSettingWidget> {
             EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
         child: Container(
             // height: 453,
-            height: 470,
+            // height: 470,
+            height: MediaQuery.of(context).size.height * 0.6,
             width: double.infinity,
             decoration: const BoxDecoration(
                 color: Colors.white,
@@ -265,32 +266,33 @@ class LocationSettingWidgetState extends ConsumerState<LocationSettingWidget> {
                               color: gray06)),
                       const SizedBox(height: 8),
                       SizedBox(
-                          height: 300,
-                          child: ListView.builder(
-                              // shrinkWrap: true,
-                              itemCount: _isSearched
-                                  ? searchedList.length
-                                  : historySearchedList.length,
-                              // : historySearchedList.length,
-                              itemBuilder: (context, index) {
-                                return GestureDetector(
-                                  onTap: () {
-                                    onTapAddress(index);
-                                  },
-                                  child: Container(
-                                      padding: const EdgeInsets.symmetric(
-                                          vertical: 16),
-                                      child: Text(
-                                          _isSearched
-                                              ? searchedList[index].address
-                                              : historySearchedList[index]
-                                                  .address,
-                                          style: TextStyle(
-                                              fontSize: 14,
-                                              fontWeight: FontWeight.w700,
-                                              color: gray05))),
-                                );
-                              })),
+                        height: MediaQuery.of(context).size.height * 0.37,
+                        child: ListView.builder(
+                            shrinkWrap: true,
+                            itemCount: _isSearched
+                                ? searchedList.length
+                                : historySearchedList.length,
+                            // : historySearchedList.length,
+                            itemBuilder: (context, index) {
+                              return GestureDetector(
+                                onTap: () {
+                                  onTapAddress(index);
+                                },
+                                child: Container(
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 16),
+                                    child: Text(
+                                        _isSearched
+                                            ? searchedList[index].address
+                                            : historySearchedList[index]
+                                                .address,
+                                        style: TextStyle(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w700,
+                                            color: gray05))),
+                              );
+                            }),
+                      ),
                     ]))));
   }
 }

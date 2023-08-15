@@ -31,15 +31,24 @@ class BookmarkCakeWidget extends ConsumerWidget {
         print('케이크 상세보기 페이지로 이동');
         context.push("/detail_cake/${cakeData.id}/${cakeData.ownerStoreId}");
       },
-      child: Container(
-          decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(16), boxShadow: [shadow01]),
-          clipBehavior: Clip.hardEdge,
-          child: Stack(alignment: Alignment.bottomRight, children: [
-            // Image.asset('assets/heart_cake.png', fit: BoxFit.cover),
-            Image.network(cakeData.image.s3Url, fit: BoxFit.cover),
-            LikeButton(cakeData: cakeData),
-          ])),
+      child: Stack(
+        alignment: Alignment.bottomRight,
+        children: [
+          Container(
+            width: double.infinity,
+            clipBehavior: Clip.hardEdge,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(16),
+              boxShadow: [shadow01],
+            ),
+            child: Image.network(
+              cakeData.image.s3Url.replaceFirst("https", "http"),
+              fit: BoxFit.cover,
+            ),
+          ),
+          LikeButton(cakeData: cakeData),
+        ],
+      ),
     );
   }
 }

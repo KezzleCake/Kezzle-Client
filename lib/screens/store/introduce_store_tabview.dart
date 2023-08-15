@@ -21,6 +21,8 @@ class _IntroduceStoreState extends State<IntroduceStore> {
   //   'assets/heart_cake.png',
   // ];
 
+  final List<String> day = ['월 ', '화 ', '수 ', '목 ', '금 ', '토 ', '일 '];
+
   final double horizontalPadding = 18;
 
   void onTapImage(int index) {
@@ -38,10 +40,10 @@ class _IntroduceStoreState extends State<IntroduceStore> {
   @override
   Widget build(BuildContext context) {
     return ListView(children: [
-      widget.store.detailImages == null
+      widget.store.detailImages == null || widget.store.detailImages!.isEmpty
           ? const SizedBox(height: 16)
           : const SizedBox(height: 30),
-      widget.store.detailImages == null
+      widget.store.detailImages == null || widget.store.detailImages!.isEmpty
           ? const SizedBox()
           : Scrollbar(
               controller: scrollController,
@@ -70,7 +72,8 @@ class _IntroduceStoreState extends State<IntroduceStore> {
                                   borderRadius: BorderRadius.circular(16)),
                               clipBehavior: Clip.hardEdge,
                               child: Image.network(
-                                  widget.store.detailImages![index].s3Url,
+                                  widget.store.detailImages![index].s3Url
+                                      .replaceFirst("https", "http"),
                                   fit: BoxFit.fitHeight),
                             ),
                           ),
@@ -97,48 +100,48 @@ class _IntroduceStoreState extends State<IntroduceStore> {
                 decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(16), color: gray02),
                 child: Row(children: [
+                  const SizedBox(width: 10),
                   Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // Text('사업자등록번호',
-                        //     style: TextStyle(
-                        //         fontSize: 12,
-                        //         color: gray07,
-                        //         fontWeight: FontWeight.w600)),
-                        // const SizedBox(height: 6),
                         Text('픽업시간',
                             style: TextStyle(
                                 fontSize: 12,
                                 color: gray07,
                                 fontWeight: FontWeight.w600)),
                         const SizedBox(height: 6),
-                        Text('전화번호',
-                            style: TextStyle(
-                                fontSize: 12,
-                                color: gray07,
-                                fontWeight: FontWeight.w600))
-                      ]),
-                  const SizedBox(width: 20),
-                  Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // Text('123-45-67890',
+
+                        for (int i = 0;
+                            i < widget.store.operatingTime!.length;
+                            i++)
+                          widget.store.operatingTime![i].isEmpty
+                              ? Text('${day[i]} 휴무일',
+                                  style: TextStyle(
+                                      fontSize: 12,
+                                      color: gray05,
+                                      fontWeight: FontWeight.w600))
+                              : Text(
+                                  '${day[i]} ${widget.store.operatingTime![i]}',
+                                  style: TextStyle(
+                                      fontSize: 12,
+                                      color: gray05,
+                                      fontWeight: FontWeight.w600)),
+                        // Text(
+                        //     // widget.store.operatingTime.join('\n'),
+                        //     widget.store.operatingTime != null &&
+                        //             widget.store.operatingTime!.isNotEmpty
+                        //         ? widget.store.operatingTime!.join('\n')
+                        //         : '픽업시간 정보가 없습니다.',
+                        //     overflow: TextOverflow.ellipsis,
                         //     style: TextStyle(
                         //         fontSize: 12,
                         //         color: gray05,
                         //         fontWeight: FontWeight.w600)),
-                        // const SizedBox(height: 6),
-                        Text(
-                            // widget.store.operatingTime.join('\n'),
-                            widget.store.operatingTime != null &&
-                                    widget.store.operatingTime!.isNotEmpty
-                                ? widget.store.operatingTime!.join('\n')
-                                : '픽업시간 정보가 없습니다.',
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
+                        const SizedBox(height: 6),
+                        Text('전화번호',
                             style: TextStyle(
                                 fontSize: 12,
-                                color: gray05,
+                                color: gray07,
                                 fontWeight: FontWeight.w600)),
                         const SizedBox(height: 6),
                         Text(
@@ -268,7 +271,8 @@ class _FullScreenImageState extends State<FullScreenImage> {
                 tag: 'image$index',
                 child: PhotoView(
                     // imageProvider: AssetImage(widget.imageURLs[index]),
-                    imageProvider: NetworkImage(widget.imageURLs[index]),
+                    imageProvider: NetworkImage(
+                        widget.imageURLs[index].replaceFirst("https", "http")),
                     minScale: PhotoViewComputedScale.contained,
                     maxScale: PhotoViewComputedScale.covered * 2.0
                     // child: AspectRatio(

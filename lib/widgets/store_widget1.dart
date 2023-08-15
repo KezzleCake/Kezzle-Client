@@ -68,7 +68,8 @@ class StoreWidget1State extends ConsumerState<StoreWidget1> {
                     // foregroundImage: NetworkImage(widget.storeData.logo!.s3Url),
                     foregroundImage: NetworkImage(widget.storeData.logo == null
                         ? ''
-                        : widget.storeData.logo!.s3Url),
+                        : widget.storeData.logo!.s3Url
+                            .replaceFirst("https", "http")),
                     onForegroundImageError: (exception, stackTrace) {
                       return;
                     },
@@ -152,7 +153,8 @@ class StoreWidget1State extends ConsumerState<StoreWidget1> {
                             borderRadius: BorderRadius.circular(16)),
                         clipBehavior: Clip.hardEdge,
                         child: Image.network(
-                            widget.storeData.cakes![index].image.s3Url,
+                            widget.storeData.cakes![index].image.s3Url
+                                .replaceFirst("https", "http"),
                             fit: BoxFit.cover),
                         // NetworkImage(widget.storeData.cakes[index].image.s3Url)
                         //     as Widget,
