@@ -60,9 +60,13 @@ class CustomInterceptor extends Interceptor {
     // 토큰이 재발급되면 다시 새 토큰으로 요청
     print('[ERR] [${err.requestOptions.method}] ${err.requestOptions.path}');
 
-    final isStatus403 = err.response?.statusCode == 403;
+    // 만료되면 status코드가 401 이었네요~~
+
+    final isStatus403 = err.response?.statusCode == 401;
 
     if (isStatus403) {
+      //토큰 만료되는지 확인
+      print('토큰 만료됨');
       final dio = Dio();
       // try {
       final token =
@@ -82,6 +86,7 @@ class CustomInterceptor extends Interceptor {
       try {
         final response = await dio.fetch(options);
         // 성공적 요청을 반환(에러가 안난것처럼 보이게할수있음)
+        print('토큰 재발급 성공 후, 재전송 성공');
         return handler.resolve(response);
       } catch (e) {
         print('토큰 재발급 실패');

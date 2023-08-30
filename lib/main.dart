@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -52,12 +53,14 @@ void main() async {
       searchedHistoryAddressVMProvider
           .overrideWith(() => SearchedAddressVM(repository2)),
     ],
-    child: const KezzleApp(),
+    child: KezzleApp(),
   ));
 }
 
 class KezzleApp extends ConsumerWidget {
-  const KezzleApp({super.key});
+  KezzleApp({super.key});
+
+  final FirebaseAnalytics analytics = FirebaseAnalytics.instance;
 
   // This widget is the root of your application.
   @override

@@ -562,10 +562,6 @@ class StoreTabBarViewState extends ConsumerState<StoreTabBarView>
                 final storeData = stores[index];
                 return Column(children: [
                   StoreWidget1(storeData: storeData),
-                  // if (isLoading && index == stores.length /*- 1*/) ...[
-                  const SizedBox(height: 12),
-                  // Center(child: CircularProgressIndicator(color: coral01)),
-                  // ]
                 ]);
               }
             }),

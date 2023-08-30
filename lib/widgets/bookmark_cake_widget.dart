@@ -36,6 +36,7 @@ class BookmarkCakeWidget extends ConsumerWidget {
         children: [
           Container(
             width: double.infinity,
+            height: double.infinity,
             clipBehavior: Clip.hardEdge,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(16),
