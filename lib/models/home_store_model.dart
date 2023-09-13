@@ -24,18 +24,47 @@ class Cake {
   @JsonKey(name: 'owner_store_id')
   String ownerStoreId;
   bool isLiked;
+  String cursor;
 
   Cake(
     this.id,
     this.image,
     this.ownerStoreId,
     this.isLiked,
+    this.cursor,
   );
 
   factory Cake.fromJson(Map<String, dynamic> json) => _$CakeFromJson(json);
 
   Map<String, dynamic> toJson() => _$CakeToJson(this);
 }
+
+// @JsonSerializable()
+// class HomeStoreModel {
+//   @JsonKey(name: '_id')
+//   String id;
+//   String name;
+//   ImageModel? logo;
+//   String address;
+//   bool isLiked;
+//   double distance;
+//   List<Cake>? cakes;
+
+//   HomeStoreModel({
+//     required this.id,
+//     required this.name,
+//     this.logo,
+//     required this.address,
+//     required this.isLiked,
+//     required this.distance,
+//     this.cakes,
+//   });
+
+//   factory HomeStoreModel.fromJson(Map<String, dynamic> json) =>
+//       _$HomeStoreModelFromJson(json);
+
+//   Map<String, dynamic> toJson() => _$HomeStoreModelToJson(this);
+// }
 
 @JsonSerializable()
 class HomeStoreModel {
@@ -45,7 +74,7 @@ class HomeStoreModel {
   ImageModel? logo;
   String address;
   bool isLiked;
-  double distance;
+  // double distance;
   List<Cake>? cakes;
 
   HomeStoreModel({
@@ -54,7 +83,7 @@ class HomeStoreModel {
     this.logo,
     required this.address,
     required this.isLiked,
-    required this.distance,
+    // required this.distance,
     this.cakes,
   });
 

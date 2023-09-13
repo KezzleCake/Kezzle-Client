@@ -92,7 +92,7 @@ class HomeStoreViewModel
       List<HomeStoreModel> newHomeStoreList = [];
 
       final result = await _fetchStores(
-        afterDistance: _homeStoreList.last.distance,
+        // afterDistance: _homeStoreList.last.distance,
       );
       // print(_homeStoreList.last.name);
       newHomeStoreList = result;

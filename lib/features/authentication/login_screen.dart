@@ -8,6 +8,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kezzle/features/authentication/repos/authentication_repo.dart';
 import 'package:kezzle/features/authentication/make_user_screen.dart';
+import 'package:kezzle/features/onboarding/initail_setting_screen.dart';
 // import 'package:kezzle/features/bookmark/view_models/bookmarked_cake_vm.dart';
 import 'package:kezzle/features/profile/repos/user_repo.dart';
 // import 'package:kezzle/screens/home_screen.dart';
@@ -75,6 +76,13 @@ class LoginScreenState extends ConsumerState<LoginScreen> {
     });
   }
 
+  void onTapLaterSign() {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+          builder: (context) => const InitialSettingSreen(nickname: '')),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -137,6 +145,22 @@ class LoginScreenState extends ConsumerState<LoginScreen> {
                                         fontSize: 12,
                                         fontWeight: FontWeight.w600))),
                           ])),
+                      // const SizedBox(height: 20),
+                      // GestureDetector(
+                      //   onTap: onTapLaterSign,
+                      //   child: Container(
+                      //       width: 280,
+                      //       padding: const EdgeInsets.all(16),
+                      //       decoration: BoxDecoration(
+                      //           border: Border.all(color: coral01, width: 1),
+                      //           borderRadius: BorderRadius.circular(28)),
+                      //       child: Text('나중에 가입하기',
+                      //           textAlign: TextAlign.center,
+                      //           style: TextStyle(
+                      //               fontSize: 16,
+                      //               fontWeight: FontWeight.w600,
+                      //               color: coral01))),
+                      // ),
                       const SizedBox(height: 40),
                       Row(
                           mainAxisAlignment: MainAxisAlignment.center,

@@ -22,6 +22,7 @@ Cake _$CakeFromJson(Map<String, dynamic> json) => Cake(
       ImageModel.fromJson(json['image'] as Map<String, dynamic>),
       json['owner_store_id'] as String,
       json['isLiked'] as bool,
+      json['cursor'] as String,
     );
 
 Map<String, dynamic> _$CakeToJson(Cake instance) => <String, dynamic>{
@@ -29,6 +30,7 @@ Map<String, dynamic> _$CakeToJson(Cake instance) => <String, dynamic>{
       'image': instance.image,
       'owner_store_id': instance.ownerStoreId,
       'isLiked': instance.isLiked,
+      'cursor': instance.cursor,
     };
 
 HomeStoreModel _$HomeStoreModelFromJson(Map<String, dynamic> json) =>
@@ -40,7 +42,6 @@ HomeStoreModel _$HomeStoreModelFromJson(Map<String, dynamic> json) =>
           : ImageModel.fromJson(json['logo'] as Map<String, dynamic>),
       address: json['address'] as String,
       isLiked: json['isLiked'] as bool,
-      distance: (json['distance'] as num).toDouble(),
       cakes: (json['cakes'] as List<dynamic>?)
           ?.map((e) => Cake.fromJson(e as Map<String, dynamic>))
           .toList(),
@@ -53,6 +54,5 @@ Map<String, dynamic> _$HomeStoreModelToJson(HomeStoreModel instance) =>
       'logo': instance.logo,
       'address': instance.address,
       'isLiked': instance.isLiked,
-      'distance': instance.distance,
       'cakes': instance.cakes,
     };

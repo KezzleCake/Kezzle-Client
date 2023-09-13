@@ -50,7 +50,7 @@ class HomeCakeViewModel extends AutoDisposeAsyncNotifier<List<Cake>> {
       fetchMore = false;
       List<Cake> newCakesList = [];
 
-      final result = await _fetchCakes(afterId: _cakeList.last.id);
+      final result = await _fetchCakes(afterId: _cakeList.last.cursor);
 
       newCakesList = result;
       _cakeList = [..._cakeList, ...newCakesList];

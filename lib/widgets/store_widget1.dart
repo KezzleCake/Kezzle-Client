@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
+import 'package:kezzle/features/analytics/analytics.dart';
 // import 'package:kezzle/features/bookmark/view_models/bookmarked_store_vm.dart';
 import 'package:kezzle/models/home_store_model.dart';
 // import 'package:kezzle/screens/store/detail_store_screen.dart';
@@ -48,7 +49,12 @@ class StoreWidget1State extends ConsumerState<StoreWidget1> {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        print('스토어 디테일로 이동');
+        // print('스토어 디테일로 이동');
+        // 스토어 누르는지 체크
+        ref.read(analyticsProvider).gaEvent('click_store', {
+          'store_id': widget.storeData.id,
+          'store_name': widget.storeData.name,
+        });
         // Navigator.push(context, MaterialPageRoute(builder: (context) {
         //   return DetailStoreScreen(store: widget.storeData);
         // }));

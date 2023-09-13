@@ -24,7 +24,7 @@ class CakesRepo {
       try {
         final response = await dio.get('cakes', queryParameters: queryParams);
         if (response.statusCode == 200) {
-          // print(response);
+          print(response);
           return response.data;
           // return response.data['docs'];
         }
@@ -47,7 +47,7 @@ class CakesRepo {
       try {
         final response = await dio.get('cakes', queryParameters: queryParams);
         if (response.statusCode == 200) {
-          // print(response);
+          print(response);
           return response.data;
           // return response.data['docs'];
         }

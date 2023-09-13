@@ -131,7 +131,8 @@ class _SearchCakeScreenState extends State<SearchCakeScreen> {
         //   ),
         // ),
       ),
-      body: SingleChildScrollView(
+      body: 
+      SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

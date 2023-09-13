@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
+import 'package:kezzle/features/analytics/analytics.dart';
 import 'package:kezzle/models/detail_store_model.dart';
 // import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:kezzle/utils/colors.dart';
@@ -28,6 +29,12 @@ class StoreWidget extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return GestureDetector(
         onTap: () {
+          // 케이크 상세보기에서 스토어 위젯 클릭 로깅
+          ref.read(analyticsProvider).gaEvent('click_taste_store_widget', {
+            'store_id': storeData.id,
+            'store_name': storeData.name,
+            'store_taste': storeData.taste.join(', '),
+          });
           print('스토어 상세보기 페이지로 이동');
           context.push("/detail_store/${storeData.id}");
         },
@@ -40,8 +47,9 @@ class StoreWidget extends ConsumerWidget {
             ),
             child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
               CircleAvatar(
-                foregroundImage: NetworkImage(
-                    storeData.logo == null ? '' : storeData.logo!.s3Url.replaceFirst("https", "http")),
+                foregroundImage: NetworkImage(storeData.logo == null
+                    ? ''
+                    : storeData.logo!.s3Url.replaceFirst("https", "http")),
                 // backgroundImage: AssetImage('assets/heart_cake.png'),
                 radius: 63 / 2,
                 onForegroundImageError: (exception, stackTrace) {},

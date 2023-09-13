@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
+import 'package:kezzle/features/analytics/analytics.dart';
 import 'package:kezzle/models/detail_store_model.dart';
 import 'package:kezzle/models/home_store_model.dart';
 import 'package:kezzle/repo/cakes_repo.dart';
@@ -12,7 +13,6 @@ import 'package:kezzle/repo/stores_repo.dart';
 import 'package:kezzle/utils/colors.dart';
 import 'package:kezzle/utils/toast.dart';
 import 'package:kezzle/view_models/cake_vm.dart';
-import 'package:kezzle/view_models/id_token_provider.dart';
 import 'package:kezzle/view_models/search_setting_vm.dart';
 // import 'package:kezzle/widgets/keyword_widget.dart';
 import 'package:kezzle/widgets/store_widget.dart';
@@ -45,34 +45,13 @@ class DetailCakeScreen extends ConsumerWidget {
   const DetailCakeScreen(
       {super.key, required this.cakeId, required this.storeId});
 
-  // void onTapStore(BuildContext context) {
-  //   print('ddd');
-  //   Navigator.of(context).push(
-  //     MaterialPageRoute(
-  //       builder: (context) => const DetailStoreScreen(
-  //         storeId: 1,
-  //       ),
-  //     ),
-  //   );
-  // }
-
-  // void moreReview(BuildContext context) {
-  //   Navigator.of(context).push(
-  //     MaterialPageRoute(
-  //       builder: (context) => const MoreReviewScreen(),
-  //     ),
-  //   );
-  // }
-
-  // void onTapOrderButton(BuildContext context) {
-  //   print('주문하러가기 버튼 클릭');
-  //   Navigator.of(context).push(
-  //     MaterialPageRoute(
-  //       builder: (context) => DetailStoreScreen(),
-  //     ),
-  //   );
-  // }
-  void onTapOrderBtn(BuildContext context, String kakaoURL, String instaURL) {
+  void onTapOrderBtn(BuildContext context, String kakaoURL, String instaURL,
+      WidgetRef ref, String storeName) {
+    ref.read(analyticsProvider).gaEvent('click_order', {
+      'cake_id': cakeId,
+      'cake_store_id': storeId,
+      'store_name': storeName,
+    });
     showModalBottomSheet(
         context: context,
         isScrollControlled: true,
@@ -92,6 +71,14 @@ class DetailCakeScreen extends ConsumerWidget {
                   const SizedBox(height: 25),
                   ListTile(
                       onTap: () async {
+                        // 카카오 채널 이동했는지 로깅
+                        ref
+                            .read(analyticsProvider)
+                            .gaEvent('click_order_kakao', {
+                          'cake_id': cakeId,
+                          'cake_store_id': storeId,
+                          'store_name': storeName,
+                        });
                         if (kakaoURL.isNotEmpty) {
                           await launchUrlString(kakaoURL,
                               mode: LaunchMode.externalApplication);
@@ -107,6 +94,14 @@ class DetailCakeScreen extends ConsumerWidget {
                               color: gray08))),
                   ListTile(
                       onTap: () async {
+                        // 인스타그램 이동했는지 로깅
+                        ref
+                            .read(analyticsProvider)
+                            .gaEvent('click_order_insta', {
+                          'cake_id': cakeId,
+                          'cake_store_id': storeId,
+                          'store_name': storeName,
+                        });
                         if (instaURL.isNotEmpty) {
                           await launchUrlString(instaURL,
                               mode: LaunchMode.externalApplication);
@@ -129,6 +124,9 @@ class DetailCakeScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // ga 이벤트 확인
+    // ref.read(analyticsProvider).gaScreen(routeName);
+
     Future<Cake?> fetchCake() async {
       //케이크 정보 가져오기
       final response = await ref.read(cakesRepo).fetchCakeById(cakeId: cakeId);
@@ -533,7 +531,9 @@ class DetailCakeScreen extends ConsumerWidget {
                                               clipBehavior: Clip.hardEdge,
                                               child: Image.network(
                                                   data.data![2]![index].image
-                                                      .s3Url.replaceFirst("https", "http"),
+                                                      .s3Url
+                                                      .replaceFirst(
+                                                          "https", "http"),
                                                   fit: BoxFit.cover)));
                                     })),
                             // Row(
@@ -628,8 +628,8 @@ class DetailCakeScreen extends ConsumerWidget {
                     color: Colors.transparent,
                     elevation: 0,
                     child: GestureDetector(
-                      onTap: () => onTapOrderBtn(
-                          context, storeData.kakaoURL!, storeData.instaURL!),
+                      onTap: () => onTapOrderBtn(context, storeData.kakaoURL!,
+                          storeData.instaURL!, ref, storeData.name!),
                       child: Container(
                           alignment: Alignment.center,
                           decoration: BoxDecoration(

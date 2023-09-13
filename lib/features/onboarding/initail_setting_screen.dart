@@ -26,11 +26,12 @@ import '../../responsive/mobile_screen_layout.dart';
 // import 'package:kezzle/widgets/time_setting_widget.dart';
 
 class InitialSettingSreen extends ConsumerStatefulWidget {
-  static const routeURL = '/initial_setting';
+  // static const routeURL = '/initial_setting';
   static const routeName = 'initial_setting';
 
   final String _nickname;
-  const InitialSettingSreen(this._nickname, {super.key});
+  const InitialSettingSreen({super.key, required String nickname})
+      : _nickname = nickname;
 
   @override
   InitialSettingSreenState createState() => InitialSettingSreenState();
@@ -123,16 +124,23 @@ class InitialSettingSreenState extends ConsumerState<InitialSettingSreen> {
   // }
 
   // 시작하기 버튼 누를 시
-  void _onTapStart() async {
-    print('start');
-    User user = ref.read(authRepo).user!;
-    print(user);
-    final response =
-        await ref.read(userRepo).createProfile(widget._nickname, user);
-    if (response != null) {
-      if (!mounted) return;
+  void _onTapStart(String nickname) async {
+    print(nickname);
+    // 회원가입 나중에 하기로 온 사람
+    if (nickname.isEmpty) {
+      print('회원가입 안함');
       context.goNamed(MobileScreenLayout.routeName,
           pathParameters: {'tab': 'home'});
+    } else {
+      User user = ref.read(authRepo).user!;
+      print(user);
+      final response =
+          await ref.read(userRepo).createProfile(widget._nickname, user);
+      if (response != null) {
+        if (!mounted) return;
+        context.goNamed(MobileScreenLayout.routeName,
+            pathParameters: {'tab': 'home'});
+      }
     }
   }
 
@@ -164,7 +172,7 @@ class InitialSettingSreenState extends ConsumerState<InitialSettingSreen> {
               ignoring:
                   ref.watch(searchSettingViewModelProvider).address.isEmpty,
               child: GestureDetector(
-                  onTap: () => _onTapStart(),
+                  onTap: () => _onTapStart(widget._nickname),
                   child: Container(
                       alignment: Alignment.center,
                       padding: const EdgeInsets.all(16),

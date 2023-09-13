@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:kezzle/features/analytics/analytics.dart';
 // import 'package:go_router/go_router.dart';
 // import 'package:kezzle/features/profile/view_models/profile_vm.dart';
 // import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -74,6 +75,11 @@ class HomeScreenState extends ConsumerState<HomeScreen>
   // }
 
   void _onTapLocation(BuildContext context) {
+    // 위치 설정 버튼 누르는지 체크
+    ref
+        .read(analyticsProvider)
+        .gaEvent('btn_location_setting', {'location': 'location'});
+
     showModalBottomSheet(
         context: context,
         isScrollControlled: true,

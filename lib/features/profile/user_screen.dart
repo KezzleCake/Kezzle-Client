@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
+import 'package:kezzle/features/analytics/analytics.dart';
 import 'package:kezzle/features/authentication/repos/authentication_repo.dart';
 import 'package:kezzle/features/bookmark/view_models/bookmarked_store_vm.dart';
 import 'package:kezzle/features/profile/change_profile_screen.dart';
@@ -53,17 +54,8 @@ class UserScreenState extends ConsumerState<UserScreen> {
               onTapConfirm: () {
                 print('로그아웃');
                 ref.read(authRepo).signOut();
-                // 모든 프로바이더 삭제 -> 안되잖아 ㅜㅜ
-                // final container = ProviderContainer();
-                // container.dispose();
-
-                // 등록된 모든 프로바이더 삭제
-                // dbExistProvider 초기화 하기
-                //TODO: 이거 이제 굳이 안필요할거같은데?
-                // ref.read(dbExistProvider.notifier).state = false;
                 ref.read(tokenProvider.notifier).resetToken();
                 context.go("/");
-                // restart(context);
               });
         });
   }
@@ -95,12 +87,20 @@ class UserScreenState extends ConsumerState<UserScreen> {
         error: (error, stackTrace) => Center(child: Text(error.toString())),
         loading: () => Center(child: CircularProgressIndicator(color: coral01)),
         data: (data) => Scaffold(
-            appBar: AppBar(title: const Text('마이페이지'), elevation: 0, actions: [
-              // IconButton(
-              //   onPressed: () {},
-              //   icon: const FaIcon(FontAwesomeIcons.bell, size: 24),
-              // ),
-            ]),
+            appBar: AppBar(
+              title: const Text('마이페이지'),
+              elevation: 0,
+              // actions: [
+              //   IconButton(
+              //     onPressed: () {
+              //       ref
+              //           .read(analyticsProvider)
+              //           .gaEvent('testEvent', {'params': 'testparams'});
+              //     },
+              //     icon: const FaIcon(FontAwesomeIcons.bell, size: 24),
+              //   ),
+              // ],
+            ),
             body: Column(children: [
               Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20),

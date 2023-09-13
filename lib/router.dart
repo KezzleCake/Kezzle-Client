@@ -1,6 +1,7 @@
 import 'dart:io';
 
 // import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kezzle/features/authentication/login_screen.dart';
@@ -16,12 +17,16 @@ import 'package:kezzle/screens/authorization_check_screen.dart';
 import 'package:kezzle/screens/detail_cake_screen.dart';
 import 'package:kezzle/screens/store/detail_store_screen.dart';
 
-final dbExistProvider = StateProvider<bool>((ref) {
-  return false;
-});
+import 'features/onboarding/initail_setting_screen.dart';
+
+// final dbExistProvider = StateProvider<bool>((ref) {
+//   return false;
+// });
 
 final routerProvider = Provider((ref) {
+  final FirebaseAnalytics analytics = FirebaseAnalytics.instance;
   return GoRouter(
+    observers: [FirebaseAnalyticsObserver(analytics: analytics)],
     // initialLocation: Platform.isAndroid ? "/splash" : "/home",
     initialLocation:
         Platform.isAndroid ? "/splash" : "/authorization_check_screen",
@@ -106,11 +111,14 @@ final routerProvider = Provider((ref) {
         builder: (context, state) => const MakeUserScreen(),
       ),
       // initial_setting 화면 라우팅 설정
-      // GoRoute(
-      //   name: InitialSettingSreen.routeName,
-      //   path: InitialSettingSreen.routeURL,
-      //   // builder: (context, state) => const InitialSettingScreen(),
-      // ),
+      GoRoute(
+        path: "/initial_setting/:nickname",
+        name: InitialSettingSreen.routeName,
+        builder: (context, state) {
+          final String? nickname = state.pathParameters['nickname'];
+          return InitialSettingSreen(nickname: nickname ?? '');
+        },
+      ),
       // 홈 화면 라우팅 설정
       GoRoute(
         path: "/:tab(home|map|search|favorite|profile)",

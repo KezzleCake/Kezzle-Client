@@ -58,7 +58,8 @@ class _MakeUserScreenState extends State<MakeUserScreen> {
     // print(_nickname);
     // 닉네임 같이 보내주기
     Navigator.of(context).push(
-      MaterialPageRoute(builder: (context) => InitialSettingSreen(_nickname)),
+      MaterialPageRoute(
+          builder: (context) => InitialSettingSreen(nickname: _nickname)),
     );
   }
 

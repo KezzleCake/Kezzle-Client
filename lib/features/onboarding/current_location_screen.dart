@@ -69,6 +69,12 @@ class CurrentLocationScreenState extends ConsumerState<CurrentLocationScreen> {
 
       // 없을 수도 있을거 같으니까 예외처리 해줘야될듯?
       currentLocation = value['results'][0]['formatted_address'];
+      List<String> searchedAddress = currentLocation.split(' ');
+      // 0, 1번 인덱스 값(대한민국, 서울특별시) 제외하고 다시 ' '로 join
+      currentLocation = searchedAddress
+          .sublist(2, searchedAddress.length)
+          .join(' ')
+          .toString();
 
       latitude = centerLatLng.latitude;
       longitude = centerLatLng.longitude;
