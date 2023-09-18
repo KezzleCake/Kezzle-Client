@@ -31,12 +31,12 @@ class DetailStoreScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     Future<DetailStoreModel?> fetchDetailStoreData() async {
-      final lat = ref.watch(searchSettingViewModelProvider).latitude;
-      final lng = ref.watch(searchSettingViewModelProvider).longitude;
+      // final lat = ref.watch(searchSettingViewModelProvider).latitude;
+      // final lng = ref.watch(searchSettingViewModelProvider).longitude;
 
       final response = await ref
           .read(storeRepo)
-          .fetchDetailStore(storeId: storeId, lat: lat, lng: lng);
+          .fetchDetailStore(storeId: storeId,/* lat: lat, lng: lng*/);
       if (response != null) {
         final fetched = DetailStoreModel.fromJson(response);
         return fetched;

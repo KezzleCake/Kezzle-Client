@@ -1,23 +1,27 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:kezzle/features/cake_search/model/hotkeyword_model.dart';
+import 'package:kezzle/features/cake_search/vm/search_cake_vm.dart';
 // import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:kezzle/features/cake_search/widgets/keyword_widget.dart';
+import 'package:kezzle/models/home_store_model.dart';
 import 'package:kezzle/utils/colors.dart';
+import 'package:kezzle/widgets/bookmark_cake_widget.dart';
 import 'package:kezzle/widgets/my_divider_widget.dart';
 
 // enum Change { up, down, maintain }
 
-class SearchCakeInitailScreen extends StatefulWidget {
+class SearchCakeInitailScreen extends ConsumerStatefulWidget {
   const SearchCakeInitailScreen({super.key});
 
   @override
-  State<SearchCakeInitailScreen> createState() =>
-      _SearchCakeInitailScreenState();
+  SearchCakeInitailScreenState createState() => SearchCakeInitailScreenState();
 }
 
-class _SearchCakeInitailScreenState extends State<SearchCakeInitailScreen> {
+class SearchCakeInitailScreenState
+    extends ConsumerState<SearchCakeInitailScreen> {
   bool isSearched = false; // 한 개의 키워드라도 적용된 경우, true로 변경
   String newKeyword = ''; // 새로운 키워드를 입력받을 변수
   final TextEditingController _textEditingController = TextEditingController();
@@ -88,6 +92,10 @@ class _SearchCakeInitailScreenState extends State<SearchCakeInitailScreen> {
       // 새로운 키워드가 적용된 키워드 리스트에 없는 경우, 추가
       if (!appliedKeyword.contains(newKeyword)) {
         appliedKeyword.insert(0, newKeyword);
+        print('새로운 키워드 적용');
+        ref
+            .read(searchCakeViewModelProvider.notifier)
+            .refresh(keywords: appliedKeyword);
       }
       if (recentKeyword.contains(newKeyword)) {
         recentKeyword.remove(newKeyword); // 최근 검색키워드에 있었으면 삭제하고 앞쪽에 다시 추가
@@ -154,6 +162,7 @@ class _SearchCakeInitailScreenState extends State<SearchCakeInitailScreen> {
           body: isSearched
               ? SingleChildScrollView(
                   child: Column(
+                      // mainAxisSize: MainAxisSize.max,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                       const SizedBox(height: 18),
@@ -195,46 +204,118 @@ class _SearchCakeInitailScreenState extends State<SearchCakeInitailScreen> {
                               separatorBuilder: (context, index) =>
                                   const SizedBox(width: 8),
                               itemCount: appliedKeyword.length)),
-                      GridView.builder(
-                        physics: const NeverScrollableScrollPhysics(),
-                        shrinkWrap: true,
-                        itemCount: 20,
-                        padding:
-                            const EdgeInsets.only(top: 30, left: 20, right: 20),
-                        gridDelegate:
-                            const SliverGridDelegateWithFixedCrossAxisCount(
-                                crossAxisCount: 3,
-                                crossAxisSpacing: 6,
-                                mainAxisSpacing: 6,
-                                childAspectRatio: 1),
-                        itemBuilder: (context, index) => Container(
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(16),
-                                boxShadow: [shadow01]),
-                            clipBehavior: Clip.hardEdge,
-                            child: Stack(
-                                alignment: Alignment.bottomRight,
-                                children: [
-                                  Image.asset('assets/heart_cake.png',
-                                      fit: BoxFit.cover),
-                                  Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: Stack(children: [
-                                        SvgPicture.asset(
-                                          'assets/icons/like=on_in.svg',
-                                          colorFilter: ColorFilter.mode(
-                                              coral01, BlendMode.srcATop),
-                                        ),
-                                        SvgPicture.asset(
-                                          'assets/icons/like=off.svg',
-                                          colorFilter: const ColorFilter.mode(
-                                              Colors.white, BlendMode.srcATop),
-                                        ),
-                                      ])),
-                                ])),
-                      ),
+                      ref.watch(searchCakeViewModelProvider).when(
+                            loading: () => Column(
+                              children: [
+                                const SizedBox(height: 100),
+                                Center(
+                                  child: CircularProgressIndicator(
+                                    color: coral01,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            error: (err, stack) =>
+                                const Center(child: Text('검색 실패')),
+                            data: (data) {
+                              List<Cake> cakes = data;
+                              if (cakes.isEmpty) {
+                                return const Center(
+                                    child: Text('검색 결과가 없습니다.'));
+                              }
+                              return GridView.builder(
+                                physics: const NeverScrollableScrollPhysics(),
+                                shrinkWrap: true,
+                                itemCount: 20,
+                                padding: const EdgeInsets.only(
+                                    top: 30, left: 20, right: 20),
+                                gridDelegate:
+                                    const SliverGridDelegateWithFixedCrossAxisCount(
+                                        crossAxisCount: 3,
+                                        crossAxisSpacing: 6,
+                                        mainAxisSpacing: 6,
+                                        childAspectRatio: 1),
+                                itemBuilder: (context, index) {
+                                  return BookmarkCakeWidget(
+                                      cakeData: cakes[index]);
+                                  // Container(
+                                  //   decoration: BoxDecoration(
+                                  //       borderRadius: BorderRadius.circular(16),
+                                  //       boxShadow: [shadow01]),
+                                  //   clipBehavior: Clip.hardEdge,
+                                  //   child:
+                                  //   Stack(
+                                  //       alignment: Alignment.bottomRight,
+                                  //       children: [
+                                  //         // Image.asset('assets/heart_cake.png',
+                                  //         //     fit: BoxFit.cover),
+                                  //         Image.network(
+                                  //             cakes[index].image.s3Url
+                                  //                 .replaceFirst(
+                                  //                     "https", "http"),
+                                  //             fit: BoxFit.cover),
+                                  //         Padding(
+                                  //             padding: const EdgeInsets.all(8.0),
+                                  //             child: Stack(children: [
+                                  //               SvgPicture.asset(
+                                  //                 'assets/icons/like=on_in.svg',
+                                  //                 colorFilter: ColorFilter.mode(
+                                  //                     coral01, BlendMode.srcATop),
+                                  //               ),
+                                  //               SvgPicture.asset(
+                                  //                 'assets/icons/like=off.svg',
+                                  //                 colorFilter:
+                                  //                     const ColorFilter.mode(
+                                  //                         Colors.white,
+                                  //                         BlendMode.srcATop),
+                                  //               ),
+                                  //             ])),
+                                  //       ]));
+                                },
+                              );
+                            },
+                          ),
+                      //  GridView.builder(
+                      //     physics: const NeverScrollableScrollPhysics(),
+                      //     shrinkWrap: true,
+                      //     itemCount: 20,
+                      //     padding:
+                      //         const EdgeInsets.only(top: 30, left: 20, right: 20),
+                      //     gridDelegate:
+                      //         const SliverGridDelegateWithFixedCrossAxisCount(
+                      //             crossAxisCount: 3,
+                      //             crossAxisSpacing: 6,
+                      //             mainAxisSpacing: 6,
+                      //             childAspectRatio: 1),
+                      //     itemBuilder: (context, index) => Container(
+                      //         decoration: BoxDecoration(
+                      //             borderRadius: BorderRadius.circular(16),
+                      //             boxShadow: [shadow01]),
+                      //         clipBehavior: Clip.hardEdge,
+                      //         child: Stack(
+                      //             alignment: Alignment.bottomRight,
+                      //             children: [
+                      //               Image.asset('assets/heart_cake.png',
+                      //                   fit: BoxFit.cover),
+                      //               Padding(
+                      //                   padding: const EdgeInsets.all(8.0),
+                      //                   child: Stack(children: [
+                      //                     SvgPicture.asset(
+                      //                       'assets/icons/like=on_in.svg',
+                      //                       colorFilter: ColorFilter.mode(
+                      //                           coral01, BlendMode.srcATop),
+                      //                     ),
+                      //                     SvgPicture.asset(
+                      //                       'assets/icons/like=off.svg',
+                      //                       colorFilter: const ColorFilter.mode(
+                      //                           Colors.white, BlendMode.srcATop),
+                      //                     ),
+                      //                   ])),
+                      //             ])),
+                      //   ),
                       const SizedBox(height: 100),
                     ]))
+              // 초기 검색화면(최근, 인기, 검색어 목록)
               : SingleChildScrollView(
                   // physics: const NeverScrollableScrollPhysics(),
                   child: Column(

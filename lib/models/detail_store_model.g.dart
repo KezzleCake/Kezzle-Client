@@ -31,7 +31,6 @@ DetailStoreModel _$DetailStoreModelFromJson(Map<String, dynamic> json) =>
       latitude: (json['latitude'] as num).toDouble(),
       longitude: (json['longitude'] as num).toDouble(),
       kakaoMapURL: json['kakao_map_url'] as String?,
-      distance: (json['distance'] as num).toDouble(),
     );
 
 Map<String, dynamic> _$DetailStoreModelToJson(DetailStoreModel instance) =>
@@ -53,5 +52,4 @@ Map<String, dynamic> _$DetailStoreModelToJson(DetailStoreModel instance) =>
       'latitude': instance.latitude,
       'longitude': instance.longitude,
       'kakao_map_url': instance.kakaoMapURL,
-      'distance': instance.distance,
     };

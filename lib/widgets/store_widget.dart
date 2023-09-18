@@ -113,12 +113,12 @@ class StoreWidget extends ConsumerWidget {
                     //   ],
                     // ),
                     // const SizedBox(height: 4),
-                    Text('${(storeData.distance / 1000).toStringAsFixed(1)}km',
-                        // '0.3km · 20,000원~40,000원',
-                        style: TextStyle(
-                            fontSize: 12,
-                            color: gray05,
-                            fontWeight: FontWeight.w400)),
+                    // Text('${(storeData.distance / 1000).toStringAsFixed(1)}km',
+                    //     // '0.3km · 20,000원~40,000원',
+                    //     style: TextStyle(
+                    //         fontSize: 12,
+                    //         color: gray05,
+                    //         fontWeight: FontWeight.w400)),
                     const SizedBox(height: 8),
                     for (int i = 0; i < storeData.taste.length; i++)
                       Text(

@@ -31,15 +31,10 @@ class BookmarkedStoreViewModel
 
   // 좋아요한 스토어 목록 가져오는 메서드
   Future<List<HomeStoreModel>> fetchBookmarkedStores({int? page}) async {
-    // 위도, 경도, 유저 가져와서 api 요청
-    final lat = ref.watch(searchSettingViewModelProvider).latitude;
-    final lon = ref.watch(searchSettingViewModelProvider).longitude;
     User? user = _authRepo!.user;
 
     final List<dynamic>? result = await _storeRepo!.fetchBookmarkedStores(
       user: user!,
-      lat: lat,
-      lng: lon,
       page: page,
     );
     // print(result);
@@ -95,5 +90,5 @@ final bookmarkedStoreProvider = AsyncNotifierProvider.autoDispose<
   () {
     return BookmarkedStoreViewModel();
   },
-  dependencies: [searchSettingViewModelProvider, authRepo],
+  dependencies: [authRepo],
 );

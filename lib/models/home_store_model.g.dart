@@ -23,6 +23,7 @@ Cake _$CakeFromJson(Map<String, dynamic> json) => Cake(
       json['owner_store_id'] as String,
       json['isLiked'] as bool,
       json['cursor'] as String,
+      (json['hashtag'] as List<dynamic>).map((e) => e as String).toList(),
     );
 
 Map<String, dynamic> _$CakeToJson(Cake instance) => <String, dynamic>{
@@ -31,6 +32,7 @@ Map<String, dynamic> _$CakeToJson(Cake instance) => <String, dynamic>{
       'owner_store_id': instance.ownerStoreId,
       'isLiked': instance.isLiked,
       'cursor': instance.cursor,
+      'hashtag': instance.hashtag,
     };
 
 HomeStoreModel _$HomeStoreModelFromJson(Map<String, dynamic> json) =>

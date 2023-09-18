@@ -33,7 +33,7 @@ class DetailStoreModel {
   double longitude;
   @JsonKey(name: 'kakao_map_url')
   String? kakaoMapURL;
-  double distance;
+  // double distance;
 
   // List<Cake> cakes;
 
@@ -55,7 +55,7 @@ class DetailStoreModel {
     required this.latitude,
     required this.longitude,
     this.kakaoMapURL,
-    required this.distance,
+    // required this.distance,
   });
 
   factory DetailStoreModel.fromJson(Map<String, dynamic> json) =>

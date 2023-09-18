@@ -131,8 +131,7 @@ class StoreWidget1State extends ConsumerState<StoreWidget1> {
                             ),
                           ]),
                       const SizedBox(height: 1),
-                      Text(
-                          '${(widget.storeData.distance / 1000).toStringAsFixed(1)}kmㆍ${widget.storeData.address}',
+                      Text('${widget.storeData.address}',
                           style: TextStyle(
                               fontSize: 12,
                               fontWeight: FontWeight.w400,

@@ -115,30 +115,14 @@ class StoreRepo {
 
   // 사용자가 찜한 스토어 리스트 가져오기
   Future<List<dynamic>?> fetchBookmarkedStores(
-      {required User user,
-      required double lat,
-      required double lng,
-      int? page}) async {
-    // 사용자 정보, 위도 경도 받아서 찜한 스토어 리스트 가져오기
+      {required User user, int? page}) async {
     if (page == null) {
-      // 첫번째 페이지 가져오기 -> 이거는 페이지네이션 아님. 근데 일단? 혹시 몰라서 page 넣어둠.
-      // 여기서 api 요청 보내기!
-      // var options = BaseOptions(
-      //     baseUrl: dotenv.env['SERVER_ENDPOINT']!,
-      //     connectTimeout: const Duration(seconds: 20),
-      //     receiveTimeout: const Duration(seconds: 20),
-      //     headers: {
-      //       'Authorization': 'Bearer ${await user.getIdToken()}',
-      //     });
-      // Dio dio = Dio(options);
       Dio dio = ref.watch(dioProvider);
-      final queryParams = {
-        'latitude': lat,
-        'longitude': lng,
-      };
+
       try {
-        final response = await dio.get('users/${user.uid}/liked-stores',
-            queryParameters: queryParams);
+        final response = await dio.get(
+          'users/${user.uid}/liked-stores',
+        );
         if (response.statusCode == 200) {
           // print('유저가 좋아요한 스토어 정보 가져오기 성공');
           // print(response.data);
@@ -163,24 +147,17 @@ class StoreRepo {
   Future<Map<String, dynamic>?> fetchDetailStore(
       {required String storeId,
       // required String token,
-      required lat,
-      required lng}) async {
-    // var options = BaseOptions(
-    //     baseUrl: dotenv.env['SERVER_ENDPOINT']!,
-    //     connectTimeout: const Duration(seconds: 20),
-    //     receiveTimeout: const Duration(seconds: 20),
-    //     headers: {
-    //       'Authorization': 'Bearer $token',
-    //     });
-    // Dio dio = Dio(options);
+      // required lat,
+      // required lng
+      }) async {
     Dio dio = ref.read(dioProvider);
-    final queryParams = {
-      'latitude': lat,
-      'longitude': lng,
-    };
+    // final queryParams = {
+    //   'latitude': lat,
+    //   'longitude': lng,
+    // };
     try {
       final response =
-          await dio.get('stores/$storeId', queryParameters: queryParams);
+          await dio.get('stores/$storeId',/* queryParameters: queryParams*/);
       if (response.statusCode == 200) {
         print('스토어 상세 정보 가져오기 성공');
         // print(response.data);

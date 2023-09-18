@@ -227,6 +227,83 @@ class CakesRepo {
     }
     return null;
   }
+
+  //유사케이크 가져오기
+  Future<Map<String, dynamic>?> fetchSimilarCakes({
+    required String cakeId,
+    required double lat,
+    required double lng,
+    required double dist,
+  }) async {
+    Dio dio = ref.watch(dioProvider);
+    final queryParams = {
+      'latitude': lat,
+      'longitude': lng,
+      'dist': dist,
+      'size': 6,
+    };
+    try {
+      final response =
+          await dio.get('cakes/$cakeId/similar', queryParameters: queryParams);
+      if (response.statusCode == 200) {
+        print('유사케이크 가져오기 성공');
+        return response.data;
+      }
+    } catch (e) {
+      print(e);
+      print('유사케이크 가져오기 실패');
+      return null;
+    } finally {
+      // dio.close();
+    }
+    return null;
+  }
+
+  // 인기케이크 가져오기
+  Future<Map<String, dynamic>?> fetchPopularCakes() async {
+    Dio dio = ref.watch(dioProvider);
+
+    try {
+      final response = await dio.get('cakes/popular');
+      if (response.statusCode == 200) {
+        print('인기 케이크 가져오기 성공');
+        // print(response.data);
+        return response.data;
+      }
+    } catch (e) {
+      // print(e);
+      print('인기 케이크 가져오기 실패');
+      return null;
+    } finally {
+      // dio.close();
+    }
+    return null;
+  }
+
+  // 인기케이크 가져오기
+  Future<Map<String, dynamic>?> searchCakes(
+      {required List<String> keywords}) async {
+    Dio dio = ref.watch(dioProvider);
+    final queryParams = {
+      'keyword': keywords.join(', '),
+    };
+
+    try {
+      final response = await dio.get('search', queryParameters: queryParams);
+      if (response.statusCode == 200) {
+        print('케이크 검색 성공');
+        // print(response.data);
+        return response.data;
+      }
+    } catch (e) {
+      // print(e);
+      print('케이크 검색 실패');
+      return null;
+    } finally {
+      // dio.close();
+    }
+    return null;
+  }
 }
 
 // cakesRepo 라는 이름으로, CakesRepo 클래스를 Provider로 등록

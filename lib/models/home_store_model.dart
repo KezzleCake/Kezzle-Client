@@ -25,6 +25,7 @@ class Cake {
   String ownerStoreId;
   bool isLiked;
   String cursor;
+  List<String> hashtag;
 
   Cake(
     this.id,
@@ -32,6 +33,7 @@ class Cake {
     this.ownerStoreId,
     this.isLiked,
     this.cursor,
+    this.hashtag,
   );
 
   factory Cake.fromJson(Map<String, dynamic> json) => _$CakeFromJson(json);

@@ -142,11 +142,11 @@ class DetailCakeScreen extends ConsumerWidget {
 
     Future<DetailStoreModel?> fetchStore() async {
       //스토어 정보 가져오기
-      final double lat = ref.watch(searchSettingViewModelProvider).latitude;
-      final double lng = ref.watch(searchSettingViewModelProvider).longitude;
-      final response = await ref
-          .read(storeRepo)
-          .fetchDetailStore(storeId: storeId, lat: lat, lng: lng);
+      // final double lat = ref.watch(searchSettingViewModelProvider).latitude;
+      // final double lng = ref.watch(searchSettingViewModelProvider).longitude;
+      final response = await ref.read(storeRepo).fetchDetailStore(
+            storeId: storeId, /*lat: lat, lng: lng*/
+          );
       if (response != null) {
         // print(response);
         // response를 DetailStoreModel로 변환

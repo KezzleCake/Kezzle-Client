@@ -1,9 +1,12 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:kezzle/features/cake_search/search_cake_initial_screen.dart';
+import 'package:kezzle/models/home_store_model.dart';
+import 'package:kezzle/repo/cakes_repo.dart';
 import 'package:kezzle/screens/more_curation_screen.dart';
-import 'package:kezzle/screens/search_similar_cake_screen.dart';
+import 'package:kezzle/features/serch_similar_cake/search_similar_cake_screen.dart';
 import 'package:kezzle/utils/colors.dart';
 import 'package:kezzle/widgets/curation_box_widget.dart';
 import 'package:visibility_detector/visibility_detector.dart';
@@ -55,18 +58,36 @@ class _CurationHomeScreenState
     }
   }
 
-  void onTapTop10Cake() {
-    // 상단 Top10 케이크 선택 시..
-    Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (context) => const SearchSimilarCakeScreen()));
-  }
+  // void onTapTop10Cake() {
+  //   // 상단 Top10 케이크 선택 시..
+  //   // Navigator.push(
+  //   //     context,
+  //   //     MaterialPageRoute(
+  //   //         builder: (context) => const SearchSimilarCakeScreen()));
+  // }
 
   void onTapMore() {
     // 더보기 선택 시..
     Navigator.push(
-        context, MaterialPageRoute(builder: (context) => MoreCurationScreen()));
+        context,
+        MaterialPageRoute(
+            builder: (context) => MoreCurationScreen(
+                title: '인기 Top20 케이크', fetchCakes: fetchTop10Cakes)));
+  }
+
+  Future<List<Cake>> fetchTop10Cakes(WidgetRef ref) async {
+    //케이크 정보 가져오기
+    List<Cake> cakes = [];
+    final response = await ref.read(cakesRepo).fetchPopularCakes();
+    if (response != null) {
+      // print(response);
+      response['cakes'].forEach((cake) {
+        cakes.add(Cake.fromJson(cake));
+      });
+      return cakes;
+    } else {
+      return [];
+    }
   }
 
   void onTapSearch() {
@@ -197,7 +218,7 @@ class _CurationHomeScreenState
                 itemCount: 5,
                 itemBuilder: (context, index) {
                   return GestureDetector(
-                    onTap: onTapTop10Cake,
+                    // onTap: onTapTop10Cake,
                     child: Container(
                       clipBehavior: Clip.hardEdge,
                       decoration: BoxDecoration(
