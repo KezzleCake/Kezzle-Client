@@ -23,8 +23,8 @@ class Cake {
   ImageModel image;
   @JsonKey(name: 'owner_store_id')
   String ownerStoreId;
-  bool isLiked;
-  String cursor;
+  bool? isLiked;
+  String? cursor;
   List<String> hashtag;
 
   Cake(

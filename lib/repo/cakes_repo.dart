@@ -304,6 +304,28 @@ class CakesRepo {
     }
     return null;
   }
+
+  // 특정 큐레이션 케이크 가져오기
+  Future<Map<String, dynamic>?> fetchCoverCakes(
+      {required String coverId}) async {
+    Dio dio = ref.watch(dioProvider);
+
+    try {
+      final response = await dio.get('curation/$coverId');
+      if (response.statusCode == 200) {
+        print('특정 큐레이션 케이크 가져오기 성공');
+        // print(response.data);
+        return response.data;
+      }
+    } catch (e) {
+      // print(e);
+      print('특정 큐레이션 케이크 가져오기 실패');
+      return null;
+    } finally {
+      // dio.close();
+    }
+    return null;
+  }
 }
 
 // cakesRepo 라는 이름으로, CakesRepo 클래스를 Provider로 등록

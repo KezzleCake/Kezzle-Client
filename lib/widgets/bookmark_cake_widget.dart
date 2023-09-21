@@ -83,9 +83,9 @@ class LikeButton extends ConsumerWidget {
     return Padding(
         padding: const EdgeInsets.all(8.0),
         child: GestureDetector(
-          onTap: () => onTapLikes(cakeData.isLiked, ref),
+          onTap: () => onTapLikes(cakeData.isLiked!, ref),
           child: Stack(children: [
-            ref.watch(cakeProvider(cakeData.id)) ?? cakeData.isLiked
+            ref.watch(cakeProvider(cakeData.id)) ?? cakeData.isLiked!
                 ? SvgPicture.asset('assets/icons/like=on_in.svg')
                 : SvgPicture.asset('assets/icons/like=off_in.svg'),
             SvgPicture.asset('assets/icons/like=off.svg',

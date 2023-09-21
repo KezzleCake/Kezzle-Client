@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+
+import 'colors.dart';
 
 enum MarkerType { placeMarker, selectedMarker, exhibitionMarker }
 
@@ -44,7 +47,8 @@ class _ExhibitionMarkerState extends State<ExhibitionMarker> {
     }
 
     // return asset.Images.marker;
-    return Container(width: 10, height: 10, color: Colors.green);
+    // return Container(width: 10, height: 10, color: Colors.red);
+    return FaIcon(FontAwesomeIcons.locationDot, color: coral01, size: 30);
   }
 
   @override

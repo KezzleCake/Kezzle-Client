@@ -34,8 +34,8 @@ class SearchSimilarCakeVM
     _cakesRepository = ref.read(cakesRepo);
 
     // 유사 케이크 가져오기
-    final similarCakes = await _fetchSimilarCakes();
-    _similarCakeList = similarCakes;
+    final fetcedCakes = await _fetchSimilarCakes();
+    _similarCakeList = fetcedCakes;
     // await Future.delayed(const Duration(seconds: 2));
 
     return _similarCakeList;

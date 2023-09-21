@@ -6,10 +6,12 @@ import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kezzle/firebase_options.dart';
+import 'package:kezzle/repo/current_keyword_repo.dart';
 import 'package:kezzle/repo/search_setting_repo.dart';
 import 'package:kezzle/repo/searched_address_repo.dart';
 import 'package:kezzle/router.dart';
 import 'package:kezzle/utils/colors.dart';
+import 'package:kezzle/view_models/currnet_keyword_view_model.dart';
 import 'package:kezzle/view_models/search_setting_vm.dart';
 import 'package:kezzle/view_models/searched_address_view_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -34,8 +36,10 @@ void main() async {
 
   // 코드 너무 막장이다... 고칠방법을 생각해보자..
   final preferences = await SharedPreferences.getInstance();
+  // ...
   final repository = SearchSettingRepository(preferences);
   final repository2 = SearchedAddressRepository(preferences);
+  final repository3 = CurrentKeywordRepository(preferences);
 
   // 화면 세로 고정
   await SystemChrome.setPreferredOrientations([
@@ -51,6 +55,8 @@ void main() async {
           .overrideWith(() => SearchSettingViewModel(repository)),
       searchedHistoryAddressVMProvider
           .overrideWith(() => SearchedAddressVM(repository2)),
+      currentKeywordVMProvider
+          .overrideWith(() => CurrentKeywordVM(repository3)),
     ],
     child: KezzleApp(),
   ));

@@ -14,7 +14,7 @@ class DetailStoreModel {
   String? instaURL;
   @JsonKey(name: 'kakako_url')
   String? kakaoURL;
-  @JsonKey(name: 'storeFeature')
+  @JsonKey(name: 'store_feature')
   String? storeFeature;
   @JsonKey(name: 'store_description')
   String? storeDescription;

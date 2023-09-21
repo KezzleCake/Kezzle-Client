@@ -7,9 +7,10 @@ import 'package:kezzle/features/cake_search/vm/search_cake_vm.dart';
 // import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:kezzle/features/cake_search/widgets/keyword_widget.dart';
 import 'package:kezzle/models/home_store_model.dart';
+import 'package:kezzle/repo/ranks_repo.dart';
 import 'package:kezzle/utils/colors.dart';
+import 'package:kezzle/view_models/currnet_keyword_view_model.dart';
 import 'package:kezzle/widgets/bookmark_cake_widget.dart';
-import 'package:kezzle/widgets/my_divider_widget.dart';
 
 // enum Change { up, down, maintain }
 
@@ -26,59 +27,9 @@ class SearchCakeInitailScreenState
   String newKeyword = ''; // 새로운 키워드를 입력받을 변수
   final TextEditingController _textEditingController = TextEditingController();
   String _text = ''; // 검색창에 입력된 텍스트를 저장할 변수
-
-  final List recentKeyword = [
-    // 최근 검색 키워드 리스트
-    '스마일',
-    '케이크',
-  ];
-
-  // final List hotKeyword = [
-  //   // 인기 검색 키워드 리스트
-  //   '스마일',
-  //   '케이크',
-  //   '하트',
-  //   '포항항',
-  //   '크리스마스',
-  //   '김이한팀',
-  //   '스마일',
-  //   '케이크',
-  //   '하트',
-  //   '포항항',
-  // ];
-
-  List<HotKeywordModel> hotkeywords = [
-    HotKeywordModel(change: Change.up, keyword: '스마일', rank: 1),
-    HotKeywordModel(change: Change.down, keyword: '케이크', rank: 2),
-    HotKeywordModel(change: Change.maintain, keyword: '하트', rank: 3),
-    HotKeywordModel(change: Change.up, keyword: '포항항', rank: 4),
-    HotKeywordModel(change: Change.up, keyword: '스마일', rank: 5),
-    HotKeywordModel(change: Change.down, keyword: '케이크', rank: 6),
-    HotKeywordModel(change: Change.maintain, keyword: '하트', rank: 7),
-    HotKeywordModel(change: Change.up, keyword: '포항항', rank: 8),
-    HotKeywordModel(change: Change.up, keyword: '스마일', rank: 9),
-    HotKeywordModel(change: Change.down, keyword: '케이크', rank: 10),
-  ];
+  late Future<RankingListModel?> fetchRanking;
 
   List<String> appliedKeyword = []; // 적용된 키워드 리스트
-
-  // List<String> searcedCakeUrl = [
-  //   // 검색된 케이크 리스트
-  //   'assets/heart_cake.png',
-  //   'assets/heart_cake.png',
-  //   'assets/heart_cake.png',
-  //   'assets/heart_cake.png',
-  //   'assets/heart_cake.png',
-  //   'assets/heart_cake.png',
-  //   'assets/heart_cake.png',
-  //   'assets/heart_cake.png',
-  //   'assets/heart_cake.png',
-  //   'assets/heart_cake.png',
-  //   'assets/heart_cake.png',
-  //   'assets/heart_cake.png',
-  //   'assets/heart_cake.png',
-  //   'assets/heart_cake.png',
-  // ]; // 검색된 케이크 리스트
 
   void search(String value) {
     // 검색 키워드를 입력하고 검색 버튼을 누른 경우, 실행될 함수
@@ -92,16 +43,23 @@ class SearchCakeInitailScreenState
       // 새로운 키워드가 적용된 키워드 리스트에 없는 경우, 추가
       if (!appliedKeyword.contains(newKeyword)) {
         appliedKeyword.insert(0, newKeyword);
-        print('새로운 키워드 적용');
+        // print('새로운 키워드 적용');
         ref
             .read(searchCakeViewModelProvider.notifier)
             .refresh(keywords: appliedKeyword);
       }
-      if (recentKeyword.contains(newKeyword)) {
-        recentKeyword.remove(newKeyword); // 최근 검색키워드에 있었으면 삭제하고 앞쪽에 다시 추가
-        recentKeyword.insert(0, newKeyword);
+      if (ref.read(currentKeywordVMProvider).contains(newKeyword)) {
+        // 최근 검색 키워드 에 있었으면 삭제하고 앞쪽에 다시 추가
+
+        print(ref.read(currentKeywordVMProvider));
+        ref.read(currentKeywordVMProvider.notifier).deleteKeyword(newKeyword);
+        ref
+            .read(currentKeywordVMProvider.notifier)
+            .addCurrentKeyword(newKeyword);
       } else {
-        recentKeyword.insert(0, newKeyword); // 최근 검색키워드에 없었으면 추가
+        ref
+            .read(currentKeywordVMProvider.notifier)
+            .addCurrentKeyword(newKeyword);
       }
       _textEditingController.clear(); // 검색창 비우기
       setState(() {});
@@ -114,18 +72,42 @@ class SearchCakeInitailScreenState
 
   @override
   void initState() {
-    super.initState();
+    fetchRanking = fetchRankingList();
     _textEditingController.addListener(() {
       setState(() {
         _text = _textEditingController.text;
       });
     });
+    super.initState();
   }
 
   @override
   void dispose() {
     _textEditingController.dispose();
     super.dispose();
+  }
+
+  // 적용된 키워드가 삭제 됐을 때, 실행 될 함수
+  void deleteAppliedKeyword(String keyword) {
+    appliedKeyword.remove(keyword);
+    ref
+        .read(searchCakeViewModelProvider.notifier)
+        .refresh(keywords: appliedKeyword);
+    // setState(() {});
+  }
+
+  Future<RankingListModel?> fetchRankingList() async {
+    final response = await ref.read(ranksRepo).fetchRankingList();
+    if (response == null) {
+      return null;
+    } else {
+      final rankingListModel = RankingListModel.fromJson(response);
+      return rankingListModel;
+    }
+  }
+
+  void onTapDeleteRecentKeyword() {
+    ref.read(currentKeywordVMProvider.notifier).deleteAllRecentKeyword();
   }
 
   @override
@@ -166,25 +148,41 @@ class SearchCakeInitailScreenState
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                       const SizedBox(height: 18),
-                      Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 20),
-                          child: Text('최근 검색 키워드',
-                              style: TextStyle(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w600,
-                                  color: gray06))),
-                      const SizedBox(height: 12),
-                      Container(
-                          padding: const EdgeInsets.only(left: 20, right: 20),
-                          height: 33,
-                          child: ListView.separated(
-                              scrollDirection: Axis.horizontal,
-                              itemBuilder: (context, index) =>
-                                  KeywordWidget(keyword: recentKeyword[index]),
-                              separatorBuilder: (context, index) =>
-                                  const SizedBox(width: 8),
-                              itemCount: recentKeyword.length)),
-                      const MyDivider(),
+                      // Padding(
+                      //     padding: const EdgeInsets.symmetric(horizontal: 20),
+                      //     child:
+                      // Row(
+                      //   children: [
+                      //     Text('최근 검색 키워드',
+                      //         style: TextStyle(
+                      //             fontSize: 12,
+                      //             fontWeight: FontWeight.w600,
+                      //             color: gray06)),
+                      //     // Container(
+                      //     //   child: Text('지우기'),
+                      //     // )
+                      //   ],
+                      // )),
+                      // const SizedBox(height: 12),
+                      // Container(
+                      //     padding: const EdgeInsets.only(left: 20, right: 20),
+                      //     height: 33,
+                      //     child: ListView.separated(
+                      //         scrollDirection: Axis.horizontal,
+                      //         itemBuilder: (context, index) => KeywordWidget(
+                      //               // keyword: recentKeyword[index],
+                      //               keyword: ref
+                      //                   .watch(currentKeywordVMProvider)[index],
+                      //               deleteFunction: () {
+                      //                 print('최근 검색키워드 삭제');
+                      //               },
+                      //             ),
+                      //         separatorBuilder: (context, index) =>
+                      //             const SizedBox(width: 8),
+                      //         // itemCount: recentKeyword.length
+                      //         itemCount:
+                      //             ref.watch(currentKeywordVMProvider).length)),
+                      // const MyDivider(),
                       Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 20),
                           child: Text('적용된 검색 키워드',
@@ -199,6 +197,8 @@ class SearchCakeInitailScreenState
                           child: ListView.separated(
                               scrollDirection: Axis.horizontal,
                               itemBuilder: (context, index) => KeywordWidget(
+                                  deleteFunction: () => deleteAppliedKeyword(
+                                      appliedKeyword[index]),
                                   keyword: appliedKeyword[index],
                                   applied: true),
                               separatorBuilder: (context, index) =>
@@ -324,116 +324,174 @@ class SearchCakeInitailScreenState
                       const SizedBox(height: 16),
                       Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 20),
-                          child: Text('최근 검색 키워드',
-                              style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w600,
-                                  color: gray08))),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text('최근 검색 키워드',
+                                  style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w600,
+                                      color: gray08)),
+                              GestureDetector(
+                                onTap: onTapDeleteRecentKeyword,
+                                child:
+                                    // TODO: 글씨체, 디자인 변경
+                                    Container(
+                                  child: Text('지우기'),
+                                ),
+                              )
+                            ],
+                          )),
                       const SizedBox(height: 16),
-                      Container(
-                        padding: const EdgeInsets.only(left: 20, right: 20),
-                        height: 33,
-                        child: ListView.separated(
-                            scrollDirection: Axis.horizontal,
-                            itemBuilder: (context, index) {
-                              return KeywordWidget(
-                                  keyword: recentKeyword[index]);
-                            },
-                            separatorBuilder: (context, index) {
-                              return const SizedBox(width: 8);
-                            },
-                            itemCount: recentKeyword.length),
-                      ),
+                      ref.read(currentKeywordVMProvider).isEmpty
+                          ? const SizedBox()
+                          : Container(
+                              padding:
+                                  const EdgeInsets.only(left: 20, right: 20),
+                              height: 33,
+                              child: ListView.separated(
+                                  scrollDirection: Axis.horizontal,
+                                  itemBuilder: (context, index) {
+                                    return GestureDetector(
+                                      onTap: () => search(ref.watch(
+                                          currentKeywordVMProvider)[index]),
+                                      child: KeywordWidget(
+                                          // keyword: recentKeyword[index],
+                                          keyword: ref.watch(
+                                              currentKeywordVMProvider)[index],
+                                          deleteFunction: () {}),
+                                    );
+                                  },
+                                  separatorBuilder: (context, index) {
+                                    return const SizedBox(width: 8);
+                                  },
+                                  // itemCount: recentKeyword.length
+                                  itemCount: ref
+                                      .watch(currentKeywordVMProvider)
+                                      .length),
+                            ),
                       const SizedBox(height: 40),
-                      Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 20),
-                          child: Column(children: [
-                            Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text('인기 검색 키워드',
-                                      style: TextStyle(
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.w600,
-                                          color: gray08)),
-                                  Text('07시 기준',
-                                      style: TextStyle(
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.w600,
-                                          color: gray05)),
-                                ]),
-                            const SizedBox(height: 16),
-                            Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  SizedBox(
-                                      width: (MediaQuery.of(context)
-                                                  .size
-                                                  .width -
-                                              40 -
-                                              36) /
-                                          2,
-                                      height: 213,
-                                      child: Column(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          mainAxisSize: MainAxisSize.max,
-                                          children: [
-                                            // for 문으로 위젯 생성
-                                            for (var i = 0;
-                                                i < hotkeywords.length / 2;
-                                                i++)
-                                              HotKeyWordWidget(
-                                                  keyword:
-                                                      hotkeywords[i].keyword,
-                                                  rank: hotkeywords[i].rank,
-                                                  change:
-                                                      hotkeywords[i].change),
-                                          ])),
-                                  const SizedBox(width: 36),
-                                  SizedBox(
-                                      width: (MediaQuery.of(context)
-                                                  .size
-                                                  .width -
-                                              40 -
-                                              36) /
-                                          2,
-                                      height: 213,
-                                      child: Column(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          mainAxisSize: MainAxisSize.max,
-                                          children: [
-                                            // for 문으로 위젯 생성
-                                            for (var i = 5;
-                                                i < hotkeywords.length;
-                                                i++)
-                                              HotKeyWordWidget(
-                                                  keyword:
-                                                      hotkeywords[i].keyword,
-                                                  rank: hotkeywords[i].rank,
-                                                  change:
-                                                      hotkeywords[i].change),
-                                          ])),
-                                ]),
-                          ])),
+                      FutureBuilder<RankingListModel?>(
+                          // future: fetchRankingList(),
+                          future: fetchRanking,
+                          builder: (context, data) {
+                            if (data.hasData) {
+                              final RankingListModel rankingList = data.data!;
+                              return Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 20),
+                                  child: Column(children: [
+                                    Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Text('인기 검색 키워드',
+                                              style: TextStyle(
+                                                  fontSize: 18,
+                                                  fontWeight: FontWeight.w600,
+                                                  color: gray08)),
+                                          // Text('07시 기준',
+                                          //     style: TextStyle(
+                                          //         fontSize: 14,
+                                          //         fontWeight: FontWeight.w600,
+                                          //         color: gray05)),
+                                          Text(
+                                              '${rankingList.startDate} ~ ${rankingList.endDate}',
+                                              style: TextStyle(
+                                                  fontSize: 14,
+                                                  fontWeight: FontWeight.w600,
+                                                  color: gray05)),
+                                        ]),
+                                    const SizedBox(height: 16),
+                                    Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          SizedBox(
+                                              width: (MediaQuery.of(context)
+                                                          .size
+                                                          .width -
+                                                      40 -
+                                                      36) /
+                                                  2,
+                                              height: 213,
+                                              child:
+                                                  Column(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .spaceBetween,
+                                                      mainAxisSize:
+                                                          MainAxisSize.max,
+                                                      children: [
+                                                    // for 문으로 위젯 생성
+                                                    for (var i = 0; i < 5; i++)
+                                                      GestureDetector(
+                                                        onTap: () => search(
+                                                            rankingList.ranks[i]
+                                                                .keyword),
+                                                        child: HotKeyWordWidget(
+                                                            rank: i + 1,
+                                                            rankData:
+                                                                rankingList
+                                                                    .ranks[i]),
+                                                      )
+                                                  ])),
+                                          const SizedBox(width: 36),
+                                          SizedBox(
+                                              width: (MediaQuery.of(context)
+                                                          .size
+                                                          .width -
+                                                      40 -
+                                                      36) /
+                                                  2,
+                                              height: 213,
+                                              child:
+                                                  Column(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .spaceBetween,
+                                                      mainAxisSize:
+                                                          MainAxisSize.max,
+                                                      children: [
+                                                    // for 문으로 위젯 생성
+                                                    for (var i = 5; i < 10; i++)
+                                                      GestureDetector(
+                                                        onTap: () => search(
+                                                            rankingList.ranks[i]
+                                                                .keyword),
+                                                        child: HotKeyWordWidget(
+                                                            rank: i + 1,
+                                                            rankData:
+                                                                rankingList
+                                                                    .ranks[i]),
+                                                      )
+                                                  ])),
+                                        ]),
+                                  ]));
+                            } else {
+                              // return const Center(child: CircularProgressIndicator());
+                              return const SizedBox();
+                            }
+                          }),
                     ])),
         ));
   }
 }
 
 class HotKeyWordWidget extends StatelessWidget {
-  final String keyword;
+  // final String keyword;
+  // final int rank;
+  // final Change change;
+  final RankModel rankData;
   final int rank;
-  final Change change;
 
   const HotKeyWordWidget({
     super.key,
-    required this.keyword,
+    // required this.keyword,
+    // required this.rank,
+    // required this.change,
+    required this.rankData,
     required this.rank,
-    required this.change,
   });
 
   @override
@@ -446,18 +504,20 @@ class HotKeyWordWidget extends StatelessWidget {
                   fontSize: 14, fontWeight: FontWeight.w700, color: gray08)),
           SizedBox(width: rank == 10 ? 10 : 17),
           Expanded(
-              child: Text(keyword,
+              child: Text(
+                  // keyword,
+                  rankData.keyword,
                   style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
                       color: gray05))),
-          SvgPicture.asset(
-              change == Change.up
-                  ? 'assets/icons/up_rank.svg'
-                  : change == Change.down
-                      ? 'assets/icons/down_rank.svg'
-                      : 'assets/icons/rank.svg',
-              width: 21),
+          // SvgPicture.asset(
+          //     change == Change.up
+          //         ? 'assets/icons/up_rank.svg'
+          //         : change == Change.down
+          //             ? 'assets/icons/down_rank.svg'
+          //             : 'assets/icons/rank.svg',
+          //     width: 21),
         ]));
   }
 }

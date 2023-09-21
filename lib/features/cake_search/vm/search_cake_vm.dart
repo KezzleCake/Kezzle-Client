@@ -17,7 +17,8 @@ class SearchCakeViewModel extends AsyncNotifier<List<Cake>> {
   }
 
   Future<void> refresh({required List<String> keywords}) async {
-    print('refresh() 실행됨');
+    print('refresh($keywords) 실행됨');
+
     state = const AsyncValue.loading();
     final cakes = await _fetchCakes(keywords: keywords);
     _cakes = cakes;

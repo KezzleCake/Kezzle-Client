@@ -21,8 +21,8 @@ Cake _$CakeFromJson(Map<String, dynamic> json) => Cake(
       json['_id'] as String,
       ImageModel.fromJson(json['image'] as Map<String, dynamic>),
       json['owner_store_id'] as String,
-      json['isLiked'] as bool,
-      json['cursor'] as String,
+      json['isLiked'] as bool?,
+      json['cursor'] as String?,
       (json['hashtag'] as List<dynamic>).map((e) => e as String).toList(),
     );
 

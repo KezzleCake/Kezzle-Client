@@ -16,7 +16,7 @@ DetailStoreModel _$DetailStoreModelFromJson(Map<String, dynamic> json) =>
       address: json['address'] as String,
       instaURL: json['insta_url'] as String?,
       kakaoURL: json['kakako_url'] as String?,
-      storeFeature: json['storeFeature'] as String?,
+      storeFeature: json['store_feature'] as String?,
       storeDescription: json['store_description'] as String?,
       phoneNumber: json['phone_number'] as String?,
       detailImages: (json['detail_images'] as List<dynamic>?)
@@ -41,7 +41,7 @@ Map<String, dynamic> _$DetailStoreModelToJson(DetailStoreModel instance) =>
       'address': instance.address,
       'insta_url': instance.instaURL,
       'kakako_url': instance.kakaoURL,
-      'storeFeature': instance.storeFeature,
+      'store_feature': instance.storeFeature,
       'store_description': instance.storeDescription,
       'phone_number': instance.phoneNumber,
       'detail_images': instance.detailImages,

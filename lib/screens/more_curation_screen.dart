@@ -19,7 +19,7 @@ class MoreCurationScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
-      appBar: AppBar(title: Text(title)),
+      appBar: AppBar(title: Text(title.replaceAll(RegExp('\n'), ' '))),
       body: FutureBuilder<List<dynamic>>(
           future: Future.wait([fetchCakes(ref)]),
           builder: (context, data) {

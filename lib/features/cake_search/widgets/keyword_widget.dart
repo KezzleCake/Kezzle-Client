@@ -42,11 +42,13 @@ import 'package:kezzle/utils/colors.dart';
 class KeywordWidget extends StatelessWidget {
   final String keyword;
   final bool? applied;
+  final Function deleteFunction;
 
   const KeywordWidget({
     super.key,
     required this.keyword,
     this.applied = false,
+    required this.deleteFunction,
   });
 
   @override
@@ -67,15 +69,18 @@ class KeywordWidget extends StatelessWidget {
               color: applied! ? orange01 : gray06,
             ),
           ),
-          const SizedBox(width: 5),
-          GestureDetector(
-            onTap: () => print('delete'),
-            child: FaIcon(
-              FontAwesomeIcons.xmark,
-              size: 12,
-              color: gray04,
-            ),
-          )
+          applied! ? const SizedBox(width: 5) : Container(),
+          applied!
+              ? GestureDetector(
+                  // onTap: () => print('delete'),
+                  onTap: () => deleteFunction(),
+                  child: FaIcon(
+                    FontAwesomeIcons.xmark,
+                    size: 12,
+                    color: gray04,
+                  ),
+                )
+              : Container(),
         ],
       ),
     );

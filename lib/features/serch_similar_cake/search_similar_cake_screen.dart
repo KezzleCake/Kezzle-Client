@@ -3,6 +3,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:kezzle/features/analytics/analytics.dart';
 import 'package:kezzle/features/serch_similar_cake/vm/search_similar_cake_vm.dart';
@@ -21,7 +22,11 @@ import 'dart:ui' as ui;
 
 class SearchSimilarCakeScreen extends ConsumerStatefulWidget {
   final Cake originalCake;
-  const SearchSimilarCakeScreen({super.key, required this.originalCake});
+  final PageController pageController = PageController(
+    viewportFraction: 0.50,
+    initialPage: 0,
+  );
+  SearchSimilarCakeScreen({super.key, required this.originalCake});
 
   @override
   SearchSimilarCakeScreenState createState() => SearchSimilarCakeScreenState();
@@ -38,6 +43,12 @@ class SearchSimilarCakeScreenState
   // );
   // GoogleMapController? _mapController;
   // bool cameraMove = false;
+  @override
+  void dispose() {
+    widget.pageController.dispose();
+    // print('dispose');
+    super.dispose();
+  }
 
   void _onTapLocation(BuildContext context) {
     // 위치 설정 버튼 누르는지 체크
@@ -79,6 +90,21 @@ class SearchSimilarCakeScreenState
     return null;
   }
 
+  void onTapDetailCake() {
+    // 현재 페이지뷰의 케이크 정보를 가지고 상세페이지로 이동
+    // print(widget.pageController.page);
+    //page가 소수점이 0.5이상이면 반올림, 아니면 내림
+    int page = widget.pageController.page!.round();
+    // print(ref
+    //     .read(similarCakeProvider(widget.originalCake.id))
+    //     .value![page]
+    //     .ownerStoreName);
+    SimilarCake cake =
+        ref.read(similarCakeProvider(widget.originalCake.id)).value![page];
+
+    context.push("/detail_cake/${cake.id}/${cake.ownerStoreId}");
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -111,8 +137,9 @@ class SearchSimilarCakeScreenState
           color: Colors.white,
           shadowColor: Colors.transparent,
           elevation: 0,
+          // TODO: 케이크 상세보기 버튼을 유사 케이크 불러오는거 완료 했을 떄, 클릭할 수 있도록 손보기
           child: GestureDetector(
-              onTap: () {},
+              onTap: onTapDetailCake,
               child: Container(
                   width: 100,
                   alignment: Alignment.center,
@@ -126,7 +153,9 @@ class SearchSimilarCakeScreenState
                           fontWeight: FontWeight.w700)))),
         ),
         body: Stack(children: [
-          MapScreen(cakeId: widget.originalCake.id),
+          MapScreen(
+              cakeId: widget.originalCake.id,
+              pageController: widget.pageController),
           FutureBuilder<DetailStoreModel?>(
               future: fetchStore(),
               builder: (context, data) {
@@ -227,14 +256,16 @@ class SearchSimilarCakeScreenState
 
 class MapScreen extends ConsumerStatefulWidget {
   final String cakeId;
-  const MapScreen({super.key, required this.cakeId});
+  final PageController pageController;
+  const MapScreen(
+      {super.key, required this.cakeId, required this.pageController});
 
   @override
   MapScreenState createState() => MapScreenState();
 }
 
 class MapScreenState extends ConsumerState<MapScreen> {
-  late PageController _pageController;
+  // late PageController _pageController;
   int currentIndex = 0;
   GoogleMapController? _mapController;
   CameraPosition? cameraPosition;
@@ -256,11 +287,12 @@ class MapScreenState extends ConsumerState<MapScreen> {
   @override
   void initState() {
     super.initState();
-    _pageController =
-        PageController(viewportFraction: 0.50, initialPage: currentIndex);
+    // _pageController =
+    //     PageController(viewportFraction: 0.50, initialPage: currentIndex);
   }
 
   void onPageChanged(int index) async {
+    double zoomLevel = await _mapController!.getZoomLevel();
     setState(() {
       currentIndex = index;
       //index에 맞는 마커로 카메라 이동
@@ -271,8 +303,9 @@ class MapScreenState extends ConsumerState<MapScreen> {
             .animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
           target: LatLng(similarCakeList[index].ownerStoreLatitude,
               similarCakeList[index].ownerStoreLongitude),
-          zoom: 16,
-          // zoom: _mapController.getZoomLevel() as double,
+          // zoom: 16,
+          // zoom: _mapController!.getZoomLevel(),
+          zoom: zoomLevel,
         )));
       }
     });
@@ -361,7 +394,7 @@ class MapScreenState extends ConsumerState<MapScreen> {
                             for (var cake in cakes)
                               Marker(
                                 onTap: () {
-                                  _pageController.animateToPage(
+                                  widget.pageController.animateToPage(
                                       cakes.indexOf(cake),
                                       duration:
                                           const Duration(milliseconds: 350),
@@ -380,7 +413,7 @@ class MapScreenState extends ConsumerState<MapScreen> {
                         height: MediaQuery.of(context).size.width * 0.50,
                         width: MediaQuery.of(context).size.width,
                         child: PageView.builder(
-                            controller: _pageController,
+                            controller: widget.pageController,
                             itemCount: cakes.length,
                             onPageChanged: onPageChanged,
                             itemBuilder: (context, index) {

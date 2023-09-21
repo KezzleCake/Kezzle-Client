@@ -70,7 +70,7 @@ class StoreWidget extends ConsumerWidget {
                           GestureDetector(
                             onTap: () => onTapLikes(storeData.isLiked, ref),
                             child: Padding(
-                              padding: const EdgeInsets.all(8.0),
+                              padding: const EdgeInsets.all(4.0),
                               child: SvgPicture.asset(
                                   ref.watch(storeProvider(storeData.id)) ??
                                           storeData.isLiked
@@ -93,7 +93,12 @@ class StoreWidget extends ConsumerWidget {
                             ),
                           ),
                         ]),
-                    const SizedBox(height: 4),
+                    // const SizedBox(height: 4),
+                    Text(storeData.address, // '서울특별시 강남구 역삼동 123-45',
+                        style: TextStyle(
+                            fontSize: 12,
+                            color: gray06,
+                            fontWeight: FontWeight.w400)),
                     // Row(
                     //   children: [
                     //     FaIcon(

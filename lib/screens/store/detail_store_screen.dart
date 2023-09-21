@@ -8,7 +8,6 @@ import 'package:kezzle/screens/store/introduce_store_tabview.dart';
 import 'package:kezzle/screens/store/store_location_screen.dart';
 import 'package:kezzle/utils/colors.dart';
 import 'package:kezzle/utils/toast.dart';
-import 'package:kezzle/view_models/search_setting_vm.dart';
 import 'package:kezzle/view_models/store_cakes_vm.dart';
 import 'package:kezzle/view_models/store_view_model.dart';
 import 'package:kezzle/widgets/bookmark_cake_widget.dart';
@@ -34,9 +33,9 @@ class DetailStoreScreen extends ConsumerWidget {
       // final lat = ref.watch(searchSettingViewModelProvider).latitude;
       // final lng = ref.watch(searchSettingViewModelProvider).longitude;
 
-      final response = await ref
-          .read(storeRepo)
-          .fetchDetailStore(storeId: storeId,/* lat: lat, lng: lng*/);
+      final response = await ref.read(storeRepo).fetchDetailStore(
+            storeId: storeId, /* lat: lat, lng: lng*/
+          );
       if (response != null) {
         final fetched = DetailStoreModel.fromJson(response);
         return fetched;
