@@ -62,9 +62,32 @@ class CustomInterceptor extends Interceptor {
 
     // 만료되면 status코드가 401 이었네요~~
 
-    final isStatus403 = err.response?.statusCode == 401;
+    final isStatus401 = err.response?.statusCode == 401;
+    final isStatus502 = err.response?.statusCode == 502;
 
-    if (isStatus403) {
+    if (isStatus502) {
+      print("502 에러 발생");
+      final dio = Dio();
+
+      final token = await ref.read(tokenProvider.notifier).getIdToken();
+
+      final options = err.requestOptions;
+      options.headers.addAll({
+        'Authorization': 'Bearer $token',
+      });
+
+      // 요청 재전송
+      try {
+        final response = await dio.fetch(options);
+        // 성공적 요청을 반환(에러가 안난것처럼 보이게할수있음)
+        // print('토큰 재발급 성공 후, 재전송 성공');
+        return handler.resolve(response);
+      } catch (e) {
+        // print('토큰 재발급 실패');
+      }
+    }
+
+    if (isStatus401) {
       //토큰 만료되는지 확인
       print('토큰 만료됨');
       final dio = Dio();

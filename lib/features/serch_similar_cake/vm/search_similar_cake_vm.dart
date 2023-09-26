@@ -33,6 +33,7 @@ class SearchSimilarCakeVM
     _cakeId = arg;
     _cakesRepository = ref.read(cakesRepo);
 
+    
     // 유사 케이크 가져오기
     final fetcedCakes = await _fetchSimilarCakes();
     _similarCakeList = fetcedCakes;

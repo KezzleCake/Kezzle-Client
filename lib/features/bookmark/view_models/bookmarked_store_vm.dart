@@ -6,7 +6,6 @@ import 'package:kezzle/features/authentication/repos/authentication_repo.dart';
 // import 'package:kezzle/features/profile/repos/user_repo.dart';
 import 'package:kezzle/models/home_store_model.dart';
 import 'package:kezzle/repo/stores_repo.dart';
-import 'package:kezzle/view_models/search_setting_vm.dart';
 
 // 스토어 모델명 그냥 바꿀까..?
 class BookmarkedStoreViewModel

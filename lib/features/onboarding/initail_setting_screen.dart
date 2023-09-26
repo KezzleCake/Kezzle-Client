@@ -77,11 +77,15 @@ class InitialSettingSreenState extends ConsumerState<InitialSettingSreen> {
     // print('currentPosition: ' + currentPosition.toString());
     if (!mounted) return;
     if (currentPosition != null) {
-      Navigator.of(context).push(MaterialPageRoute(
-          builder: (context) => CurrentLocationScreen(
-                initial_lat: currentPosition.latitude,
-                initial_lng: currentPosition.longitude,
-              )));
+      // Navigator.of(context).push(MaterialPageRoute(
+      //     builder: (context) => CurrentLocationScreen(
+      //           initial_lat: currentPosition.latitude,
+      //           initial_lng: currentPosition.longitude,
+      //         )));
+      context.pushNamed(CurrentLocationScreen.routeName, extra: {
+        'lat': currentPosition.latitude,
+        'lng': currentPosition.longitude,
+      });
     }
 
     // context.pushNamed(CurrentLocationScreen.routeName);

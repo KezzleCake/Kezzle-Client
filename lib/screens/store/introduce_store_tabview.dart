@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:kezzle/models/detail_store_model.dart';
@@ -71,8 +72,9 @@ class _IntroduceStoreState extends State<IntroduceStore> {
                               decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(16)),
                               clipBehavior: Clip.hardEdge,
-                              child: Image.network(
-                                  widget.store.detailImages![index].s3Url
+                              child: CachedNetworkImage(
+                                  imageUrl: widget
+                                      .store.detailImages![index].s3Url
                                       .replaceFirst("https", "http"),
                                   fit: BoxFit.fitHeight),
                             ),

@@ -1,7 +1,13 @@
+import 'dart:typed_data';
+
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:go_router/go_router.dart';
+import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:kezzle/features/analytics/analytics.dart';
 import 'package:kezzle/features/serch_similar_cake/search_similar_cake_screen.dart';
 import 'package:kezzle/models/detail_store_model.dart';
@@ -12,10 +18,12 @@ import 'package:kezzle/utils/colors.dart';
 import 'package:kezzle/utils/toast.dart';
 import 'package:kezzle/view_models/cake_vm.dart';
 import 'package:kezzle/widgets/store_widget.dart';
+import 'package:super_clipboard/super_clipboard.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
 class DetailCakeScreen extends ConsumerWidget {
   static const routeName = 'detail_cake';
+
   final String cakeId;
   final String storeId;
 
@@ -146,14 +154,41 @@ class DetailCakeScreen extends ConsumerWidget {
       return null;
     }
 
-    // void onTapLikes(bool initialLike) async {
-    //   print('좋아요 버튼 클릭');
-    //   if (ref.read(cakeProvider(cakeId)) == null) {
-    //     ref.read(cakeProvider(cakeId).notifier).init(initialLike);
-    //   }
-    //   ref.read(cakeProvider(cakeId).notifier).toggleLike(/*widget.storeData*/);
-    //   return;
-    // }
+    saveNetworkImage(String imageUrl) async {
+      var response = await Dio()
+          .get(imageUrl, options: Options(responseType: ResponseType.bytes));
+      final result = await ImageGallerySaver.saveImage(
+          Uint8List.fromList(response.data),
+          quality: 60,
+          name: "hello");
+      // print(result);
+      return result['isSuccess'];
+    }
+
+    void onTapSaveBtn(String imageUrl) async {
+      bool isSuccess = await saveNetworkImage(imageUrl);
+      if (!context.mounted) return;
+      if (isSuccess) {
+        Toast.toast(context, '이미지가 저장되었습니다.');
+      } else {
+        Toast.toast(context, '이미지 저장에 실패했습니다.');
+      }
+    }
+
+    Future<Uint8List> createImageData(String imageUrl) async {
+      final response = await Dio()
+          .get(imageUrl, options: Options(responseType: ResponseType.bytes));
+      return response.data;
+    }
+
+    void copyImage(String imageUrl) async {
+      final image = await createImageData(imageUrl);
+      final item = DataWriterItem(suggestedName: 'RedCircle.png');
+      item.add(Formats.png(image));
+      await ClipboardWriter.instance.write([item]);
+      if (!context.mounted) return;
+      Toast.toast(context, '이미지가 클립보드에 복사되었습니다.');
+    }
 
     return FutureBuilder<List<dynamic>>(
         future: Future.wait([fetchCake(), fetchStore(), fetchAnoterCake()]),
@@ -166,19 +201,26 @@ class DetailCakeScreen extends ConsumerWidget {
             return Scaffold(
                 // backgroundColor: Colors.white,
                 appBar: AppBar(
-                  title: const Text(
-                    '케이크 상세보기',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
+                  title: const Text('케이크 상세보기',
+                      style:
+                          TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
                   actions: [
                     // 케이크 별로 상태관리 해줘야됨....
+                    GestureDetector(
+                        onTap: () => onTapSaveBtn(cakeData.image.s3Url),
+                        child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 7.5, vertical: 12),
+                            child: FaIcon(FontAwesomeIcons.download,
+                                size: 20, color: gray08))),
+                    GestureDetector(
+                        onTap: () => copyImage(cakeData.image.s3Url),
+                        child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 7.5, vertical: 12),
+                            child: FaIcon(FontAwesomeIcons.paperclip,
+                                size: 20, color: gray08))),
                     LikeButton(cakeData: cakeData),
-                    // 클립보드 복사 아이콘
-                    FaIcon(FontAwesomeIcons.download, size: 20, color: gray08),
-                    FaIcon(FontAwesomeIcons.paperclip, size: 20, color: gray08),
                   ],
                 ),
                 body: SingleChildScrollView(
@@ -189,8 +231,8 @@ class DetailCakeScreen extends ConsumerWidget {
                     aspectRatio: 1,
                     child: SizedBox(
                       width: double.infinity,
-                      child: Image.network(
-                        data.data![0].image.s3Url.replaceFirst("https", "http"),
+                      child: CachedNetworkImage(
+                        imageUrl: data.data![0].image.s3Url.replaceFirst("https", "http"),
                         fit: BoxFit.cover,
                       ),
                       // Image(
@@ -254,15 +296,11 @@ class DetailCakeScreen extends ConsumerWidget {
                                             // print('케이크 상세보기 페이지로 이동');
                                             // context.push(
                                             //     "/detail_cake/${anotherCakeList[index].id}/${anotherCakeList[index].ownerStoreId}");
-                                            // TODO: 네비게이트 방식으로 바꾸기
-                                            Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                    builder: (context) =>
-                                                        SearchSimilarCakeScreen(
-                                                            originalCake:
-                                                                anotherCakeList[
-                                                                    index])));
+
+                                            context.pushNamed(
+                                                SearchSimilarCakeScreen
+                                                    .routeName,
+                                                extra: anotherCakeList[index]);
                                           },
                                           child: Container(
                                               width: (MediaQuery.of(context)
@@ -276,8 +314,8 @@ class DetailCakeScreen extends ConsumerWidget {
                                                       BorderRadius.circular(16),
                                                   boxShadow: [shadow01]),
                                               clipBehavior: Clip.hardEdge,
-                                              child: Image.network(
-                                                  data.data![2]![index].image
+                                              child: CachedNetworkImage(
+                                                  imageUrl: data.data![2]![index].image
                                                       .s3Url
                                                       .replaceFirst(
                                                           "https", "http"),
@@ -337,7 +375,8 @@ class LikeButton extends ConsumerWidget {
     return GestureDetector(
       onTap: () => onTapLikes(cakeData.isLiked!, ref),
       child: Padding(
-        padding: const EdgeInsets.all(12.0),
+        padding:
+            const EdgeInsets.only(right: 12.0, top: 12, bottom: 12, left: 4),
         child: SvgPicture.asset(
           ref.watch(cakeProvider(cakeData.id)) ?? cakeData.isLiked!
               ? 'assets/icons/like=on_in.svg'

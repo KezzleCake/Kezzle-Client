@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -131,7 +132,7 @@ class StoreWidget1State extends ConsumerState<StoreWidget1> {
                             ),
                           ]),
                       const SizedBox(height: 1),
-                      Text('${widget.storeData.address}',
+                      Text(widget.storeData.address,
                           style: TextStyle(
                               fontSize: 12,
                               fontWeight: FontWeight.w400,
@@ -157,8 +158,8 @@ class StoreWidget1State extends ConsumerState<StoreWidget1> {
                         decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(16)),
                         clipBehavior: Clip.hardEdge,
-                        child: Image.network(
-                            widget.storeData.cakes![index].image.s3Url
+                        child: CachedNetworkImage(
+                            imageUrl: widget.storeData.cakes![index].image.s3Url
                                 .replaceFirst("https", "http"),
                             fit: BoxFit.cover),
                         // NetworkImage(widget.storeData.cakes[index].image.s3Url)

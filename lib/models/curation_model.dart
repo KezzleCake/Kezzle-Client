@@ -1,5 +1,4 @@
 import 'package:json_annotation/json_annotation.dart';
-import 'package:kezzle/models/home_store_model.dart';
 part 'curation_model.g.dart';
 
 // @JsonSerializable()

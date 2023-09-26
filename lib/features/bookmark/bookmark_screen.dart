@@ -198,6 +198,7 @@ class NoItemScreen extends StatelessWidget {
       SvgPicture.asset('assets/icons/illust-empty.svg'),
       const SizedBox(height: 15),
       Text(text,
+          textAlign: TextAlign.center,
           style: TextStyle(
               fontSize: 14, fontWeight: FontWeight.w600, color: gray05)),
     ]);

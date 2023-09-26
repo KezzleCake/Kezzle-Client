@@ -40,6 +40,7 @@ class UserRepo {
         return null;
       }
     } catch (e) {
+      print(e);
       return null;
     }
   }
@@ -66,6 +67,7 @@ class UserRepo {
       //   return null;
       // }
     } catch (e) {
+      print(e);
       return null;
     }
   }

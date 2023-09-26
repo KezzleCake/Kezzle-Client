@@ -1,5 +1,7 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:kezzle/models/curation_model.dart';
 import 'package:kezzle/models/home_store_model.dart';
 import 'package:kezzle/repo/cakes_repo.dart';
@@ -10,24 +12,21 @@ class CurationBoxWidget extends StatelessWidget {
   // final String imageUrl;
   // final String title;
   final CurationCoverModel cover;
-  final Color color;
+  final List<Color> colors;
 
   const CurationBoxWidget({
     super.key,
     // required this.imageUrl,
     // required this.title,
     required this.cover,
-    required this.color,
+    required this.colors,
   });
 
   void onTapCurationBox(BuildContext context) {
-    // print('큐레이션 박스 클릭');
-    // 함수와 함께 전달
-    Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (context) => MoreCurationScreen(
-                title: cover.description, fetchCakes: fetchCoverCakes)));
+    context.pushNamed(MoreCurationScreen.routeName, extra: {
+      'title': cover.description,
+      'fetchCakes': fetchCoverCakes,
+    });
   }
 
   Future<List<Cake>> fetchCoverCakes(WidgetRef ref) async {
@@ -67,10 +66,10 @@ class CurationBoxWidget extends StatelessWidget {
             //   height: 180,
             //   fit: BoxFit.cover,
             // ),
-            Image.network(
-              // imageUrl.replaceFirst("https", "http"),
-              cover.s3url.replaceFirst("https", "http"),
-
+            CachedNetworkImage(
+              imageUrl:
+                  // imageUrl.replaceFirst("https", "http"),
+                  cover.s3url.replaceFirst("https", "http"),
               width: 150,
               height: 180,
               fit: BoxFit.cover,
@@ -83,28 +82,21 @@ class CurationBoxWidget extends StatelessWidget {
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                   colors: [
-                    // Color(0xffFFB8B8).withAlpha(0),
-                    // Color(0xffFFB8B8),
-                    color.withAlpha(0),
-                    color,
+                    colors[0].withAlpha(0),
+                    colors[0].withOpacity(0.55),
+                    colors[1].withOpacity(0.9)
                   ],
                 ),
               ),
             ),
             Padding(
-              padding: const EdgeInsets.only(
-                left: 20,
-                bottom: 20,
-              ),
+              padding: const EdgeInsets.only(left: 20, bottom: 20),
               child: Text(
                 // '일년에 하나 뿐인\n생일을 축하하며',
                 // title,
                 cover.description,
                 style: TextStyle(
-                  color: gray01,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                ),
+                    color: gray01, fontSize: 14, fontWeight: FontWeight.w700),
               ),
             ),
           ],

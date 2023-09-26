@@ -6,7 +6,7 @@ class RanksRepo {
   final ProviderRef ref;
   RanksRepo(this.ref);
 
-  Future<Map<String, dynamic>> fetchRankingList() async {
+  Future<Map<String, dynamic>?> fetchRankingList() async {
     Dio dio = ref.watch(dioProvider);
     try {
       final response = await dio.get('search/rank');
@@ -19,7 +19,7 @@ class RanksRepo {
       print(e);
       print('랭킹 리스트 가져오기 실패');
     }
-    return {};
+    return null;
   }
 }
 

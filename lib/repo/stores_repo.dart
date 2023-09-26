@@ -1,11 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kezzle/utils/dio/dio.dart';
-// import 'package:kezzle/utils/dio/dio.dart';
-// import 'package:kezzle/view_models/id_token_provider.dart';
 
 class StoreRepo {
   final ProviderRef ref;

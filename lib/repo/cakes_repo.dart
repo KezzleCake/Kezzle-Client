@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 // import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:kezzle/models/home_store_model.dart';
 import 'package:kezzle/utils/dio/dio.dart';
 
 class CakesRepo {
@@ -24,7 +25,7 @@ class CakesRepo {
       try {
         final response = await dio.get('cakes', queryParameters: queryParams);
         if (response.statusCode == 200) {
-          print(response);
+          // print(response);
           return response.data;
           // return response.data['docs'];
         }
@@ -47,7 +48,7 @@ class CakesRepo {
       try {
         final response = await dio.get('cakes', queryParameters: queryParams);
         if (response.statusCode == 200) {
-          print(response);
+          // print(response);
           return response.data;
           // return response.data['docs'];
         }
@@ -170,7 +171,7 @@ class CakesRepo {
             queryParameters: queryParams);
         if (response.statusCode == 200) {
           print('매장의 케이크 정보 불러오기 성공');
-          print(response.data);
+          // print(response.data);
           return response.data;
         }
       } catch (e) {
@@ -281,24 +282,34 @@ class CakesRepo {
   }
 
   // 인기케이크 가져오기
-  Future<Map<String, dynamic>?> searchCakes(
-      {required List<String> keywords}) async {
+  Future<SerachCakesVO?> searchCakes(
+      {required List<String> keywords, int? page}) async {
     Dio dio = ref.watch(dioProvider);
+
     final queryParams = {
       'keyword': keywords.join(', '),
+      'page': page ?? 0,
     };
-
     try {
       final response = await dio.get('search', queryParameters: queryParams);
       if (response.statusCode == 200) {
         print('케이크 검색 성공');
         // print(response.data);
-        return response.data;
+        final result = response.data as Map<String, dynamic>?;
+        if (result == null) return null;
+        final cakes = (result['cakes'] as List)
+            .map((e) => Cake.fromJson(e as Map<String, dynamic>))
+            .toList();
+        return SerachCakesVO(
+          cakes: cakes,
+          hasMore: result['hasMore'] as bool,
+          nextPage: result['nextPage'] as int,
+        );
       }
     } catch (e) {
       // print(e);
       print('케이크 검색 실패');
-      return null;
+      // return null;
     } finally {
       // dio.close();
     }
@@ -330,3 +341,20 @@ class CakesRepo {
 
 // cakesRepo 라는 이름으로, CakesRepo 클래스를 Provider로 등록
 final cakesRepo = Provider((ref) => CakesRepo(ref));
+
+class SerachCakesVO {
+  final List<Cake> cakes;
+  final bool hasMore;
+  final int nextPage;
+
+  SerachCakesVO({
+    required this.cakes,
+    required this.hasMore,
+    required this.nextPage,
+  });
+
+  @override
+  String toString() {
+    return "SerachCakesVO{cakes: $cakes, hasMore: $hasMore, nextPage: $nextPage}";
+  }
+}

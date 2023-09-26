@@ -74,5 +74,8 @@
     	<string>https</string>
     	<string>http</string>
   	</array>
+
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>사용자에게 앱에서 제공하는 케이크 이미지를 저장할 수 있게 합니다.</string>
 </dict>
 </plist>

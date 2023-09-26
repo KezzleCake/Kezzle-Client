@@ -123,12 +123,12 @@ class LocationSettingWidgetState extends ConsumerState<LocationSettingWidget> {
 
   void onSubmitted(String value) {
     _isSearched = true;
-    print('onSubmitted: $value');
+    // print('onSubmitted: $value');
 
     // 검색 결과 가져오기
     AddressSearchVM().searchAddress(value).then((value) {
-      print('검색결과\n');
-      print(value);
+      // print('검색결과\n');
+      // print(value);
 
       //검색된 주소 리스트 변경
       searchedList = [];
@@ -153,7 +153,7 @@ class LocationSettingWidgetState extends ConsumerState<LocationSettingWidget> {
   }
 
   void onTapAddress(int index) {
-    print('onTapAddress');
+    // print('onTapAddress');
     // Navigator.pop(context);
     // pop하면서 주소값 전달
     // Navigator.pop(context, address);
@@ -190,11 +190,16 @@ class LocationSettingWidgetState extends ConsumerState<LocationSettingWidget> {
     if (!mounted) return;
     if (currentPosition != null) {
       context.pop();
-      Navigator.of(context).push(MaterialPageRoute(
-          builder: (context) => CurrentLocationScreen(
-                initial_lat: currentPosition.latitude,
-                initial_lng: currentPosition.longitude,
-              )));
+
+      // Navigator.of(context).push(MaterialPageRoute(
+      //     builder: (context) => CurrentLocationScreen(
+      //           initial_lat: currentPosition.latitude,
+      //           initial_lng: currentPosition.longitude,
+      //         )));
+      context.pushNamed(CurrentLocationScreen.routeName, extra: {
+        'lat': currentPosition.latitude,
+        'lng': currentPosition.longitude,
+      });
     }
     // print('onTapCurrentLocation');
     // context.pushNamed(CurrentLocationScreen.routeName);
@@ -206,9 +211,10 @@ class LocationSettingWidgetState extends ConsumerState<LocationSettingWidget> {
         padding:
             EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
         child: Container(
+
             // height: 453,
             // height: 470,
-            height: MediaQuery.of(context).size.height * 0.6,
+            height: MediaQuery.of(context).size.height * 0.55,
             width: double.infinity,
             decoration: const BoxDecoration(
                 color: Colors.white,
@@ -266,7 +272,7 @@ class LocationSettingWidgetState extends ConsumerState<LocationSettingWidget> {
                               color: gray06)),
                       const SizedBox(height: 8),
                       SizedBox(
-                        height: MediaQuery.of(context).size.height * 0.37,
+                        height: MediaQuery.of(context).size.height * 0.32,
                         child: ListView.builder(
                             shrinkWrap: true,
                             itemCount: _isSearched

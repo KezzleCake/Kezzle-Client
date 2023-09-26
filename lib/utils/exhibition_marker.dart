@@ -48,7 +48,7 @@ class _ExhibitionMarkerState extends State<ExhibitionMarker> {
 
     // return asset.Images.marker;
     // return Container(width: 10, height: 10, color: Colors.red);
-    return FaIcon(FontAwesomeIcons.locationDot, color: coral01, size: 30);
+    return FaIcon(FontAwesomeIcons.locationDot, color: coral01, size: 35);
   }
 
   @override

@@ -57,6 +57,8 @@ class _MakeUserScreenState extends State<MakeUserScreen> {
     // print('Tapped');
     // print(_nickname);
     // 닉네임 같이 보내주기
+
+    //TODO: 라우팅 방식 바꾸기
     Navigator.of(context).push(
       MaterialPageRoute(
           builder: (context) => InitialSettingSreen(nickname: _nickname)),

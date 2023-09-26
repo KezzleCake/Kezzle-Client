@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:kezzle/features/analytics/analytics.dart';
 import 'package:kezzle/utils/colors.dart';
 import 'package:kezzle/view_models/search_setting_vm.dart';
 
@@ -33,7 +35,14 @@ class DistanceSettingWidgetState extends ConsumerState<DistanceSettingWidget> {
           .read(searchSettingViewModelProvider.notifier)
           .setRadius(selectedIndex + 1);
     }
-    Navigator.of(context).pop();
+    // Navigator.of(context).pop();
+
+    // 반경 뭘로 변경하는지 체크
+    ref
+        .read(analyticsProvider)
+        .gaEvent('btn_radius_setting', {'radius': selectedIndex + 1});
+
+    context.pop();
   }
 
   void onSelectedItemChanged(int index) {

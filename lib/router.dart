@@ -6,15 +6,20 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kezzle/features/authentication/login_screen.dart';
 import 'package:kezzle/features/authentication/make_user_screen.dart';
+import 'package:kezzle/features/cake_search/search_cake_initial_screen.dart';
+import 'package:kezzle/features/onboarding/current_location_screen.dart';
 // import 'package:kezzle/features/authentication/repos/authentication_repo.dart';
 // import 'package:kezzle/features/onboarding/current_location_screen.dart';
 // import 'package:kezzle/features/onboarding/initail_setting_screen.dart';
 import 'package:kezzle/features/profile/change_profile_screen.dart';
+import 'package:kezzle/features/serch_similar_cake/search_similar_cake_screen.dart';
 // import 'package:kezzle/features/profile/repos/user_repo.dart';
 import 'package:kezzle/features/splash/splash_screen.dart';
+import 'package:kezzle/models/home_store_model.dart';
 import 'package:kezzle/responsive/mobile_screen_layout.dart';
 import 'package:kezzle/screens/authorization_check_screen.dart';
 import 'package:kezzle/screens/detail_cake_screen.dart';
+import 'package:kezzle/screens/more_curation_screen.dart';
 import 'package:kezzle/screens/store/detail_store_screen.dart';
 
 import 'features/onboarding/initail_setting_screen.dart';
@@ -158,6 +163,52 @@ final routerProvider = Provider((ref) {
           final String id = state.pathParameters['id']!;
           final String storeId = state.pathParameters['store_id']!;
           return DetailCakeScreen(cakeId: id, storeId: storeId);
+        },
+      ),
+      // 비슷한 케이크 찾기 화면 라우팅 설정
+      GoRoute(
+        path: "/search_similar_cake",
+        name: SearchSimilarCakeScreen.routeName,
+        builder: (context, state) {
+          Cake cake = state.extra as Cake;
+          return SearchSimilarCakeScreen(
+            originalCake: cake,
+          );
+        },
+      ),
+      // 큐레이션 더보기 화면 라우팅 설정
+      GoRoute(
+        path: "/more_curation",
+        name: MoreCurationScreen.routeName,
+        builder: (context, state) {
+          Map<String, dynamic> args = state.extra as Map<String, dynamic>;
+          // final String title = state.pathParameters['title']!;
+          return MoreCurationScreen(
+            title: args['title'] as String,
+            // fetchCakes는 안 올 수도 있음
+            fetchCakes: args['fetchCakes'] as Function?,
+            initailCakes: args['initailCakes'] as List<Cake>?,
+          );
+        },
+      ),
+      //케이크 검색 화면 라우팅 설정
+      GoRoute(
+        path: "/search_cake",
+        name: SearchCakeInitailScreen.routeName,
+        builder: (context, state) {
+          return const SearchCakeInitailScreen();
+        },
+      ),
+      // 위치 설정 화면 라우팅 설정
+      GoRoute(
+        path: CurrentLocationScreen.routeURL,
+        name: CurrentLocationScreen.routeName,
+        builder: (context, state) {
+          Map<String, double> args = state.extra as Map<String, double>;
+          return CurrentLocationScreen(
+            initial_lat: args['lat']!,
+            initial_lng: args['lng']!,
+          );
         },
       ),
     ],

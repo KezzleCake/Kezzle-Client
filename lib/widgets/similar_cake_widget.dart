@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:kezzle/models/similar_cake_model.dart';
 import 'package:kezzle/utils/colors.dart';
@@ -27,8 +28,8 @@ class SimilarCakeWidget extends StatelessWidget {
           padding: const EdgeInsets.all(20),
           child: ClipRRect(
             borderRadius: const BorderRadius.all(Radius.circular(16)),
-            child: Image.network(
-                similarCake.image.s3Url.replaceFirst("https", "http"),
+            child: CachedNetworkImage(
+                imageUrl: similarCake.image.s3Url.replaceFirst("https", "http"),
                 width: double.infinity,
                 fit: BoxFit.cover),
             // Image.asset(

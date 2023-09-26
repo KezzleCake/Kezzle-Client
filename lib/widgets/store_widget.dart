@@ -35,7 +35,7 @@ class StoreWidget extends ConsumerWidget {
             'store_name': storeData.name,
             'store_taste': storeData.taste.join(', '),
           });
-          print('스토어 상세보기 페이지로 이동');
+          // print('스토어 상세보기 페이지로 이동');
           context.push("/detail_store/${storeData.id}");
         },
         child: Container(

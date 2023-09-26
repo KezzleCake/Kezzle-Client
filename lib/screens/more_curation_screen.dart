@@ -1,30 +1,43 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:go_router/go_router.dart';
 import 'package:kezzle/features/serch_similar_cake/search_similar_cake_screen.dart';
 import 'package:kezzle/models/home_store_model.dart';
 import 'package:kezzle/utils/colors.dart';
 
 class MoreCurationScreen extends ConsumerWidget {
+  static const routeName = '/more_curation_screen';
+
   MoreCurationScreen(
-      {super.key, required this.title, required this.fetchCakes});
+      {super.key,
+      required this.title,
+      required this.fetchCakes,
+      this.initailCakes});
 
   final String title;
-  final Function fetchCakes;
+  final Function? fetchCakes;
 
   // final int cakeLength = 10;
   final List<double> widthList = [240, 174, 200, 174];
-  // List<Cake> cakes = [];
+  List<Cake>? initailCakes;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
-      appBar: AppBar(title: Text(title.replaceAll(RegExp('\n'), ' '))),
+      appBar: AppBar(
+          title: Text(title
+              .replaceAll(RegExp('\n'), ' ')
+              .replaceAll(RegExp('  '), ' '))),
       body: FutureBuilder<List<dynamic>>(
-          future: Future.wait([fetchCakes(ref)]),
+          future: fetchCakes == null
+              ? Future.wait([])
+              : Future.wait([fetchCakes!(ref)]),
           builder: (context, data) {
             if (data.hasData) {
-              final List<Cake> cakes = data.data![0];
+              final List<Cake> cakes = initailCakes ?? data.data![0];
+
               return MasonryGridView.builder(
                   mainAxisSpacing: 23,
                   crossAxisSpacing: 5,
@@ -65,14 +78,8 @@ class CakeKeywordWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     void onTapCake() {
-      // SearchSimilarCakeScreen 으로 이동, cake 객체 전달
-      // Navigator.pushNamed(context, '/search_similar_cake_screen',
-      //     arguments: cake);
-      Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) =>
-                  SearchSimilarCakeScreen(originalCake: cake)));
+      // print('유사케이크 검색');
+      context.pushNamed(SearchSimilarCakeScreen.routeName, extra: cake);
     }
 
     return Column(children: [
@@ -85,9 +92,10 @@ class CakeKeywordWidget extends StatelessWidget {
             height: width,
             decoration: BoxDecoration(borderRadius: BorderRadius.circular(16)),
             clipBehavior: Clip.hardEdge,
-            child: Image.network(
-                // cakes[index].image.s3Url.replaceFirst("https", "http"),
-                cake.image.s3Url.replaceFirst("https", "http"),
+            child: CachedNetworkImage(
+                imageUrl:
+                    // cakes[index].image.s3Url.replaceFirst("https", "http"),
+                    cake.image.s3Url.replaceFirst("https", "http"),
                 fit: BoxFit.cover)),
       ),
       // Image.asset('assets/heart_cake.png',

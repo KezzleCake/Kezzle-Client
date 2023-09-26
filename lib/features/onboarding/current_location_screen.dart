@@ -61,8 +61,8 @@ class CurrentLocationScreenState extends ConsumerState<CurrentLocationScreen> {
         .searchCurrentLocationGoogleMap(
             centerLatLng.longitude, centerLatLng.latitude)
         .then((value) {
-      print('구글 지도 api를 이용한 위도 경도로 주소 검색');
-      print(value);
+      // print('구글 지도 api를 이용한 위도 경도로 주소 검색');
+      // print(value);
       //도로명 주소가 있으면 도로명 주소를, 없으면 지번 주소 가져오기
 
       // print(value['results'][0]['formatted_address']);

@@ -1,7 +1,9 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kezzle/features/analytics/analytics.dart';
+import 'package:kezzle/features/serch_similar_cake/search_similar_cake_screen.dart';
 import 'package:kezzle/models/home_store_model.dart';
 import 'package:kezzle/utils/colors.dart';
 
@@ -22,8 +24,9 @@ class HomeCakeWidget extends ConsumerWidget {
           'cake_id': cakeData.id,
           'cake_store_id': cakeData.ownerStoreId,
         });
-        print('케이크 상세보기 페이지로 이동');
-        context.push("/detail_cake/${cakeData.id}/${cakeData.ownerStoreId}");
+        context.pushNamed(SearchSimilarCakeScreen.routeName, extra: cakeData);
+        // print('케이크 상세보기 페이지로 이동');
+        // context.push("/detail_cake/${cakeData.id}/${cakeData.ownerStoreId}");
       },
       child: Container(
         decoration: BoxDecoration(
@@ -33,8 +36,12 @@ class HomeCakeWidget extends ConsumerWidget {
             // Stack(
             // alignment: Alignment.bottomRight,
             // children: [
-            Image.network(cakeData.image.s3Url.replaceFirst("https", "http"),
-                fit: BoxFit.cover),
+            AspectRatio(
+          aspectRatio: 1,
+          child: CachedNetworkImage(
+              imageUrl: cakeData.image.s3Url.replaceFirst("https", "http"),
+              fit: BoxFit.cover),
+        ),
         // Image.asset(cakeData.url, fit: BoxFit.cover),
         // Padding(
         //     padding: const EdgeInsets.all(8.0),

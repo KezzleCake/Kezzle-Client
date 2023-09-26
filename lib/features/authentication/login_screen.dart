@@ -8,10 +8,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kezzle/features/authentication/repos/authentication_repo.dart';
 import 'package:kezzle/features/authentication/make_user_screen.dart';
-import 'package:kezzle/features/onboarding/initail_setting_screen.dart';
-// import 'package:kezzle/features/bookmark/view_models/bookmarked_cake_vm.dart';
 import 'package:kezzle/features/profile/repos/user_repo.dart';
-// import 'package:kezzle/screens/home_screen.dart';
 import 'package:kezzle/utils/colors.dart';
 import 'package:kezzle/view_models/id_token_provider.dart';
 import 'package:url_launcher/url_launcher_string.dart';
@@ -76,12 +73,12 @@ class LoginScreenState extends ConsumerState<LoginScreen> {
     });
   }
 
-  void onTapLaterSign() {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-          builder: (context) => const InitialSettingSreen(nickname: '')),
-    );
-  }
+  // void onTapLaterSign() {
+  //   Navigator.of(context).push(
+  //     MaterialPageRoute(
+  //         builder: (context) => const InitialSettingSreen(nickname: '')),
+  //   );
+  // }
 
   @override
   Widget build(BuildContext context) {

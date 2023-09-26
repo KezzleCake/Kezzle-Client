@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
@@ -6,6 +7,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:kezzle/features/analytics/analytics.dart';
+import 'package:kezzle/features/bookmark/bookmark_screen.dart';
 import 'package:kezzle/features/serch_similar_cake/vm/search_similar_cake_vm.dart';
 import 'package:kezzle/models/detail_store_model.dart';
 import 'package:kezzle/models/home_store_model.dart';
@@ -21,6 +23,9 @@ import 'package:kezzle/widgets/similar_cake_widget.dart';
 import 'dart:ui' as ui;
 
 class SearchSimilarCakeScreen extends ConsumerStatefulWidget {
+  static const routeName = '/search_similar_cake';
+  static const routeUrl = '/search_similar_cake/:cakeId';
+
   final Cake originalCake;
   final PageController pageController = PageController(
     viewportFraction: 0.50,
@@ -66,6 +71,10 @@ class SearchSimilarCakeScreenState
   }
 
   void _onTapDistance(BuildContext context) {
+    // ref
+    //     .read(analyticsProvider)
+    //     .gaEvent('btn_radius_setting', {'radius': });
+
     showModalBottomSheet<int>(
         context: context,
         builder: (context) {
@@ -90,6 +99,11 @@ class SearchSimilarCakeScreenState
     return null;
   }
 
+  void onTapOriginalCake() {
+    context.push(
+        "/detail_cake/${widget.originalCake.id}/${widget.originalCake.ownerStoreId}");
+  }
+
   void onTapDetailCake() {
     // 현재 페이지뷰의 케이크 정보를 가지고 상세페이지로 이동
     // print(widget.pageController.page);
@@ -108,49 +122,97 @@ class SearchSimilarCakeScreenState
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        resizeToAvoidBottomInset: false,
         appBar: AppBar(
+          titleSpacing: 0,
           centerTitle: true,
           title: GestureDetector(
               onTap: () => _onTapLocation(context),
-              child: Row(mainAxisSize: MainAxisSize.min, children: [
-                Text(ref.watch(searchSettingViewModelProvider).address,
-                    style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                        color: gray08)),
-                SvgPicture.asset('assets/icons/arrow-down.svg',
-                    colorFilter: ColorFilter.mode(gray07, BlendMode.srcIn)),
-                GestureDetector(
-                    onTap: () => _onTapDistance(context),
-                    child: Row(children: [
-                      Text(
-                          '${ref.watch(searchSettingViewModelProvider).radius}km',
-                          style: const TextStyle(
-                              fontSize: 14, fontWeight: FontWeight.w600)),
-                      SvgPicture.asset('assets/icons/arrow-down.svg',
-                          colorFilter:
-                              ColorFilter.mode(gray07, BlendMode.srcIn)),
-                    ])),
-              ])),
+              child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                        // 주소가 없으면 '위치를 설정해주세요' 로
+                        ref
+                                .watch(searchSettingViewModelProvider)
+                                .address
+                                .isEmpty
+                            ? '위치를 설정해주세요'
+                            :
+                            // 15글자 넘어가면 끝에 ... 로
+                            ref
+                                        .watch(searchSettingViewModelProvider)
+                                        .address
+                                        .length >
+                                    15
+                                ? '${ref.watch(searchSettingViewModelProvider).address.substring(0, 15)}...'
+                                : ref
+                                    .watch(searchSettingViewModelProvider)
+                                    .address,
+                        textAlign: TextAlign.right,
+                        style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                            color: gray08)),
+                    SvgPicture.asset('assets/icons/arrow-down.svg',
+                        colorFilter: ColorFilter.mode(gray07, BlendMode.srcIn)),
+                    GestureDetector(
+                        onTap: () => _onTapDistance(context),
+                        child: Row(children: [
+                          Text(
+                              '${ref.watch(searchSettingViewModelProvider).radius}km',
+                              style: const TextStyle(
+                                  fontSize: 14, fontWeight: FontWeight.w600)),
+                          SvgPicture.asset('assets/icons/arrow-down.svg',
+                              colorFilter:
+                                  ColorFilter.mode(gray07, BlendMode.srcIn)),
+                          Text('내 검색 결과',
+                              style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w600,
+                                  color: gray08)),
+                        ])),
+                  ])),
         ),
         bottomNavigationBar: BottomAppBar(
           color: Colors.white,
           shadowColor: Colors.transparent,
           elevation: 0,
-          // TODO: 케이크 상세보기 버튼을 유사 케이크 불러오는거 완료 했을 떄, 클릭할 수 있도록 손보기
-          child: GestureDetector(
-              onTap: onTapDetailCake,
-              child: Container(
-                  width: 100,
-                  alignment: Alignment.center,
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                      color: coral01, borderRadius: BorderRadius.circular(28)),
-                  child: Text('케이크 상세보기',
-                      style: TextStyle(
-                          fontSize: 16,
-                          color: gray01,
-                          fontWeight: FontWeight.w700)))),
+          child: IgnorePointer(
+            ignoring: ref
+                    .watch(similarCakeProvider(widget.originalCake.id))
+                    .isLoading ||
+                ref
+                    .watch(similarCakeProvider(widget.originalCake.id))
+                    .value!
+                    .isEmpty,
+            child: GestureDetector(
+                onTap: onTapDetailCake,
+                child: Container(
+                    width: 100,
+                    alignment: Alignment.center,
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: ref
+                                  .watch(similarCakeProvider(
+                                      widget.originalCake.id))
+                                  .isLoading ||
+                              ref
+                                  .watch(similarCakeProvider(
+                                      widget.originalCake.id))
+                                  .value!
+                                  .isEmpty
+                          ? gray03
+                          : coral01,
+                      borderRadius: BorderRadius.circular(28),
+                    ),
+                    child: Text('케이크 상세보기',
+                        style: TextStyle(
+                            fontSize: 16,
+                            color: gray01,
+                            fontWeight: FontWeight.w700)))),
+          ),
         ),
         body: Stack(children: [
           MapScreen(
@@ -162,93 +224,99 @@ class SearchSimilarCakeScreenState
                 if (data.hasData) {
                   DetailStoreModel? store = data.data;
                   return Align(
-                    alignment: Alignment.topCenter,
-                    child: Container(
-                        margin: const EdgeInsets.only(top: 16),
-                        padding: const EdgeInsets.all(16),
-                        width: MediaQuery.of(context).size.width - 40,
-                        height: (MediaQuery.of(context).size.width - 40) *
-                            142 /
-                            350,
-                        decoration: BoxDecoration(
-                            boxShadow: [shadow01],
-                            borderRadius: BorderRadius.circular(16),
-                            color: Colors.white),
-                        child: Row(mainAxisSize: MainAxisSize.min, children: [
-                          AspectRatio(
-                            aspectRatio: 1,
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(16),
-                              // child: Image.asset('assets/heart_cake.png',
-                              //     fit: BoxFit.cover),
-                              child: Image.network(
-                                widget.originalCake.image.s3Url
-                                    .replaceFirst("https", "http"),
-                                fit: BoxFit.cover,
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          Column(
-                              // mainAxisSize: MainAxisSize.min,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: [
-                                Text(store!.name,
-                                    // '본비케이크',
-                                    style: TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w600,
-                                        color: gray08)),
-                                SizedBox(
-                                  width: (MediaQuery.of(context).size.width -
-                                          40) -
-                                      (MediaQuery.of(context).size.width - 40) *
-                                          142 /
-                                          350 -
-                                      8,
-                                  child: Text(
-                                      // '서울 강남구 역삼동',
-                                      store.address,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: TextStyle(
-                                          fontSize: 12,
-                                          fontWeight: FontWeight.w400,
-                                          color: gray05)),
-                                ),
-                                SizedBox(
-                                  width: (MediaQuery.of(context).size.width -
-                                          40) -
-                                      (MediaQuery.of(context).size.width - 40) *
-                                          142 /
-                                          350 -
-                                      8,
-                                  child: Text(
-                                      // '초코 제누아주: 가나슈필링\n바닐라 제누아즈: 버터크림 + 딸기잼필링\n당근케익(건포도 + 크렌베리 + 호두): 크랜베리',
-                                      // softWrap: true,
-                                      store.taste.join('\n'),
-                                      maxLines: 3,
-                                      textAlign: TextAlign.left,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: TextStyle(
-                                          fontSize: 12,
-                                          fontWeight: FontWeight.w400,
-                                          color: gray08)),
-                                ),
-                              ]),
-                        ])),
-                  );
-                } else {
-                  return const SizedBox();
+                      alignment: Alignment.topCenter,
+                      child: GestureDetector(
+                        onTap: onTapOriginalCake,
+                        child: Container(
+                            margin: const EdgeInsets.only(top: 16),
+                            padding: const EdgeInsets.all(16),
+                            width: MediaQuery.of(context).size.width - 40,
+                            height: (MediaQuery.of(context).size.width - 40) *
+                                142 /
+                                350,
+                            decoration: BoxDecoration(
+                                boxShadow: [shadow01],
+                                borderRadius: BorderRadius.circular(16),
+                                color: Colors.white),
+                            child:
+                                Row(mainAxisSize: MainAxisSize.min, children: [
+                              AspectRatio(
+                                  aspectRatio: 1,
+                                  child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(16),
+                                      // child: Image.asset('assets/heart_cake.png',
+                                      //     fit: BoxFit.cover),
+                                      child: CachedNetworkImage(
+                                          imageUrl: widget.originalCake.image.s3Url
+                                              .replaceFirst("https", "http"),
+                                          fit: BoxFit.cover))),
+                              const SizedBox(width: 8),
+                              Column(
+                                  // mainAxisSize: MainAxisSize.min,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
+                                  children: [
+                                    Text(store!.name,
+                                        // '본비케이크',
+                                        style: TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w600,
+                                            color: gray08)),
+                                    SizedBox(
+                                        width: (MediaQuery.of(context)
+                                                    .size
+                                                    .width -
+                                                40) -
+                                            (MediaQuery.of(context).size.width -
+                                                    40) *
+                                                142 /
+                                                350 -
+                                            8,
+                                        child: Text(
+                                            // '서울 강남구 역삼동',
+                                            store.address,
+                                            overflow: TextOverflow.ellipsis,
+                                            style: TextStyle(
+                                                fontSize: 12,
+                                                fontWeight: FontWeight.w400,
+                                                color: gray05))),
+                                    SizedBox(
+                                        width: (MediaQuery.of(context)
+                                                    .size
+                                                    .width -
+                                                40) -
+                                            (MediaQuery.of(context).size.width -
+                                                    40) *
+                                                142 /
+                                                350 -
+                                            8,
+                                        child: Text(
+                                            // '초코 제누아주: 가나슈필링\n바닐라 제누아즈: 버터크림 + 딸기잼필링\n당근케익(건포도 + 크렌베리 + 호두): 크랜베리',
+                                            // softWrap: true,
+                                            store.taste.join('\n'),
+                                            maxLines: 3,
+                                            textAlign: TextAlign.left,
+                                            overflow: TextOverflow.ellipsis,
+                                            style: TextStyle(
+                                                fontSize: 12,
+                                                fontWeight: FontWeight.w400,
+                                                color: gray08))),
+                                  ]),
+                            ])),
+                      ));
                 }
-                // else if (data.connectionState == ConnectionState.waiting) {
-                //   return Scaffold(
-                //       body: Center(
-                //           child: CircularProgressIndicator(color: coral01)));
-                // } else {
-                //   return const Scaffold(
-                //       body: Center(child: Text('오류가 발생했습니다.')));
+                // else {
+                //   return const SizedBox();
                 // }
+                else if (data.connectionState == ConnectionState.waiting) {
+                  return Scaffold(
+                      body: Center(
+                          child: CircularProgressIndicator(color: coral01)));
+                } else {
+                  return const Scaffold(
+                      body: Center(child: Text('오류가 발생했습니다.')));
+                }
               }),
         ]));
   }
@@ -368,8 +436,19 @@ class MapScreenState extends ConsumerState<MapScreen> {
               return Stack(
                 children: [
                   cakes.isEmpty
-                      //TODO: 비슷한 케이크가 없을 때, 표시할 화면 놓기
-                      ? const Text('유사 케이크 없음~')
+                      ? Padding(
+                          padding: EdgeInsets.only(
+                              top: (MediaQuery.of(context).size.width - 40) *
+                                  142 /
+                                  350),
+                          child: const Center(
+                            child: NoItemScreen(
+                                text:
+                                    '설정 위치의 반경 내, 비슷한 케이크를 제공하는\n스토어를 찾을 수 없습니다.'),
+                            // Text('해당 반경 내, 비슷한 케이크를 제공하는 스토어를 찾을 수 없습니다.'),
+                          ),
+                        )
+                      // const Text('해당 반경 내, 비슷한 케이크를 제공하는 스토어를 찾을 수 없습니다.')
                       : GoogleMap(
                           onCameraMove: (position) {
                             setState(() {

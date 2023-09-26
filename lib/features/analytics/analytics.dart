@@ -30,6 +30,8 @@ class Analytics {
     }
     print('화면 전환 로깅 완료');
   }
+
+  
 }
 
 final analyticsProvider = Provider((ref) {

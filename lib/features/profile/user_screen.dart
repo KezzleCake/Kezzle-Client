@@ -3,18 +3,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
-import 'package:kezzle/features/analytics/analytics.dart';
 import 'package:kezzle/features/authentication/repos/authentication_repo.dart';
-import 'package:kezzle/features/bookmark/view_models/bookmarked_store_vm.dart';
 import 'package:kezzle/features/profile/change_profile_screen.dart';
 import 'package:kezzle/features/profile/view_models/profile_vm.dart';
-import 'package:kezzle/main.dart';
-import 'package:kezzle/router.dart';
-// import 'package:kezzle/features/profile/review_screen.dart';
 import 'package:kezzle/utils/colors.dart';
 import 'package:kezzle/view_models/id_token_provider.dart';
-
-// import 'package:kezzle/widgets/my_divider_widget.dart';
 
 class UserScreen extends ConsumerStatefulWidget {
   const UserScreen({super.key});
@@ -24,13 +17,6 @@ class UserScreen extends ConsumerStatefulWidget {
 }
 
 class UserScreenState extends ConsumerState<UserScreen> {
-  // void onTapReview(BuildContext context) {
-  //   Navigator.of(context).push(
-  //     MaterialPageRoute(
-  //       builder: (context) => const ReviewScreen(),
-  //     ),
-  //   );
-  // }
 
   void onTapNickName(BuildContext context) {
     //프로필 수정 화면으로 이동
@@ -52,7 +38,7 @@ class UserScreenState extends ConsumerState<UserScreen> {
               onTapCancel: () => context.pop(),
               // 로그아웃 시키기
               onTapConfirm: () {
-                print('로그아웃');
+                // print('로그아웃');
                 ref.read(authRepo).signOut();
                 ref.read(tokenProvider.notifier).resetToken();
                 context.go("/");
