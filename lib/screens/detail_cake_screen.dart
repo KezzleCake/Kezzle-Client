@@ -170,6 +170,11 @@ class DetailCakeScreen extends ConsumerWidget {
       if (!context.mounted) return;
       if (isSuccess) {
         Toast.toast(context, '이미지가 저장되었습니다.');
+
+        ref.read(analyticsProvider).gaEvent('save_cake_image', {
+          'cake_id': cakeId,
+          'cake_store_id': storeId,
+        });
       } else {
         Toast.toast(context, '이미지 저장에 실패했습니다.');
       }
@@ -188,6 +193,11 @@ class DetailCakeScreen extends ConsumerWidget {
       await ClipboardWriter.instance.write([item]);
       if (!context.mounted) return;
       Toast.toast(context, '이미지가 클립보드에 복사되었습니다.');
+
+      ref.read(analyticsProvider).gaEvent('copy_cake_image', {
+        'cake_id': cakeId,
+        'cake_store_id': storeId,
+      });
     }
 
     return FutureBuilder<List<dynamic>>(
@@ -232,7 +242,8 @@ class DetailCakeScreen extends ConsumerWidget {
                     child: SizedBox(
                       width: double.infinity,
                       child: CachedNetworkImage(
-                        imageUrl: data.data![0].image.s3Url.replaceFirst("https", "http"),
+                        imageUrl: data.data![0].image.s3Url
+                            .replaceFirst("https", "http"),
                         fit: BoxFit.cover,
                       ),
                       // Image(
@@ -315,7 +326,9 @@ class DetailCakeScreen extends ConsumerWidget {
                                                   boxShadow: [shadow01]),
                                               clipBehavior: Clip.hardEdge,
                                               child: CachedNetworkImage(
-                                                  imageUrl: data.data![2]![index].image
+                                                  imageUrl: data
+                                                      .data![2]![index]
+                                                      .image
                                                       .s3Url
                                                       .replaceFirst(
                                                           "https", "http"),

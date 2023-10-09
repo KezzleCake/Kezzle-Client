@@ -34,9 +34,7 @@ class HomeScreenState extends ConsumerState<HomeScreen>
 
   void _onTapLocation(BuildContext context) {
     // 위치 설정 버튼 누르는지 체크
-    ref
-        .read(analyticsProvider)
-        .gaEvent('btn_location_setting', {'location': 'location'});
+    ref.read(analyticsProvider).gaEvent('btn_location_setting', {});
 
     showModalBottomSheet(
         context: context,

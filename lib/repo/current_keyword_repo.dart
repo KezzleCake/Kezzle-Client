@@ -11,7 +11,7 @@ class CurrentKeywordRepository {
     _preferences.setStringList(_key, currentKeywordList);
   }
 
-  List<String> getCurrentKeyword() {
+  List<String> getCurrentKeywords() {
     return _preferences.getStringList(_key) ?? [];
   }
 }

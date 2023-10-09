@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
+import 'package:kezzle/features/analytics/analytics.dart';
 import 'package:kezzle/features/cake_search/search_cake_initial_screen.dart';
 import 'package:kezzle/models/curation_model.dart';
 import 'package:kezzle/models/home_store_model.dart';
@@ -44,12 +45,6 @@ class CurationHomeScreenState extends ConsumerState<CurationHomeScreen>
     super.initState();
   }
 
-  // 상단 슬라이드에 들어갈 사진과 텍스트
-  // final List<String> slideItem = [
-  //   'assets/heart_cake.png',
-  //   'assets/smile_cake.png',
-  //   'assets/heart_cake.png',
-  // ];
   // 현재 슬라이드 페이지
   int _currentPage = 0;
   // 자동 슬라이드 여부
@@ -61,6 +56,11 @@ class CurationHomeScreenState extends ConsumerState<CurationHomeScreen>
     context.pushNamed(MoreCurationScreen.routeName, extra: {
       'title': aniversaryCuration.anniversaryTitle,
       'fetchCakes': fetchAnniversaryCakes,
+    });
+
+    ref.read(analyticsProvider).gaEvent('click_curation', {
+      'anniversary_id': anniversaryId,
+      'curation_description': 'anniversary',
     });
   }
 
@@ -113,6 +113,11 @@ class CurationHomeScreenState extends ConsumerState<CurationHomeScreen>
         'initailCakes': popularCakes,
       },
     );
+
+    ref.read(analyticsProvider).gaEvent('click_more_popular', {
+      'curation_id': 'popular',
+      'curation_description': '인기 Top20 케이크',
+    });
   }
 
   Future<Map<String, dynamic>> fetchHomeCurations() async {
@@ -143,13 +148,22 @@ class CurationHomeScreenState extends ConsumerState<CurationHomeScreen>
               ),
             ),
           ])),
-      body: FutureBuilder<Map<String, dynamic>>(
+      body: FutureBuilder<Map<String, dynamic>?>(
           // future: fetchHomeCurations(),
           future: fetchCurations,
           builder: (context, data) {
             if (data.hasData) {
-              final AniversaryCurationModel aniversaryCuration =
-                  AniversaryCurationModel.fromJson(data.data!['anniversary']);
+              final rawData = data.data;
+              final aniversaryCuration = rawData != null
+                  ? AniversaryCurationModel.fromJson(data.data!['anniversary'])
+                  : null; //TODO: null 넘어오는 것 체크
+
+              if (aniversaryCuration == null) {
+                return const Center(
+                  child: Text('데이터 로딩 실패'),
+                );
+              }
+
               final List<Cake> popularCakes = [];
               anniversaryId = aniversaryCuration.id;
               data.data!['popular']['cakes'].forEach((cake) {
@@ -272,26 +286,6 @@ class CurationHomeScreenState extends ConsumerState<CurationHomeScreen>
                         // itemCount: popularCakes.length,
                         itemBuilder: (context, index) {
                           return HomeCakeWidget(cakeData: popularCakes[index]);
-                          // return GestureDetector(
-                          //   onTap: onTapTop10Cake,
-                          //   child: Container(
-                          //     clipBehavior: Clip.hardEdge,
-                          //     decoration: BoxDecoration(
-                          //       borderRadius: BorderRadius.circular(16),
-                          //       boxShadow: [shadow01],
-                          //     ),
-                          //     // child: Image.asset('assets/heart_cake.png'),
-                          //     child: AspectRatio(
-                          //       aspectRatio: 1,
-                          //       child: Image.network(
-                          //           popularCakes[index]
-                          //               .image
-                          //               .s3Url
-                          //               .replaceFirst('https', 'http'),
-                          //           fit: BoxFit.cover),
-                          //     ),
-                          //   ),
-                          // );
                         })),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -346,7 +340,8 @@ class CurationHomeScreenState extends ConsumerState<CurationHomeScreen>
                             itemBuilder: (context, index) {
                               return CurationBoxWidget(
                                   // color: const Color(0xFFE8B8FF),
-                                  colors: colors[index + 4],
+                                  colors: colors[index % 4 + 4],
+                                  // colors: colors[index + 4],
                                   cover: curations[1]
                                       .curationCoverModelList[index]);
                             })),

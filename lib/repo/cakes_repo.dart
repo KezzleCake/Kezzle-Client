@@ -286,6 +286,7 @@ class CakesRepo {
       {required List<String> keywords, int? page}) async {
     Dio dio = ref.watch(dioProvider);
 
+    print("[$keywords] 적용 되어 검색!");
     final queryParams = {
       'keyword': keywords.join(', '),
       'page': page ?? 0,

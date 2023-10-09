@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -57,9 +59,7 @@ class SearchSimilarCakeScreenState
 
   void _onTapLocation(BuildContext context) {
     // 위치 설정 버튼 누르는지 체크
-    ref
-        .read(analyticsProvider)
-        .gaEvent('btn_location_setting', {'location': 'location'});
+    ref.read(analyticsProvider).gaEvent('btn_location_setting', {});
 
     showModalBottomSheet(
         context: context,
@@ -73,7 +73,7 @@ class SearchSimilarCakeScreenState
   void _onTapDistance(BuildContext context) {
     // ref
     //     .read(analyticsProvider)
-    //     .gaEvent('btn_radius_setting', {'radius': });
+    //     .gaEvent('btn_radius_setting', {'radius': ref.read()});
 
     showModalBottomSheet<int>(
         context: context,
@@ -102,6 +102,11 @@ class SearchSimilarCakeScreenState
   void onTapOriginalCake() {
     context.push(
         "/detail_cake/${widget.originalCake.id}/${widget.originalCake.ownerStoreId}");
+
+    ref.read(analyticsProvider).gaEvent('click_original_cake', {
+      'cake_id': widget.originalCake.id,
+      'cake_store_id': widget.originalCake.ownerStoreId
+    });
   }
 
   void onTapDetailCake() {
@@ -117,6 +122,14 @@ class SearchSimilarCakeScreenState
         ref.read(similarCakeProvider(widget.originalCake.id)).value![page];
 
     context.push("/detail_cake/${cake.id}/${cake.ownerStoreId}");
+
+    ref.read(analyticsProvider).gaEvent('click_detail_similar_cake', {
+      'cake_id': cake.id,
+      'cake_store_id': cake.ownerStoreId,
+      'cake_store_name': cake.ownerStoreName,
+      'original_cake_id': widget.originalCake.id,
+      'original_cake_store_id': widget.originalCake.ownerStoreId,
+    });
   }
 
   @override
@@ -125,12 +138,17 @@ class SearchSimilarCakeScreenState
         resizeToAvoidBottomInset: false,
         appBar: AppBar(
           titleSpacing: 0,
-          centerTitle: true,
-          title: GestureDetector(
-              onTap: () => _onTapLocation(context),
-              child: Row(
+          // centerTitle: true,
+          title: Row(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            // crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              GestureDetector(
+                onTap: () => _onTapLocation(context),
+                child: Row(
                   mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
                         // 주소가 없으면 '위치를 설정해주세요' 로
@@ -145,8 +163,8 @@ class SearchSimilarCakeScreenState
                                         .watch(searchSettingViewModelProvider)
                                         .address
                                         .length >
-                                    15
-                                ? '${ref.watch(searchSettingViewModelProvider).address.substring(0, 15)}...'
+                                    16
+                                ? '${ref.watch(searchSettingViewModelProvider).address.substring(0, 14)}...'
                                 : ref
                                     .watch(searchSettingViewModelProvider)
                                     .address,
@@ -155,25 +173,49 @@ class SearchSimilarCakeScreenState
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
                             color: gray08)),
-                    SvgPicture.asset('assets/icons/arrow-down.svg',
-                        colorFilter: ColorFilter.mode(gray07, BlendMode.srcIn)),
-                    GestureDetector(
-                        onTap: () => _onTapDistance(context),
-                        child: Row(children: [
-                          Text(
+                    Padding(
+                        padding: Platform.isAndroid
+                            ? const EdgeInsets.only(top: 2.0)
+                            : const EdgeInsets.all(0),
+                        child: SvgPicture.asset('assets/icons/arrow-down.svg',
+                            colorFilter:
+                                ColorFilter.mode(gray07, BlendMode.srcIn))),
+                  ],
+                ),
+              ),
+
+              GestureDetector(
+                  onTap: () => _onTapDistance(context),
+                  child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Padding(
+                          padding: Platform.isAndroid
+                              ? const EdgeInsets.only(top: 2.0)
+                              : const EdgeInsets.all(0),
+                          child: Text(
                               '${ref.watch(searchSettingViewModelProvider).radius}km',
                               style: const TextStyle(
                                   fontSize: 14, fontWeight: FontWeight.w600)),
-                          SvgPicture.asset('assets/icons/arrow-down.svg',
+                        ),
+                        Padding(
+                          padding: Platform.isAndroid
+                              ? const EdgeInsets.only(top: 2.0)
+                              : const EdgeInsets.all(0),
+                          child: SvgPicture.asset('assets/icons/arrow-down.svg',
                               colorFilter:
                                   ColorFilter.mode(gray07, BlendMode.srcIn)),
-                          Text('내 검색 결과',
-                              style: TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w600,
-                                  color: gray08)),
-                        ])),
-                  ])),
+                        ),
+                      ])),
+              //         ])),
+              Text('내 검색 결과',
+                  style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: gray08)),
+            ],
+          ),
         ),
         bottomNavigationBar: BottomAppBar(
           color: Colors.white,
@@ -247,7 +289,8 @@ class SearchSimilarCakeScreenState
                                       // child: Image.asset('assets/heart_cake.png',
                                       //     fit: BoxFit.cover),
                                       child: CachedNetworkImage(
-                                          imageUrl: widget.originalCake.image.s3Url
+                                          imageUrl: widget
+                                              .originalCake.image.s3Url
                                               .replaceFirst("https", "http"),
                                           fit: BoxFit.cover))),
                               const SizedBox(width: 8),
@@ -291,17 +334,21 @@ class SearchSimilarCakeScreenState
                                                 142 /
                                                 350 -
                                             8,
-                                        child: Text(
-                                            // '초코 제누아주: 가나슈필링\n바닐라 제누아즈: 버터크림 + 딸기잼필링\n당근케익(건포도 + 크렌베리 + 호두): 크랜베리',
-                                            // softWrap: true,
-                                            store.taste.join('\n'),
-                                            maxLines: 3,
-                                            textAlign: TextAlign.left,
-                                            overflow: TextOverflow.ellipsis,
-                                            style: TextStyle(
-                                                fontSize: 12,
-                                                fontWeight: FontWeight.w400,
-                                                color: gray08))),
+                                        child: Padding(
+                                          padding:
+                                              const EdgeInsets.only(top: 3),
+                                          child: Text(
+                                              // '초코 제누아주: 가나슈필링\n바닐라 제누아즈: 버터크림 + 딸기잼필링\n당근케익(건포도 + 크렌베리 + 호두): 크랜베리',
+                                              // softWrap: true,
+                                              store.taste.join('\n'),
+                                              maxLines: 3,
+                                              textAlign: TextAlign.left,
+                                              overflow: TextOverflow.ellipsis,
+                                              style: TextStyle(
+                                                  fontSize: 12,
+                                                  fontWeight: FontWeight.w400,
+                                                  color: gray08)),
+                                        )),
                                   ]),
                             ])),
                       ));

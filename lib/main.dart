@@ -55,8 +55,8 @@ void main() async {
           .overrideWith(() => SearchSettingViewModel(repository)),
       searchedHistoryAddressVMProvider
           .overrideWith(() => SearchedAddressVM(repository2)),
-      currentKeywordVMProvider
-          .overrideWith(() => CurrentKeywordVM(repository3)),
+      recentKeywordRecordProvider
+          .overrideWith(() => RecentKeywordRecordNotifier(repository3)),
     ],
     child: KezzleApp(),
   ));

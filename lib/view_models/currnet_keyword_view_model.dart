@@ -1,32 +1,36 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kezzle/repo/current_keyword_repo.dart';
 
-class CurrentKeywordVM extends Notifier<List<String>> {
+class RecentKeywordRecordNotifier extends Notifier<List<String>> {
   final CurrentKeywordRepository _repository;
 
-  CurrentKeywordVM(this._repository);
+  RecentKeywordRecordNotifier(this._repository);
 
-  // 사용자가 키워드 검색한 내용 추가
-  void addCurrentKeyword(String keyword) {
-    // 기존에 저장된 키워드 목록을 불러옴
-    final List<String> currentKeywordList = _repository.getCurrentKeyword();
+  List<String> get _currentKeywordsAtRepository =>
+      _repository.getCurrentKeywords();
 
-    // 기존에 저장된 키워드 목록에 새로운 키워드를 추가
-    // currentKeywordList.add(keyword);
-    // if (currentKeywordList.length > 5) {
-    // }
+  @override
+  List<String> build() {
+    return _currentKeywordsAtRepository;
+  }
 
-    // 기존에 저장된 키워드 목록에 새로운 키워드를 추가
-    currentKeywordList.insert(0, keyword);
-    if (currentKeywordList.length > 5) {
-      currentKeywordList.removeLast();
-    }
+  void recordKeyword(String keyword) {
+    if (state.contains(keyword)) _deleteKeyword(keyword);
+    _addCurrentKeyword(keyword);
+  }
 
-    _repository.setCurrentKeyword(currentKeywordList);
+  void _addCurrentKeyword(String keyword) {
+    final modifiedKeywords = _currentKeywordsAtRepository..insert(0, keyword);
+    if (modifiedKeywords.length > 5) modifiedKeywords.removeLast();
 
-    state = currentKeywordList;
-    print('키워드들 확인');
-    print(currentKeywordList);
+    _repository.setCurrentKeyword(modifiedKeywords);
+    state = modifiedKeywords;
+  }
+
+  void _deleteKeyword(String keyword) {
+    final modifiedKeywords = _currentKeywordsAtRepository..remove(keyword);
+    _repository.setCurrentKeyword(modifiedKeywords);
+    state = modifiedKeywords;
   }
 
   // 사용자가 키워드 검색한 내용 전부 삭제
@@ -34,21 +38,9 @@ class CurrentKeywordVM extends Notifier<List<String>> {
     _repository.setCurrentKeyword([]);
     state = [];
   }
-
-  void deleteKeyword(String keyword) {
-    final List<String> currentKeywordList = _repository.getCurrentKeyword();
-    currentKeywordList.remove(keyword);
-    _repository.setCurrentKeyword(currentKeywordList);
-    state = currentKeywordList;
-  }
-
-  @override
-  List<String> build() {
-    return _repository.getCurrentKeyword();
-  }
 }
 
-final currentKeywordVMProvider =
-    NotifierProvider<CurrentKeywordVM, List<String>>(
+final recentKeywordRecordProvider =
+    NotifierProvider<RecentKeywordRecordNotifier, List<String>>(
   () => throw UnimplementedError(),
 );

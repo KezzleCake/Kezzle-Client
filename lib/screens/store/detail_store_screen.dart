@@ -295,7 +295,7 @@ class _StoreCakesState extends ConsumerState<StoreCakes> {
               childAspectRatio: 1,
             ),
             itemBuilder: (context, index) {
-              print(index);
+              // print(index);
               if (index == cakes.length && isLoading) {
                 return Container();
               } else if (index == cakes.length + 1 && isLoading) {

@@ -5,11 +5,12 @@ class Analytics {
   final ProviderRef ref;
   Analytics(this.ref);
 
-  final FirebaseAnalytics analytics = FirebaseAnalytics.instance;
+  // FirebaseAnalytics get analytics => _analytics;
+  final FirebaseAnalytics _analytics = FirebaseAnalytics.instance;
 
   Future<void> gaEvent(
       String eventName, Map<String, dynamic> eventParams) async {
-    await analytics.logEvent(
+    await _analytics.logEvent(
       name: eventName,
       parameters: eventParams,
     );
@@ -18,7 +19,7 @@ class Analytics {
 
   Future<void> gaScreen(String screenName) async {
     try {
-      await analytics.logEvent(
+      await _analytics.logEvent(
         name: 'screen_view',
         parameters: {
           'firebase_screen': screenName,
@@ -31,7 +32,9 @@ class Analytics {
     print('화면 전환 로깅 완료');
   }
 
-  
+  Future<void> logSearch({required String searchTerm}) {
+    return _analytics.logSearch(searchTerm: searchTerm);
+  }
 }
 
 final analyticsProvider = Provider((ref) {

@@ -2,13 +2,14 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:kezzle/features/analytics/analytics.dart';
 import 'package:kezzle/models/curation_model.dart';
 import 'package:kezzle/models/home_store_model.dart';
 import 'package:kezzle/repo/cakes_repo.dart';
 import 'package:kezzle/screens/more_curation_screen.dart';
 import 'package:kezzle/utils/colors.dart';
 
-class CurationBoxWidget extends StatelessWidget {
+class CurationBoxWidget extends ConsumerWidget {
   // final String imageUrl;
   // final String title;
   final CurationCoverModel cover;
@@ -22,10 +23,16 @@ class CurationBoxWidget extends StatelessWidget {
     required this.colors,
   });
 
-  void onTapCurationBox(BuildContext context) {
+  void onTapCurationBox(BuildContext context, WidgetRef ref) {
     context.pushNamed(MoreCurationScreen.routeName, extra: {
       'title': cover.description,
       'fetchCakes': fetchCoverCakes,
+    });
+
+    ref.read(analyticsProvider).gaEvent('click_curation', {
+      'curation_id': cover.id,
+      'curation_description': cover.description,
+      'curation_cover_image': cover.s3url,
     });
   }
 
@@ -46,9 +53,9 @@ class CurationBoxWidget extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return GestureDetector(
-      onTap: () => onTapCurationBox(context),
+      onTap: () => onTapCurationBox(context, ref),
       child: Container(
         width: 150,
         height: 180,
