@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 // import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -13,14 +15,18 @@ class CakesRepo {
   Future<Map<String, dynamic>?> fetchCakes({
     required int count,
     String? afterId,
+    required double lat,
+    required double lng,
+    required int dist,
   }) async {
     Dio dio = ref.watch(dioProvider);
     if (afterId == null) {
       final queryParams = {
-        // 'latitude': lat,
-        // 'longitude': lng,
+        'latitude': lat,
+        'longitude': lng,
         // 'after': ,
         'count': 18,
+        'dist': dist * 1000,
       };
       try {
         final response = await dio.get('cakes', queryParameters: queryParams);
@@ -40,10 +46,11 @@ class CakesRepo {
       return {};
     } else {
       final queryParams = {
-        // 'latitude': lat,
-        // 'longitude': lng,
+        'latitude': lat,
+        'longitude': lng,
         'after': afterId,
         'count': 18,
+        'dist': dist * 1000,
       };
       try {
         final response = await dio.get('cakes', queryParameters: queryParams);

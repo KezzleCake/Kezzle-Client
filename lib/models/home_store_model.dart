@@ -76,7 +76,7 @@ class HomeStoreModel {
   ImageModel? logo;
   String address;
   bool isLiked;
-  // double distance;
+  double? distance;
   List<Cake>? cakes;
 
   HomeStoreModel({
@@ -85,7 +85,7 @@ class HomeStoreModel {
     this.logo,
     required this.address,
     required this.isLiked,
-    // required this.distance,
+    this.distance,
     this.cakes,
   });
 

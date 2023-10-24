@@ -24,7 +24,7 @@ class LoginScreen extends ConsumerStatefulWidget {
 }
 
 class LoginScreenState extends ConsumerState<LoginScreen> {
-  bool isLoading = false;
+  bool? isLoading;
 
   void onTapBtn(BuildContext context) {
     context.pushNamed(MakeUserScreen.routeName);
@@ -83,8 +83,10 @@ class LoginScreenState extends ConsumerState<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: isLoading
-            ? Center(child: CircularProgressIndicator(color: coral01))
+        body: isLoading != null
+            ? isLoading == true
+                ? Center(child: CircularProgressIndicator(color: coral01))
+                : Container()
             : Center(
                 child: Column(
                     mainAxisSize: MainAxisSize.min,

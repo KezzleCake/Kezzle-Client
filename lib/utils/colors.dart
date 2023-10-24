@@ -11,7 +11,8 @@ Color gray07 = const Color(0xff40414F);
 Color gray08 = const Color(0xff18181C);
 
 // Maincolor
-Color coral01 = const Color(0xffF8576A);
+// Color coral01 = const Color(0xffF8576A);
+Color coral01 = const Color(0xffF8596C);
 Color coral02 = const Color(0xffFF94A1);
 Color coral03 = const Color(0xffFFC2C9);
 Color coral04 = const Color(0xffFFE2E5);

@@ -1,11 +1,15 @@
+import 'dart:async';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kezzle/features/analytics/analytics.dart';
 import 'package:kezzle/features/cake_search/search_cake_initial_screen.dart';
+import 'package:kezzle/features/event/event_screen.dart';
 import 'package:kezzle/models/curation_model.dart';
 import 'package:kezzle/models/home_store_model.dart';
 import 'package:kezzle/repo/curation_repo.dart';
@@ -13,6 +17,8 @@ import 'package:kezzle/screens/more_curation_screen.dart';
 import 'package:kezzle/utils/colors.dart';
 import 'package:kezzle/widgets/curation_box_widget.dart';
 import 'package:kezzle/widgets/home_cake_widget.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 
 class CurationHomeScreen extends ConsumerStatefulWidget {
@@ -41,8 +47,24 @@ class CurationHomeScreenState extends ConsumerState<CurationHomeScreen>
   @override
   void initState() {
     // fetchPopularCakes = fetchTop10Cakes(ref);
-    fetchCurations = fetchHomeCurations();
+    // print('inithome');
+
+    //completer로 fetxhCuration 끝나면 팝업 띄우기
     super.initState();
+    fetchCurations = fetchHomeCurations();
+    fetchCurations.then((_) async {
+      final sharedPreferences = await SharedPreferences.getInstance();
+      if (sharedPreferences.getBool('isShowPopUp') == null ||
+          sharedPreferences.getBool('isShowPopUp') == true) {
+        // _showPopup(context);
+        popUpTest();
+      }
+    });
+
+    // WidgetsBinding.instance.addPostFrameCallback((_) {
+    //   // 화면이 다 그려진 후에 실행되는 코드
+    //   popUpTest();
+    // });
   }
 
   // 현재 슬라이드 페이지
@@ -130,32 +152,135 @@ class CurationHomeScreenState extends ConsumerState<CurationHomeScreen>
     context.pushNamed(SearchCakeInitailScreen.routeName);
   }
 
+  void popUpTest() async {
+    //TODO: 두번씩 호출되는거 어쩔거야..
+
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return Column(
+              // mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                GestureDetector(
+                  onTap: () => launchUrlString(
+                    'https://forms.gle/Y6SV3LvCMUvvi4xE8',
+                    mode: LaunchMode.externalApplication,
+                  ),
+                  child: Container(
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(20)),
+                      clipBehavior: Clip.hardEdge,
+                      width: MediaQuery.of(context).size.width - 55,
+                      // height: 475,
+                      child: Image.asset('assets/event/store_event.png')),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 27.5),
+                  child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        TextButton(
+                            onPressed: () async {
+                              // shared 값 변경
+                              //TODO: shared 쓰는 방식 고치기, 값저장하는거 고치기
+                              final sharedPreferences =
+                                  await SharedPreferences.getInstance();
+                              sharedPreferences.setBool('isShowPopUp', false);
+                              // Navigator.pop(context);
+                              if (!mounted) return;
+                              context.pop();
+                            },
+                            child: Row(
+                              children: [
+                                FaIcon(FontAwesomeIcons.circleCheck,
+                                    size: 15, color: gray01),
+                                const SizedBox(width: 5),
+                                Text(
+                                  '다시 보지 않기',
+                                  style: TextStyle(
+                                      color: gray01,
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.w500),
+                                ),
+                              ],
+                            )),
+                        TextButton(
+                            onPressed: () async {
+                              // Navigator.pop(context);
+                              // shared 값 변경
+                              //TODO: shared 쓰는 방식 고치기, 값저장하는거 고치기
+                              final sharedPreferences =
+                                  await SharedPreferences.getInstance();
+                              sharedPreferences.setBool('isShowPopUp', false);
+                              // Navigator.pop(context);
+                              if (!mounted) return;
+                              context.pop();
+                            },
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Text(
+                                  '닫기',
+                                  style: TextStyle(
+                                      color: gray01,
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.w500),
+                                ),
+                                const SizedBox(width: 5),
+                                FaIcon(FontAwesomeIcons.circleXmark,
+                                    size: 15, color: gray01)
+                              ],
+                            )),
+                      ]),
+                ),
+              ]);
+        });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+          // toolbarHeight: 45,
+          // elevation: 1,
+          // backgroundColor: coral01,
           centerTitle: false,
           title:
               Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-            SvgPicture.asset('assets/Kezzle.svg', width: 96),
+            SvgPicture.asset(
+              'assets/Kezzle.svg',
+              width: 95,
+              colorFilter: ColorFilter.mode(coral01, BlendMode.srcIn),
+            ),
             GestureDetector(
               onTap: onTapSearch,
-              child: SvgPicture.asset(
-                'assets/tab_icons/search.svg',
-                width: 26,
-                colorFilter:
-                    const ColorFilter.mode(Colors.black, BlendMode.srcIn),
-              ),
+              child:
+                  // SvgPicture.asset(
+                  //   'assets/tab_icons/search.svg',
+                  //   width: 26,
+                  //   colorFilter: ColorFilter.mode(gray08, BlendMode.srcIn),
+                  // ),
+                  FaIcon(FontAwesomeIcons.magnifyingGlass,
+                      size: 23, color: gray08),
             ),
           ])),
       body: FutureBuilder<Map<String, dynamic>?>(
-          // future: fetchHomeCurations(),
           future: fetchCurations,
-          builder: (context, data) {
-            if (data.hasData) {
-              final rawData = data.data;
+          // future: _popupCompleter.future,
+          builder: (context, snapshot) {
+            if (
+                // snapshot.hasData
+                snapshot.connectionState == ConnectionState.done) {
+              // WidgetsBinding.instance.addPostFrameCallback((_) {
+              //   // 화면이 다 그려진 후에 실행되는 코드
+              //   popUpTest();
+              // });
+
+              final rawData = snapshot.data;
               final aniversaryCuration = rawData != null
-                  ? AniversaryCurationModel.fromJson(data.data!['anniversary'])
+                  ? AniversaryCurationModel.fromJson(
+                      snapshot.data!['anniversary'])
                   : null; //TODO: null 넘어오는 것 체크
 
               if (aniversaryCuration == null) {
@@ -166,15 +291,16 @@ class CurationHomeScreenState extends ConsumerState<CurationHomeScreen>
 
               final List<Cake> popularCakes = [];
               anniversaryId = aniversaryCuration.id;
-              data.data!['popular']['cakes'].forEach((cake) {
+              snapshot.data!['popular']['cakes'].forEach((cake) {
                 popularCakes.add(Cake.fromJson(cake));
               });
               final List<CurationModel> curations = [];
-              data.data!['show'].forEach((curation) {
+              snapshot.data!['show'].forEach((curation) {
                 curations.add(CurationModel.fromJson(curation));
               });
 
               return ListView(children: [
+                const SizedBox(height: 8),
                 VisibilityDetector(
                     key: const Key('carousel'),
                     onVisibilityChanged: _slideVisibilityChanged,
@@ -346,10 +472,61 @@ class CurationHomeScreenState extends ConsumerState<CurationHomeScreen>
                                       .curationCoverModelList[index]);
                             })),
                     const SizedBox(height: 30),
+                    // Container(
+                    //   width: double.infinity,
+                    //   height: 185,
+                    //   color: coral01,
+                    // ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                      ),
+                      child: Column(
+                        children: [
+                          GestureDetector(
+                            onTap: () {
+                              // context.pushNamed(EventScreen.routeName, extra: {
+                              //   'image': 'assets/event/store_event.png',
+                              //   'eventURL':
+                              //       'https://forms.gle/Y6SV3LvCMUvvi4xE8',
+                              // });
+                              // TODO: 이벤트 심기
+                              launchUrlString(
+                                  'https://forms.gle/Y6SV3LvCMUvvi4xE8',
+                                  mode: LaunchMode.externalApplication);
+                            },
+                            child: Image.asset('assets/event/사장님배너.png',
+                                width: double.infinity),
+                          ),
+                          const SizedBox(height: 12),
+                          GestureDetector(
+                            onTap: () {
+                              // TODO: 이벤트 심기
+                              launchUrlString(
+                                'https://forms.gle/wztk59iVxkYPDhtL8',
+                                mode: LaunchMode.externalApplication,
+                              );
+                            },
+                            child: Image.asset('assets/event/스벅배너.png',
+                                width: double.infinity),
+                          ),
+                          const SizedBox(height: 16),
+                        ],
+                      ),
+                    ),
                   ],
                 ),
               ]);
-            } else {
+            }
+            // 데이터 fetch 다 끝나면
+
+            // else if (snapshot.connectionState == ConnectionState.done) {
+            //   // return const Center(child: Text('에러'));
+            //   print('d?');
+            //   popUpTest();
+            //   return Container();
+            // }
+            else {
               return const Center(child: CircularProgressIndicator());
               // return const Center(child: Text('에러'));
             }

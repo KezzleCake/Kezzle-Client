@@ -54,9 +54,16 @@ class KeywordWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      padding: EdgeInsets.only(
+        left: 10,
+        right: applied ?? false ? 0 : 10,
+        top: applied ?? false ? 0 : 6,
+        bottom: applied ?? false ? 0 : 6,
+        // horizontal: 10, vertical: 6
+      ),
       decoration: BoxDecoration(
-        border: Border.all(color: applied! ? orange01 : gray04),
+        border: Border.all(color: coral01),
+        // color: applied! ? gray01 : coral02,
         borderRadius: BorderRadius.circular(16),
       ),
       child: Row(
@@ -66,18 +73,22 @@ class KeywordWidget extends StatelessWidget {
             style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w600,
-              color: applied! ? orange01 : gray06,
+              color: applied! ? coral01 : gray05,
             ),
           ),
-          applied! ? const SizedBox(width: 5) : Container(),
+          // applied! ? const SizedBox(width: 5) : Container(),
           applied!
               ? GestureDetector(
                   // onTap: () => print('delete'),
                   onTap: () => deleteFunction(),
-                  child: FaIcon(
-                    FontAwesomeIcons.xmark,
-                    size: 12,
-                    color: gray04,
+                  child: Padding(
+                    padding: const EdgeInsets.only(
+                        left: 5.0, right: 10.0, top: 6.0, bottom: 6),
+                    child: FaIcon(
+                      FontAwesomeIcons.xmark,
+                      size: 12,
+                      color: gray04,
+                    ),
                   ),
                 )
               : Container(),

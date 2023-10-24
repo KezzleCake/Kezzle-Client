@@ -3,11 +3,13 @@ import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kezzle/models/home_store_model.dart';
 import 'package:kezzle/repo/cakes_repo.dart';
+import 'package:kezzle/view_models/search_setting_vm.dart';
 // import 'package:kezzle/view_models/id_token_provider.dart';
 // import 'package:kezzle/view_models/search_setting_vm.dart';
 
 class HomeCakeViewModel extends AutoDisposeAsyncNotifier<List<Cake>> {
-  late final CakesRepo _repository;
+  // late final CakesRepo _repository;
+  CakesRepo? _repository;
   List<Cake> _cakeList = [];
   bool fetchMore = false;
 
@@ -24,7 +26,18 @@ class HomeCakeViewModel extends AutoDisposeAsyncNotifier<List<Cake>> {
   }
 
   Future<List<Cake>> _fetchCakes({String? afterId}) async {
-    final Map<String, dynamic>? result = await _repository.fetchCakes(
+    final lat = ref.watch(searchSettingViewModelProvider).latitude;
+    final lon = ref.watch(searchSettingViewModelProvider).longitude;
+    final radius = ref.watch(searchSettingViewModelProvider).radius;
+
+    if (lat == 0.0 && lon == 0.0) {
+      return [];
+    }
+
+    final Map<String, dynamic>? result = await _repository!.fetchCakes(
+      dist: radius,
+      lat: lat,
+      lng: lon,
       afterId: afterId,
       count: 18,
     );
@@ -50,6 +63,7 @@ class HomeCakeViewModel extends AutoDisposeAsyncNotifier<List<Cake>> {
       List<Cake> newCakesList = [];
 
       final result = await _fetchCakes(afterId: _cakeList.last.cursor);
+      // final result = await _fetchCakes(afterId: _cakeList.last.id);
 
       newCakesList = result;
       _cakeList = [..._cakeList, ...newCakesList];
@@ -75,4 +89,5 @@ class HomeCakeViewModel extends AutoDisposeAsyncNotifier<List<Cake>> {
 final homeCakeProvider =
     AsyncNotifierProvider.autoDispose<HomeCakeViewModel, List<Cake>>(
   () => HomeCakeViewModel(),
+  dependencies: [searchSettingViewModelProvider],
 );

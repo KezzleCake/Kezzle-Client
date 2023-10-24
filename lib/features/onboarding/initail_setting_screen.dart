@@ -351,15 +351,18 @@ class InitialSettingSreenState extends ConsumerState<InitialSettingSreen> {
                 //                   size: 10, color: gray05),
                 //             ]))),
               ]),
-              const SizedBox(height: 10),
+              const SizedBox(height: 18),
               GestureDetector(
                 onTap: () => _onTapCurrentLocation(),
                 child: Row(
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      const FaIcon(FontAwesomeIcons.locationCrosshairs,
-                          size: 18),
+                      const Padding(
+                        padding: EdgeInsets.only(left: 3),
+                        child: FaIcon(FontAwesomeIcons.locationCrosshairs,
+                            size: 18),
+                      ),
                       const SizedBox(width: 6),
                       Text('현재 위치로 설정',
                           style: TextStyle(

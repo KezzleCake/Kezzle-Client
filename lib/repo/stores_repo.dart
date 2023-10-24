@@ -16,6 +16,7 @@ class StoreRepo {
     required int count,
     required double lat,
     required double lng,
+    required int dist,
   }) async {
     // 처음 요청은 아이디 없이 보내기
     Dio dio = ref.watch(dioProvider);
@@ -25,6 +26,7 @@ class StoreRepo {
         'count': 8,
         'latitude': lat,
         'longitude': lng,
+        'dist': dist * 1000,
       };
       try {
         final response = await dio.get('stores', queryParameters: queryParams);
@@ -48,6 +50,7 @@ class StoreRepo {
         'count': 8,
         'latitude': lat,
         'longitude': lng,
+        'dist': dist * 1000,
       };
       try {
         final response = await dio.get('stores', queryParameters: queryParams);
@@ -140,20 +143,21 @@ class StoreRepo {
   }
 
   // 스토어 상세 정보 가져오기
-  Future<Map<String, dynamic>?> fetchDetailStore(
-      {required String storeId,
-      // required String token,
-      // required lat,
-      // required lng
-      }) async {
+  Future<Map<String, dynamic>?> fetchDetailStore({
+    required String storeId,
+    // required String token,
+    // required lat,
+    // required lng
+  }) async {
     Dio dio = ref.read(dioProvider);
     // final queryParams = {
     //   'latitude': lat,
     //   'longitude': lng,
     // };
     try {
-      final response =
-          await dio.get('stores/$storeId',/* queryParameters: queryParams*/);
+      final response = await dio.get(
+        'stores/$storeId', /* queryParameters: queryParams*/
+      );
       if (response.statusCode == 200) {
         print('스토어 상세 정보 가져오기 성공');
         // print(response.data);

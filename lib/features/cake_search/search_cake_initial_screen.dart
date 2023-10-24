@@ -119,10 +119,10 @@ class SearchCakeInitailScreenState
                       onSubmitted: search,
                       controller: _textEditingController,
                       style: TextStyle(
-                          fontSize: 14,
+                          fontSize: 14.5,
                           fontWeight: FontWeight.w600,
                           color: gray06),
-                      placeholder: '검색어를 입력해주세요.',
+                      placeholder: '키워드로 케이크 디자인을 검색해보세요!',
                       placeholderStyle: TextStyle(color: gray04),
                       decoration: BoxDecoration(
                           color: gray02,
@@ -130,8 +130,13 @@ class SearchCakeInitailScreenState
                           border: _textEditingController.text.isEmpty
                               ? Border.all(color: Colors.transparent)
                               : Border.all(color: coral01)),
-                      prefixIcon:
-                          SvgPicture.asset('assets/icons/search_bar.svg'),
+                      prefixIcon: SvgPicture.asset(
+                        'assets/icons/search_bar.svg',
+                        colorFilter: ColorFilter.mode(
+                          gray05,
+                          BlendMode.srcIn,
+                        ),
+                      ),
                       prefixInsets: const EdgeInsets.only(
                           left: 16, top: 10.5, bottom: 10.5, right: 4))),
             ),
@@ -444,7 +449,7 @@ class HotKeyWordWidget extends StatelessWidget {
         child: Row(children: [
           Text('$rank',
               style: TextStyle(
-                  fontSize: 14, fontWeight: FontWeight.w700, color: gray08)),
+                  fontSize: 14, fontWeight: FontWeight.w700, color: coral01)),
           SizedBox(width: rank == 10 ? 10 : 17),
           Expanded(
               child: Text(rankData.keyword,

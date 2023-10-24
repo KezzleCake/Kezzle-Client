@@ -27,6 +27,7 @@ class StoreWidget1 extends ConsumerStatefulWidget {
 class StoreWidget1State extends ConsumerState<StoreWidget1> {
   @override
   void initState() {
+    print(widget.storeData);
     super.initState();
 
     Future.delayed(Duration.zero, () {
@@ -71,18 +72,34 @@ class StoreWidget1State extends ConsumerState<StoreWidget1> {
             Padding(
               padding: const EdgeInsets.only(top: 16, left: 16, right: 16),
               child: Row(children: [
-                CircleAvatar(
-                    // foregroundImage: NetworkImage(widget.storeData.logo!.s3Url),
-                    foregroundImage: NetworkImage(widget.storeData.logo == null
-                        ? ''
-                        : widget.storeData.logo!.s3Url
-                            .replaceFirst("https", "http")),
-                    onForegroundImageError: (exception, stackTrace) {
-                      return;
-                    },
-                    // backgroundImage: AssetImage(widget.storeData.thumbnail),
-                    // backgroundImage: Image.network(widget.storeData.logo.s3Url),
-                    radius: 63 / 2),
+                Container(
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(color: gray03, width: 1),
+                  ),
+                  child: CircleAvatar(
+                    backgroundColor: coral04,
+                    radius: 63 / 2,
+                    foregroundImage: NetworkImage(widget.storeData.logo != null
+                        ? widget.storeData.logo!.s3Url
+                            .replaceFirst("https", "http")
+                        : ''),
+                    onForegroundImageError: (exception, stackTrace) =>
+                        const SizedBox(),
+                  ),
+                ),
+                // CircleAvatar(
+                //     // foregroundImage: NetworkImage(widget.storeData.logo!.s3Url),
+                //     foregroundImage: NetworkImage(widget.storeData.logo == null
+                //         ? ''
+                //         : widget.storeData.logo!.s3Url
+                //             .replaceFirst("https", "http")),
+                //     onForegroundImageError: (exception, stackTrace) {
+                //       return;
+                //     },
+                //     // backgroundImage: AssetImage(widget.storeData.thumbnail),
+                //     // backgroundImage: Image.network(widget.storeData.logo.s3Url),
+                //     radius: 63 / 2),
                 const SizedBox(width: 8),
                 Expanded(
                     child: Column(
@@ -105,7 +122,11 @@ class StoreWidget1State extends ConsumerState<StoreWidget1> {
                               //         : 'assets/icons/like=off_in.svg',
                               //     width: 24),
                               child: Padding(
-                                padding: const EdgeInsets.all(8.0),
+                                padding: const EdgeInsets.only(
+                                  left: 8,
+                                  right: 8,
+                                  top: 8,
+                                ),
                                 child: SvgPicture.asset(
                                   ref.watch(storeProvider(
                                               widget.storeData.id)) ??
@@ -131,12 +152,24 @@ class StoreWidget1State extends ConsumerState<StoreWidget1> {
                               ),
                             ),
                           ]),
-                      const SizedBox(height: 1),
-                      Text(widget.storeData.address,
-                          style: TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w400,
-                              color: gray05)),
+                      // const SizedBox(height: 1),
+                      widget.storeData.distance == null
+                          ? Text(widget.storeData.address,
+                              style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w400,
+                                  color: gray05))
+                          : Text(
+                              '${(widget.storeData.distance! / 1000).toStringAsFixed(1)}kmㆍ${widget.storeData.address}',
+                              style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w400,
+                                  color: gray05)),
+                      // Text(widget.storeData.address,
+                      //     style: TextStyle(
+                      //         fontSize: 12,
+                      //         fontWeight: FontWeight.w400,
+                      //         color: gray05)),
                     ])),
               ]),
             ),

@@ -25,7 +25,7 @@ class _ExhibitionMarkerState extends State<ExhibitionMarker> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance?.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       // widget.onFinishRendering(_globalKey, widget.type);
       loadTheMarker();
     });
@@ -48,7 +48,7 @@ class _ExhibitionMarkerState extends State<ExhibitionMarker> {
 
     // return asset.Images.marker;
     // return Container(width: 10, height: 10, color: Colors.red);
-    return FaIcon(FontAwesomeIcons.locationDot, color: coral01, size: 35);
+    return FaIcon(FontAwesomeIcons.locationDot, color: coral01, size: 40);
   }
 
   @override

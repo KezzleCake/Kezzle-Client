@@ -46,14 +46,29 @@ class StoreWidget extends ConsumerWidget {
               boxShadow: [shadow01],
             ),
             child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              CircleAvatar(
-                foregroundImage: NetworkImage(storeData.logo == null
-                    ? ''
-                    : storeData.logo!.s3Url.replaceFirst("https", "http")),
-                // backgroundImage: AssetImage('assets/heart_cake.png'),
-                radius: 63 / 2,
-                onForegroundImageError: (exception, stackTrace) {},
+              Container(
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(color: gray03, width: 1),
+                ),
+                child: CircleAvatar(
+                  backgroundColor: coral04,
+                  radius: 63 / 2,
+                  foregroundImage: NetworkImage(storeData.logo != null
+                      ? storeData.logo!.s3Url.replaceFirst("https", "http")
+                      : ''),
+                  onForegroundImageError: (exception, stackTrace) =>
+                      const SizedBox(),
+                ),
               ),
+              // CircleAvatar(
+              //   foregroundImage: NetworkImage(storeData.logo == null
+              //       ? ''
+              //       : storeData.logo!.s3Url.replaceFirst("https", "http")),
+              //   // backgroundImage: AssetImage('assets/heart_cake.png'),
+              //   radius: 63 / 2,
+              //   onForegroundImageError: (exception, stackTrace) {},
+              // ),
               const SizedBox(width: 8),
               Expanded(
                   child: Column(

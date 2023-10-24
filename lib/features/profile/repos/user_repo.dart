@@ -80,13 +80,6 @@ class UserRepo {
         'users/${user.uid}',
       );
       return response;
-      // if (response.statusCode == 200) {
-      //   // print(response.data);
-      //   return response.data;
-      // } else {
-      //   print('로그인 실패');
-      //   return null;
-      // }
     } catch (e) {
       return null;
     }

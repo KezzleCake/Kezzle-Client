@@ -1,11 +1,14 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:kezzle/features/authentication/login_screen.dart';
 import 'package:kezzle/features/authentication/make_user_screen.dart';
 import 'package:kezzle/features/authentication/repos/authentication_repo.dart';
+import 'package:kezzle/features/onboarding/onboarding_screen.dart';
 import 'package:kezzle/features/profile/repos/user_repo.dart';
 import 'package:kezzle/responsive/mobile_screen_layout.dart';
+import 'package:kezzle/utils/shared_preference_provider.dart';
 // import 'package:kezzle/screens/home_screen.dart';
 // import 'package:kezzle/utils/colors.dart';
 
@@ -67,10 +70,22 @@ class AuthorizationCheckScreenState
             // 홈 화면으로 이동
             if (snapshot.data == 'login firebase') {
               // return const Text('로그인 화면으로 이동');
-              return const LoginScreen();
+              // return const LoginScreen();
+              // TODO: 온보딩 값 저장했는지 확인하고 온보딩 화면으로 이동
+              ref.read(sharedPreferenceRepo).getBool('onbording').then((value) {
+                value != false
+                    ? context.go(OnboardingScreen.routeURL)
+                    : context.go(LoginScreen.routeURL);
+              });
+              // return    const OnboardingScreen();
+              return const Scaffold(
+                  body: Center(
+                child: CircularProgressIndicator(),
+              ));
             } else if (snapshot.data == 'make user') {
               // return const Text('유저 정보 만들기 화면으로 이동');
               return const MakeUserScreen();
+              // return const OnboardingScreen();
             } else if (snapshot.data == 'home') {
               return const MobileScreenLayout(tab: 'home');
             } else {
@@ -80,6 +95,11 @@ class AuthorizationCheckScreenState
             // 사용자 정보가 없으면
             // 로그인 화면으로 이동
             return const Text('사용자 정보 없음');
+          } else if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Scaffold(
+                body: Center(
+              child: CircularProgressIndicator(),
+            ));
           } else {
             // 사용자 정보를 가져오는 중이면
             // 로딩 화면 표시

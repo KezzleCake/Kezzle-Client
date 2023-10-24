@@ -63,7 +63,7 @@ void main() async {
 }
 
 class KezzleApp extends ConsumerWidget {
-  KezzleApp({super.key});
+  const KezzleApp({super.key});
 
   //final FirebaseAnalytics analytics = FirebaseAnalytics.instance;
 

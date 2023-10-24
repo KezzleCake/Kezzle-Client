@@ -11,7 +11,7 @@ import 'package:kezzle/utils/toast.dart';
 import 'package:kezzle/view_models/store_cakes_vm.dart';
 import 'package:kezzle/view_models/store_view_model.dart';
 import 'package:kezzle/widgets/bookmark_cake_widget.dart';
-import 'package:url_launcher/url_launcher_string.dart';
+import 'package:kezzle/widgets/url_launch_dialog_widget.dart';
 
 final tabs = [
   // '가격',
@@ -102,13 +102,28 @@ class DetailStoreScreen extends ConsumerWidget {
         return Padding(
             padding: const EdgeInsets.all(20),
             child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              CircleAvatar(
-                radius: 63 / 2,
-                foregroundImage: NetworkImage(store.logo != null
-                    ? store.logo!.s3Url.replaceFirst("https", "http")
-                    : ''),
-                onForegroundImageError: (exception, stackTrace) =>
-                    const SizedBox(),
+              // CircleAvatar(
+
+              //   radius: 63 / 2,
+              //   foregroundImage: NetworkImage(store.logo != null
+              //       ? store.logo!.s3Url.replaceFirst("https", "http")
+              //       : ''),
+              //   onForegroundImageError: (exception, stackTrace) =>
+              //       const SizedBox(),
+              // ),
+              Container(
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(color: gray03, width: 1),
+                ),
+                child: CircleAvatar(
+                  radius: 63 / 2,
+                  foregroundImage: NetworkImage(store.logo != null
+                      ? store.logo!.s3Url.replaceFirst("https", "http")
+                      : ''),
+                  onForegroundImageError: (exception, stackTrace) =>
+                      const SizedBox(),
+                ),
               ),
               const SizedBox(width: 8),
               Expanded(
@@ -144,35 +159,70 @@ class DetailStoreScreen extends ConsumerWidget {
                               color: gray06,
                               fontWeight: FontWeight.w400)),
                     ],
-                    const SizedBox(height: 16),
+                    // const SizedBox(height: 16),
                     Row(children: [
                       GestureDetector(
-                        onTap: () async {
-                          // print(store.instaURL);
-                          if (store.instaURL != null &&
-                              store.instaURL!.isNotEmpty) {
-                            await launchUrlString(store.instaURL!,
-                                mode: LaunchMode.externalApplication);
-                          } else {
-                            Toast.toast(context, '해당 링크가 존재하지 않습니다. 😅');
-                          }
-                        },
-                        child: const FaIcon(
-                          FontAwesomeIcons.instagram,
-                        ),
-                      ),
-                      const SizedBox(width: 13),
+                          onTap: () async {
+                            // print(store.instaURL);
+                            if (store.instaURL != null &&
+                                store.instaURL!.isNotEmpty) {
+                              showDialog(
+                                  context: context,
+                                  builder: (context) => LaunchExternalURLDialog(
+                                        title: '스토어의 인스타그램으로\n이동하시겠습니까?',
+                                        content:
+                                            '더 다양한 스토어의 정보를 확인해보실 수 있습니다. 주문은 원하는 케이크 이미지를 저장/복사 후, 카톡으로 전달하여 주문하세요!',
+                                        url: store.instaURL!,
+                                      ));
+                              // await launchUrlString(store.instaURL!,
+                              //     mode: LaunchMode.externalApplication);
+                            } else {
+                              Toast.toast(context, '해당 링크가 존재하지 않습니다. 😅');
+                            }
+                          },
+                          child: Padding(
+                              padding: const EdgeInsets.only(
+                                right: 13 / 2,
+                                bottom: 5,
+                                top: 16,
+                                // left: 5,
+                              ),
+                              child: SvgPicture.asset(
+                                'assets/icons/insta.svg',
+                                width: 24,
+                              ))),
+                      // const SizedBox(width: 13),
                       GestureDetector(
                         onTap: () async {
                           if (store.kakaoURL != null &&
                               store.kakaoURL!.isNotEmpty) {
-                            await launchUrlString(store.kakaoURL!,
-                                mode: LaunchMode.externalApplication);
+                            // 팝업창으로 묻고 이동시키기
+                            showDialog(
+                                context: context,
+                                builder: (context) => LaunchExternalURLDialog(
+                                      title: '스토어의 카카오톡 채널로\n이동하시겠습니까?',
+                                      content:
+                                          '먼저 원하는 케이크 이미지를 복사/저장한 후, 카톡으로 전달하여 주문을 완료해보세요!',
+                                      url: store.kakaoURL!,
+                                    ));
+                            // await launchUrlString(store.kakaoURL!,
+                            //     mode: LaunchMode.externalApplication);
                           } else {
                             Toast.toast(context, '해당 링크가 존재하지 않습니다. 😅');
                           }
                         },
-                        child: const FaIcon(FontAwesomeIcons.comment),
+                        child: const Padding(
+                          padding: EdgeInsets.only(
+                            left: 13 / 2,
+                            bottom: 5,
+                            top: 16,
+                            // left: 5,
+                          ),
+                          child: FaIcon(
+                            FontAwesomeIcons.solidComment,
+                            size: 24,
+                          ),
+                        ),
                       ),
                     ]),
                   ])),
@@ -316,56 +366,5 @@ class _StoreCakesState extends ConsumerState<StoreCakes> {
         return Center(child: Text('$e'));
       },
     );
-
-    // return Column(children: [
-    //   // const SizedBox(height: 30),
-    //   // SizedBox(
-    //   //     height: 30,
-    //   //     child: ListView.separated(
-    //   //         itemCount: keywords.length,
-    //   //         padding: const EdgeInsets.symmetric(horizontal: 20),
-    //   //         scrollDirection: Axis.horizontal,
-    //   //         separatorBuilder: (context, index) => const SizedBox(width: 8),
-    //   //         itemBuilder: (context, index) => GestureDetector(
-    //   //               //누르면 선택된 인덱스를 바꾸는 함수
-    //   //               onTap: () => onTapKeyword(index),
-    //   //               child: AnimatedContainer(
-    //   //                   duration: const Duration(milliseconds: 100),
-    //   //                   alignment: Alignment.center,
-    //   //                   padding: const EdgeInsets.symmetric(
-    //   //                       vertical: 4, horizontal: 10),
-    //   //                   decoration: BoxDecoration(
-    //   //                       borderRadius: BorderRadius.circular(16),
-    //   //                       color: index == selectedKeywordIndex
-    //   //                           ? coral01
-    //   //                           : coral04),
-    //   //                   child: Text(keywords[index],
-    //   //                       style: TextStyle(
-    //   //                           fontSize: 14,
-    //   //                           color: index == selectedKeywordIndex
-    //   //                               ? Colors.white
-    //   //                               : coral01,
-    //   //                           fontWeight: FontWeight.w600))),
-    //   //             ))),
-    //   // const SizedBox(height: 16),
-    //   Flexible(
-    //       child: GridView.builder(
-    //     itemCount: widget.cakes.length,
-    //     padding: const EdgeInsets.only(
-    //       top: 16,
-    //       left: 20,
-    //       right: 20,
-    //       bottom: 40,
-    //     ),
-    //     gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-    //       crossAxisCount: 3,
-    //       crossAxisSpacing: 6,
-    //       mainAxisSpacing: 6,
-    //       childAspectRatio: 1,
-    //     ),
-    //     itemBuilder: (context, index) =>
-    //         BookmarkCakeWidget(cakeData: widget.cakes[index]),
-    //   )),
-    // ]);
   }
 }

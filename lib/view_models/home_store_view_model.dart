@@ -50,11 +50,18 @@ class HomeStoreViewModel
     // 위도, 경도, 유저 가져와서 api 요청
     final lat = ref.watch(searchSettingViewModelProvider).latitude;
     final lon = ref.watch(searchSettingViewModelProvider).longitude;
+    final radius = ref.watch(searchSettingViewModelProvider).radius;
+
+    if(lat == 0.0 && lon == 0.0) {
+      return [];
+    }
+
 
     final Map<String, dynamic>? result = await _storeRepo!.fetchStores(
       lat: lat,
       lng: lon,
       count: 8,
+      dist: radius,
       afterDistance: afterDistance,
     );
     // print(result);
@@ -92,7 +99,7 @@ class HomeStoreViewModel
       List<HomeStoreModel> newHomeStoreList = [];
 
       final result = await _fetchStores(
-        // afterDistance: _homeStoreList.last.distance,
+        afterDistance: _homeStoreList.last.distance,
       );
       // print(_homeStoreList.last.name);
       newHomeStoreList = result;

@@ -7,7 +7,9 @@ import 'package:go_router/go_router.dart';
 import 'package:kezzle/features/authentication/login_screen.dart';
 import 'package:kezzle/features/authentication/make_user_screen.dart';
 import 'package:kezzle/features/cake_search/search_cake_initial_screen.dart';
+import 'package:kezzle/features/event/event_screen.dart';
 import 'package:kezzle/features/onboarding/current_location_screen.dart';
+import 'package:kezzle/features/onboarding/onboarding_screen.dart';
 // import 'package:kezzle/features/authentication/repos/authentication_repo.dart';
 // import 'package:kezzle/features/onboarding/current_location_screen.dart';
 // import 'package:kezzle/features/onboarding/initail_setting_screen.dart';
@@ -33,7 +35,10 @@ final routerProvider = Provider((ref) {
   return GoRouter(
     observers: [FirebaseAnalyticsObserver(analytics: analytics)],
     // initialLocation: Platform.isAndroid ? "/splash" : "/home",
+
+    //TODO: 온보딩 잠시 확인용
     initialLocation:
+        // "/onboarding",
         Platform.isAndroid ? "/splash" : "/authorization_check_screen",
 
     // initialLocation: "/splash",
@@ -97,6 +102,12 @@ final routerProvider = Provider((ref) {
         path: SplashScreen.routeURL,
         builder: (context, state) => const SplashScreen(),
       ),
+      // 온보딩 화면 라우팅 설정
+      GoRoute(
+        name: OnboardingScreen.routeName,
+        path: OnboardingScreen.routeURL,
+        builder: (context, state) => const OnboardingScreen(),
+      ),
       // 권한 설정 화면 라우팅 설정
       GoRoute(
         name: AuthorizationCheckScreen.routeName,
@@ -126,7 +137,7 @@ final routerProvider = Provider((ref) {
       ),
       // 홈 화면 라우팅 설정
       GoRoute(
-        path: "/:tab(home|map|search|favorite|profile)",
+        path: "/:tab(home|map|search|favorite|profile|search_around)",
         name: MobileScreenLayout.routeName,
         builder: (context, state) {
           // final tab = state.params['tab']!;
@@ -208,6 +219,17 @@ final routerProvider = Provider((ref) {
           return CurrentLocationScreen(
             initial_lat: args['lat']!,
             initial_lng: args['lng']!,
+          );
+        },
+      ),
+      GoRoute(
+        name: EventScreen.routeName,
+        path: EventScreen.routeURL,
+        builder: (context, state) {
+          Map<String, String> args = state.extra as Map<String, String>;
+          return EventScreen(
+            image: args['image']!,
+            eventURL: args['eventURL']!,
           );
         },
       ),

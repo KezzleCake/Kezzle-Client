@@ -7,6 +7,7 @@ import 'package:kezzle/features/authentication/repos/authentication_repo.dart';
 import 'package:kezzle/features/profile/change_profile_screen.dart';
 import 'package:kezzle/features/profile/view_models/profile_vm.dart';
 import 'package:kezzle/utils/colors.dart';
+import 'package:kezzle/utils/shared_preference_provider.dart';
 import 'package:kezzle/view_models/id_token_provider.dart';
 
 class UserScreen extends ConsumerStatefulWidget {
@@ -17,11 +18,16 @@ class UserScreen extends ConsumerStatefulWidget {
 }
 
 class UserScreenState extends ConsumerState<UserScreen> {
-
   void onTapNickName(BuildContext context) {
     //프로필 수정 화면으로 이동
     context.pushNamed(ChangeProfileScreen.routeName);
   }
+
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   // print('initUser');
+  // }
 
   // 로그아웃 버튼
   void onTapLogout(BuildContext context) {
@@ -39,6 +45,10 @@ class UserScreenState extends ConsumerState<UserScreen> {
               // 로그아웃 시키기
               onTapConfirm: () {
                 // print('로그아웃');
+                //TODO: 온보딩, 팝업
+                ref.read(sharedPreferenceRepo).setBool('onboarding', true);
+                ref.read(sharedPreferenceRepo).setBool('isShowPopUp', true);
+
                 ref.read(authRepo).signOut();
                 ref.read(tokenProvider.notifier).resetToken();
                 context.go("/");
@@ -58,6 +68,10 @@ class UserScreenState extends ConsumerState<UserScreen> {
             cancelText: '탈퇴하기',
             confirmText: '계속 유지할게요',
             onTapCancel: () {
+              //TODO: 온보딩, 팝업
+              ref.read(sharedPreferenceRepo).setBool('onboarding', true);
+              ref.read(sharedPreferenceRepo).setBool('isShowPopUp', true);
+
               ref.read(profileProvider.notifier).deleteProfile();
               ref.read(tokenProvider.notifier).resetToken();
               context.go("/authorization_check_screen");

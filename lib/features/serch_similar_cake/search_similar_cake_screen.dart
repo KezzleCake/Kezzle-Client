@@ -109,28 +109,28 @@ class SearchSimilarCakeScreenState
     });
   }
 
-  void onTapDetailCake() {
-    // 현재 페이지뷰의 케이크 정보를 가지고 상세페이지로 이동
-    // print(widget.pageController.page);
-    //page가 소수점이 0.5이상이면 반올림, 아니면 내림
-    int page = widget.pageController.page!.round();
-    // print(ref
-    //     .read(similarCakeProvider(widget.originalCake.id))
-    //     .value![page]
-    //     .ownerStoreName);
-    SimilarCake cake =
-        ref.read(similarCakeProvider(widget.originalCake.id)).value![page];
+  // void onTapDetailCake() {
+  //   // 현재 페이지뷰의 케이크 정보를 가지고 상세페이지로 이동
+  //   // print(widget.pageController.page);
+  //   //page가 소수점이 0.5이상이면 반올림, 아니면 내림
+  //   int page = widget.pageController.page!.round();
+  //   // print(ref
+  //   //     .read(similarCakeProvider(widget.originalCake.id))
+  //   //     .value![page]
+  //   //     .ownerStoreName);
+  //   SimilarCake cake =
+  //       ref.read(similarCakeProvider(widget.originalCake.id)).value![page];
 
-    context.push("/detail_cake/${cake.id}/${cake.ownerStoreId}");
+  //   context.push("/detail_cake/${cake.id}/${cake.ownerStoreId}");
 
-    ref.read(analyticsProvider).gaEvent('click_detail_similar_cake', {
-      'cake_id': cake.id,
-      'cake_store_id': cake.ownerStoreId,
-      'cake_store_name': cake.ownerStoreName,
-      'original_cake_id': widget.originalCake.id,
-      'original_cake_store_id': widget.originalCake.ownerStoreId,
-    });
-  }
+  //   ref.read(analyticsProvider).gaEvent('click_detail_similar_cake', {
+  //     'cake_id': cake.id,
+  //     'cake_store_id': cake.ownerStoreId,
+  //     'cake_store_name': cake.ownerStoreName,
+  //     'original_cake_id': widget.originalCake.id,
+  //     'original_cake_store_id': widget.originalCake.ownerStoreId,
+  //   });
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -217,47 +217,48 @@ class SearchSimilarCakeScreenState
             ],
           ),
         ),
-        bottomNavigationBar: BottomAppBar(
-          color: Colors.white,
-          shadowColor: Colors.transparent,
-          elevation: 0,
-          child: IgnorePointer(
-            ignoring: ref
-                    .watch(similarCakeProvider(widget.originalCake.id))
-                    .isLoading ||
-                ref
-                    .watch(similarCakeProvider(widget.originalCake.id))
-                    .value!
-                    .isEmpty,
-            child: GestureDetector(
-                onTap: onTapDetailCake,
-                child: Container(
-                    width: 100,
-                    alignment: Alignment.center,
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: ref
-                                  .watch(similarCakeProvider(
-                                      widget.originalCake.id))
-                                  .isLoading ||
-                              ref
-                                  .watch(similarCakeProvider(
-                                      widget.originalCake.id))
-                                  .value!
-                                  .isEmpty
-                          ? gray03
-                          : coral01,
-                      borderRadius: BorderRadius.circular(28),
-                    ),
-                    child: Text('케이크 상세보기',
-                        style: TextStyle(
-                            fontSize: 16,
-                            color: gray01,
-                            fontWeight: FontWeight.w700)))),
-          ),
-        ),
+        // bottomNavigationBar: BottomAppBar(
+        //   color: Colors.white,
+        //   shadowColor: Colors.transparent,
+        //   elevation: 0,
+        //   child: IgnorePointer(
+        //     ignoring: ref
+        //             .watch(similarCakeProvider(widget.originalCake.id))
+        //             .isLoading ||
+        //         ref
+        //             .watch(similarCakeProvider(widget.originalCake.id))
+        //             .value!
+        //             .isEmpty,
+        //     child: GestureDetector(
+        //         onTap: onTapDetailCake,
+        //         child: Container(
+        //             width: 100,
+        //             alignment: Alignment.center,
+        //             padding: const EdgeInsets.all(16),
+        //             decoration: BoxDecoration(
+        //               color: ref
+        //                           .watch(similarCakeProvider(
+        //                               widget.originalCake.id))
+        //                           .isLoading ||
+        //                       ref
+        //                           .watch(similarCakeProvider(
+        //                               widget.originalCake.id))
+        //                           .value!
+        //                           .isEmpty
+        //                   ? gray03
+        //                   : coral01,
+        //               borderRadius: BorderRadius.circular(28),
+        //             ),
+        //             child: Text('케이크 상세보기',
+        //                 style: TextStyle(
+        //                     fontSize: 16,
+        //                     color: gray01,
+        //                     fontWeight: FontWeight.w700)))),
+        //   ),
+        // ),
         body: Stack(children: [
           MapScreen(
+              originalCake: widget.originalCake,
               cakeId: widget.originalCake.id,
               pageController: widget.pageController),
           FutureBuilder<DetailStoreModel?>(
@@ -372,8 +373,12 @@ class SearchSimilarCakeScreenState
 class MapScreen extends ConsumerStatefulWidget {
   final String cakeId;
   final PageController pageController;
+  final Cake originalCake;
   const MapScreen(
-      {super.key, required this.cakeId, required this.pageController});
+      {super.key,
+      required this.cakeId,
+      required this.pageController,
+      required this.originalCake});
 
   @override
   MapScreenState createState() => MapScreenState();
@@ -388,6 +393,19 @@ class MapScreenState extends ConsumerState<MapScreen> {
   BitmapDescriptor markerIcon = BitmapDescriptor.defaultMarker;
   List<SimilarCake> similarCakeList = [];
   bool markerLoading = true;
+
+  void onTapSimilarCake(int index) {
+    context.push(
+        "/detail_cake/${similarCakeList[index].id}/${similarCakeList[index].ownerStoreId}");
+
+    ref.read(analyticsProvider).gaEvent('click_detail_similar_cake', {
+      'cake_id': similarCakeList[index].id,
+      'cake_store_id': similarCakeList[index].ownerStoreId,
+      'cake_store_name': similarCakeList[index].ownerStoreName,
+      'original_cake_id': widget.originalCake.id,
+      'original_cake_store_id': widget.originalCake.ownerStoreId,
+    });
+  }
 
   Future<Uint8List> getBytesFromAsset(String path, int width) async {
     ByteData data = await rootBundle.load(path);
@@ -519,6 +537,9 @@ class MapScreenState extends ConsumerState<MapScreen> {
                           markers: {
                             for (var cake in cakes)
                               Marker(
+                                infoWindow: InfoWindow(
+                                    title: cake.ownerStoreName,
+                                    snippet: cake.ownerStoreAddress),
                                 onTap: () {
                                   widget.pageController.animateToPage(
                                       cakes.indexOf(cake),
@@ -534,9 +555,9 @@ class MapScreenState extends ConsumerState<MapScreen> {
                           },
                         ),
                   Positioned(
-                    bottom: 0,
+                    bottom: 30,
                     child: SizedBox(
-                        height: MediaQuery.of(context).size.width * 0.50,
+                        height: MediaQuery.of(context).size.width * 0.64,
                         width: MediaQuery.of(context).size.width,
                         child: PageView.builder(
                             controller: widget.pageController,
@@ -549,8 +570,13 @@ class MapScreenState extends ConsumerState<MapScreen> {
                                   duration: const Duration(milliseconds: 350),
                                   tween:
                                       Tween<double>(begin: scale, end: scale),
-                                  child: SimilarCakeWidget(
-                                      similarCake: cakes[index]),
+                                  child: GestureDetector(
+                                    onTap: () => onTapSimilarCake(index),
+                                    child: SimilarCakeWidget(
+                                        // onTapSimilarCake:
+                                        //     onTapSimilarCake(index),
+                                        similarCake: cakes[index]),
+                                  ),
                                   builder: (context, value, child) {
                                     return Transform.scale(
                                         scale: value, child: child);

@@ -44,6 +44,7 @@ HomeStoreModel _$HomeStoreModelFromJson(Map<String, dynamic> json) =>
           : ImageModel.fromJson(json['logo'] as Map<String, dynamic>),
       address: json['address'] as String,
       isLiked: json['isLiked'] as bool,
+      distance: (json['distance'] as num?)?.toDouble(),
       cakes: (json['cakes'] as List<dynamic>?)
           ?.map((e) => Cake.fromJson(e as Map<String, dynamic>))
           .toList(),
@@ -56,5 +57,6 @@ Map<String, dynamic> _$HomeStoreModelToJson(HomeStoreModel instance) =>
       'logo': instance.logo,
       'address': instance.address,
       'isLiked': instance.isLiked,
+      'distance': instance.distance,
       'cakes': instance.cakes,
     };
