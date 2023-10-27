@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
@@ -9,7 +10,6 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kezzle/features/analytics/analytics.dart';
 import 'package:kezzle/features/cake_search/search_cake_initial_screen.dart';
-import 'package:kezzle/features/event/event_screen.dart';
 import 'package:kezzle/models/curation_model.dart';
 import 'package:kezzle/models/home_store_model.dart';
 import 'package:kezzle/repo/curation_repo.dart';
@@ -176,64 +176,62 @@ class CurationHomeScreenState extends ConsumerState<CurationHomeScreen>
                       child: Image.asset('assets/event/store_event.png')),
                 ),
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 27.5),
-                  child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        TextButton(
-                            onPressed: () async {
-                              // shared 값 변경
-                              //TODO: shared 쓰는 방식 고치기, 값저장하는거 고치기
-                              final sharedPreferences =
-                                  await SharedPreferences.getInstance();
-                              sharedPreferences.setBool('isShowPopUp', false);
-                              // Navigator.pop(context);
-                              if (!mounted) return;
-                              context.pop();
-                            },
-                            child: Row(
-                              children: [
-                                FaIcon(FontAwesomeIcons.circleCheck,
-                                    size: 15, color: gray01),
-                                const SizedBox(width: 5),
-                                Text(
-                                  '다시 보지 않기',
-                                  style: TextStyle(
-                                      color: gray01,
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.w500),
-                                ),
-                              ],
-                            )),
-                        TextButton(
-                            onPressed: () async {
-                              // Navigator.pop(context);
-                              // shared 값 변경
-                              //TODO: shared 쓰는 방식 고치기, 값저장하는거 고치기
-                              final sharedPreferences =
-                                  await SharedPreferences.getInstance();
-                              sharedPreferences.setBool('isShowPopUp', false);
-                              // Navigator.pop(context);
-                              if (!mounted) return;
-                              context.pop();
-                            },
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Text(
-                                  '닫기',
-                                  style: TextStyle(
-                                      color: gray01,
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.w500),
-                                ),
-                                const SizedBox(width: 5),
-                                FaIcon(FontAwesomeIcons.circleXmark,
-                                    size: 15, color: gray01)
-                              ],
-                            )),
-                      ]),
-                ),
+                    padding: const EdgeInsets.symmetric(horizontal: 27.5),
+                    child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          TextButton(
+                              onPressed: () async {
+                                // shared 값 변경
+                                //TODO: shared 쓰는 방식 고치기, 값저장하는거 고치기
+                                final sharedPreferences =
+                                    await SharedPreferences.getInstance();
+                                sharedPreferences.setBool('isShowPopUp', false);
+                                // Navigator.pop(context);
+                                if (!mounted) return;
+                                context.pop();
+                              },
+                              child: Row(
+                                children: [
+                                  FaIcon(FontAwesomeIcons.circleCheck,
+                                      size: 15, color: gray01),
+                                  const SizedBox(width: 5),
+                                  Text(
+                                    '다시 보지 않기',
+                                    style: TextStyle(
+                                        color: gray01,
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.w500),
+                                  ),
+                                ],
+                              )),
+                          TextButton(
+                              onPressed: () async {
+                                // Navigator.pop(context);
+                                // shared 값 변경
+                                //TODO: shared 쓰는 방식 고치기, 값저장하는거 고치기
+                                final sharedPreferences =
+                                    await SharedPreferences.getInstance();
+                                sharedPreferences.setBool('isShowPopUp', false);
+                                // Navigator.pop(context);
+                                if (!mounted) return;
+                                context.pop();
+                              },
+                              child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      '닫기',
+                                      style: TextStyle(
+                                          color: gray01,
+                                          fontSize: 15,
+                                          fontWeight: FontWeight.w500),
+                                    ),
+                                    const SizedBox(width: 5),
+                                    FaIcon(FontAwesomeIcons.circleXmark,
+                                        size: 15, color: gray01)
+                                  ])),
+                        ])),
               ]);
         });
   }
@@ -242,9 +240,6 @@ class CurationHomeScreenState extends ConsumerState<CurationHomeScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-          // toolbarHeight: 45,
-          // elevation: 1,
-          // backgroundColor: coral01,
           centerTitle: false,
           title:
               Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
@@ -255,14 +250,8 @@ class CurationHomeScreenState extends ConsumerState<CurationHomeScreen>
             ),
             GestureDetector(
               onTap: onTapSearch,
-              child:
-                  // SvgPicture.asset(
-                  //   'assets/tab_icons/search.svg',
-                  //   width: 26,
-                  //   colorFilter: ColorFilter.mode(gray08, BlendMode.srcIn),
-                  // ),
-                  FaIcon(FontAwesomeIcons.magnifyingGlass,
-                      size: 23, color: gray08),
+              child: FaIcon(FontAwesomeIcons.magnifyingGlass,
+                  size: 23, color: gray08),
             ),
           ])),
       body: FutureBuilder<Map<String, dynamic>?>(
@@ -342,40 +331,37 @@ class CurationHomeScreenState extends ConsumerState<CurationHomeScreen>
                                         width: double.maxFinite,
                                         height: 240,
                                         decoration: BoxDecoration(
-                                          gradient: LinearGradient(
-                                              begin: Alignment.topCenter,
-                                              end: Alignment.bottomCenter,
-                                              colors: [
-                                                Colors.transparent,
-                                                Colors.black.withOpacity(0.5)
-                                              ]),
-                                        )),
+                                            gradient: LinearGradient(
+                                                begin: Alignment.topCenter,
+                                                end: Alignment.bottomCenter,
+                                                colors: [
+                                              Colors.transparent,
+                                              Colors.black.withOpacity(0.5)
+                                            ]))),
                                   ]);
                             }),
                         Positioned(
-                          bottom: 0,
-                          left: 0,
-                          child: AnimatedContainer(
-                              duration: const Duration(milliseconds: 300),
-                              width: MediaQuery.of(context).size.width /
-                                  // slideItem.length *
-                                  aniversaryCuration.imageUrls.length *
-                                  (_currentPage + 1),
-                              height: 4,
-                              color: coral01),
-                        ),
+                            bottom: 0,
+                            left: 0,
+                            child: AnimatedContainer(
+                                duration: const Duration(milliseconds: 300),
+                                width: MediaQuery.of(context).size.width /
+                                    // slideItem.length *
+                                    aniversaryCuration.imageUrls.length *
+                                    (_currentPage + 1),
+                                height: 4,
+                                color: coral01)),
                         Positioned(
                             left: 40,
                             bottom: 40,
                             child: IgnorePointer(
-                              child: Text(
-                                  // '특별한\n크리스마스를 위한 케이크\nD-8',
-                                  '${aniversaryCuration.anniversaryTitle}\n${aniversaryCuration.dday}',
-                                  style: TextStyle(
-                                      fontSize: 26,
-                                      fontWeight: FontWeight.w800,
-                                      color: gray01)),
-                            )),
+                                child: Text(
+                                    // '특별한\n크리스마스를 위한 케이크\nD-8',
+                                    '${aniversaryCuration.anniversaryTitle}\n${aniversaryCuration.dday}',
+                                    style: TextStyle(
+                                        fontSize: 26,
+                                        fontWeight: FontWeight.w800,
+                                        color: gray01)))),
                       ]),
                     )),
                 const SizedBox(height: 30),
@@ -408,98 +394,83 @@ class CurationHomeScreenState extends ConsumerState<CurationHomeScreen>
                         separatorBuilder: (context, index) =>
                             const SizedBox(width: 12),
                         scrollDirection: Axis.horizontal,
+                        //TODO: 10개 올거임. 바꾸기
                         itemCount: 5,
                         // itemCount: popularCakes.length,
                         itemBuilder: (context, index) {
                           return HomeCakeWidget(cakeData: popularCakes[index]);
                         })),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Padding(
-                        padding: const EdgeInsets.only(left: 20, top: 30),
-                        child: Text(
-                            // '상황별 BESddT',
-                            curations[0].note,
-                            style: TextStyle(
-                                color: gray08,
-                                fontSize: 18,
-                                fontWeight: FontWeight.w600))),
-                    const SizedBox(height: 16),
-                    SizedBox(
-                        height: 180, //이거 나중에 비율 화면에 맞게 조절해야할 거 같긴 함.
-                        child: ListView.separated(
-                            padding: const EdgeInsets.symmetric(horizontal: 20),
-                            // itemCount: 3,
-                            itemCount:
-                                curations[0].curationCoverModelList.length,
-                            scrollDirection: Axis.horizontal,
-                            separatorBuilder: (context, index) =>
-                                const SizedBox(width: 12),
-                            itemBuilder: (context, index) {
-                              return CurationBoxWidget(
-                                colors: colors[index % 4],
+                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                  Padding(
+                      padding: const EdgeInsets.only(left: 20, top: 30),
+                      child: Text(
+                          // '상황별 BESddT',
+                          curations[0].note,
+                          style: TextStyle(
+                              color: gray08,
+                              fontSize: 18,
+                              fontWeight: FontWeight.w600))),
+                  const SizedBox(height: 16),
+                  SizedBox(
+                      height: 180, //이거 나중에 비율 화면에 맞게 조절해야할 거 같긴 함.
+                      child: ListView.separated(
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
+                          // itemCount: 3,
+                          itemCount: curations[0].curationCoverModelList.length,
+                          scrollDirection: Axis.horizontal,
+                          separatorBuilder: (context, index) =>
+                              const SizedBox(width: 12),
+                          itemBuilder: (context, index) {
+                            return CurationBoxWidget(
+                              colors: colors[index % 4],
+                              cover: curations[0].curationCoverModelList[index],
+                            );
+                          })),
+                  Padding(
+                      padding: const EdgeInsets.only(left: 20, top: 30),
+                      child: Text(
+                          // '받는 사람을 위한 dd케이크',
+                          curations[1].note,
+                          style: TextStyle(
+                              color: gray08,
+                              fontSize: 18,
+                              fontWeight: FontWeight.w600))),
+                  const SizedBox(height: 16),
+                  SizedBox(
+                      height: 180, //이거 나중에 비율 화면에 맞게 조절해야할 거 같긴 함.
+                      child: ListView.separated(
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
+                          // itemCount: 3,
+                          itemCount: curations[1].curationCoverModelList.length,
+                          scrollDirection: Axis.horizontal,
+                          separatorBuilder: (context, index) =>
+                              const SizedBox(width: 12),
+                          itemBuilder: (context, index) {
+                            return CurationBoxWidget(
+                                // color: const Color(0xFFE8B8FF),
+                                colors: colors[index % 4 + 4],
+                                // colors: colors[index + 4],
                                 cover:
-                                    curations[0].curationCoverModelList[index],
-                              );
-                            })),
-                    Padding(
-                        padding: const EdgeInsets.only(left: 20, top: 30),
-                        child: Text(
-                            // '받는 사람을 위한 dd케이크',
-                            curations[1].note,
-                            style: TextStyle(
-                                color: gray08,
-                                fontSize: 18,
-                                fontWeight: FontWeight.w600))),
-                    const SizedBox(height: 16),
-                    SizedBox(
-                        height: 180, //이거 나중에 비율 화면에 맞게 조절해야할 거 같긴 함.
-                        child: ListView.separated(
-                            padding: const EdgeInsets.symmetric(horizontal: 20),
-                            // itemCount: 3,
-                            itemCount:
-                                curations[1].curationCoverModelList.length,
-                            scrollDirection: Axis.horizontal,
-                            separatorBuilder: (context, index) =>
-                                const SizedBox(width: 12),
-                            itemBuilder: (context, index) {
-                              return CurationBoxWidget(
-                                  // color: const Color(0xFFE8B8FF),
-                                  colors: colors[index % 4 + 4],
-                                  // colors: colors[index + 4],
-                                  cover: curations[1]
-                                      .curationCoverModelList[index]);
-                            })),
-                    const SizedBox(height: 30),
-                    // Container(
-                    //   width: double.infinity,
-                    //   height: 185,
-                    //   color: coral01,
-                    // ),
-                    Padding(
+                                    curations[1].curationCoverModelList[index]);
+                          })),
+                  const SizedBox(height: 30),
+                  Padding(
                       padding: const EdgeInsets.symmetric(
                         horizontal: 10,
                       ),
-                      child: Column(
-                        children: [
-                          GestureDetector(
-                            onTap: () {
-                              // context.pushNamed(EventScreen.routeName, extra: {
-                              //   'image': 'assets/event/store_event.png',
-                              //   'eventURL':
-                              //       'https://forms.gle/Y6SV3LvCMUvvi4xE8',
-                              // });
-                              // TODO: 이벤트 심기
-                              launchUrlString(
-                                  'https://forms.gle/Y6SV3LvCMUvvi4xE8',
-                                  mode: LaunchMode.externalApplication);
-                            },
-                            child: Image.asset('assets/event/사장님배너.png',
-                                width: double.infinity),
-                          ),
-                          const SizedBox(height: 12),
-                          GestureDetector(
+                      child: Column(children: [
+                        GestureDetector(
+                          onTap: () {
+                            // TODO: 이벤트 심기
+                            launchUrlString(
+                                'https://forms.gle/Y6SV3LvCMUvvi4xE8',
+                                mode: LaunchMode.externalApplication);
+                          },
+                          child: Image.asset('assets/event/사장님배너.png',
+                              width: double.infinity),
+                        ),
+                        const SizedBox(height: 12),
+                        GestureDetector(
                             onTap: () {
                               // TODO: 이벤트 심기
                               launchUrlString(
@@ -508,25 +479,15 @@ class CurationHomeScreenState extends ConsumerState<CurationHomeScreen>
                               );
                             },
                             child: Image.asset('assets/event/스벅배너.png',
-                                width: double.infinity),
-                          ),
-                          const SizedBox(height: 16),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
+                                width: double.infinity)),
+                        const SizedBox(height: 16),
+                      ])),
+                ]),
               ]);
-            }
-            // 데이터 fetch 다 끝나면
-
-            // else if (snapshot.connectionState == ConnectionState.done) {
-            //   // return const Center(child: Text('에러'));
-            //   print('d?');
-            //   popUpTest();
-            //   return Container();
-            // }
-            else {
+            } else if (snapshot.hasError) {
+              // 에러 있는 경우?
+              return const Center(child: Text('에러'));
+            } else {
               return const Center(child: CircularProgressIndicator());
               // return const Center(child: Text('에러'));
             }

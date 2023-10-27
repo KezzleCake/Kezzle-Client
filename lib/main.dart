@@ -1,10 +1,13 @@
 import 'dart:io';
 
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:kezzle/features/notifications/notifications_provider.dart';
 import 'package:kezzle/firebase_options.dart';
 import 'package:kezzle/repo/current_keyword_repo.dart';
 import 'package:kezzle/repo/search_setting_repo.dart';
@@ -16,6 +19,36 @@ import 'package:kezzle/view_models/search_setting_vm.dart';
 import 'package:kezzle/view_models/searched_address_view_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+// 알림 위해 추가
+// Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+//   print("백그라운드 메시지 처리.. ${message.notification!.body!}");
+// }
+
+// late AndroidNotificationChannel channel;
+// late FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
+
+// void initializeNotification() async {
+//   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+
+//   final flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+//   await flutterLocalNotificationsPlugin
+//       .resolvePlatformSpecificImplementation<
+//           AndroidFlutterLocalNotificationsPlugin>()
+//       ?.createNotificationChannel(const AndroidNotificationChannel(
+//           'high_importance_channel', 'high_importance_notification',
+//           importance: Importance.max));
+
+//   await flutterLocalNotificationsPlugin.initialize(const InitializationSettings(
+//     android: AndroidInitializationSettings("@mipmap/ic_launcher"),
+//   ));
+
+//   await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
+//     alert: true,
+//     badge: true,
+//     sound: true,
+//   );
+// }
+
 class MyHttpOverrides extends HttpOverrides {
   @override
   HttpClient createHttpClient(SecurityContext? context) {
@@ -25,7 +58,6 @@ class MyHttpOverrides extends HttpOverrides {
 
 void main() async {
   HttpOverrides.global = MyHttpOverrides();
-
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     name: 'Kezzle',
@@ -70,6 +102,7 @@ class KezzleApp extends ConsumerWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    
     return MaterialApp.router(
       debugShowCheckedModeBanner: false,
       routerConfig: ref.watch(routerProvider),

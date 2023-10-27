@@ -301,12 +301,24 @@ class SearchSimilarCakeScreenState
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceEvenly,
                                   children: [
-                                    Text(store!.name,
-                                        // '본비케이크',
-                                        style: TextStyle(
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.w600,
-                                            color: gray08)),
+                                    SizedBox(
+                                      width: (MediaQuery.of(context)
+                                                  .size
+                                                  .width -
+                                              40) -
+                                          (MediaQuery.of(context).size.width -
+                                                  40) *
+                                              142 /
+                                              350 -
+                                          8,
+                                      child: Text(store!.name,
+                                          // '본비케이크',
+                                          overflow: TextOverflow.ellipsis,
+                                          style: TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.w600,
+                                              color: gray08)),
+                                    ),
                                     SizedBox(
                                         width: (MediaQuery.of(context)
                                                     .size
