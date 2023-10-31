@@ -38,7 +38,8 @@ class MoreCurationScreen extends ConsumerWidget {
             if (data.hasData) {
               final List<Cake> cakes = initailCakes ?? data.data![0];
 
-              return MasonryGridView.builder(
+              return 
+              MasonryGridView.builder(
                   mainAxisSpacing: 23,
                   crossAxisSpacing: 5,
                   padding: const EdgeInsets.only(

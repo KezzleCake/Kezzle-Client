@@ -13,6 +13,8 @@ import 'package:kezzle/features/cake_search/search_cake_initial_screen.dart';
 import 'package:kezzle/models/curation_model.dart';
 import 'package:kezzle/models/home_store_model.dart';
 import 'package:kezzle/repo/curation_repo.dart';
+import 'package:kezzle/screens/infinite_anniversary_screen.dart';
+import 'package:kezzle/screens/infinite_curation_screen.dart';
 import 'package:kezzle/screens/more_curation_screen.dart';
 import 'package:kezzle/utils/colors.dart';
 import 'package:kezzle/widgets/curation_box_widget.dart';
@@ -75,9 +77,14 @@ class CurationHomeScreenState extends ConsumerState<CurationHomeScreen>
 
   void onTapSlide(AniversaryCurationModel aniversaryCuration) {
     // 슬라이드 이미지 선택 시..
-    context.pushNamed(MoreCurationScreen.routeName, extra: {
-      'title': aniversaryCuration.anniversaryTitle,
-      'fetchCakes': fetchAnniversaryCakes,
+
+    // context.pushNamed(MoreCurationScreen.routeName, extra: {
+    //   'title': aniversaryCuration.anniversaryTitle,
+    //   'fetchCakes': fetchAnniversaryCakes,
+    // });
+    context.pushNamed(InfiniteAnniversaryScreen.routeName, extra: {
+      'curation_id': anniversaryId,
+      'curation_description': aniversaryCuration.anniversaryTitle,
     });
 
     ref.read(analyticsProvider).gaEvent('click_curation', {
@@ -125,20 +132,24 @@ class CurationHomeScreenState extends ConsumerState<CurationHomeScreen>
     }
   }
 
-  void onTapMore(List<Cake> popularCakes) {
+  void onTapMore() {
     // 더보기 선택 시..
-    context.pushNamed(
-      MoreCurationScreen.routeName,
-      extra: {
-        'title': '인기 Top20 케이크',
-        'fetchCakes': null,
-        'initailCakes': popularCakes,
-      },
-    );
+    // context.pushNamed(
+    //   MoreCurationScreen.routeName,
+    //   extra: {
+    //     'title': '인기 Top20 케이크',
+    //     'fetchCakes': null,
+    //     'initailCakes': popularCakes,
+    //   },
+    // );
+    context.pushNamed(InfiniteAnniversaryScreen.routeName, extra: {
+      'curation_id': 'popular',
+      'curation_description': '인기 Top100 케이크',
+    });
 
     ref.read(analyticsProvider).gaEvent('click_more_popular', {
       'curation_id': 'popular',
-      'curation_description': '인기 Top20 케이크',
+      'curation_description': '인기 Top100 케이크',
     });
   }
 
@@ -370,13 +381,13 @@ class CurationHomeScreenState extends ConsumerState<CurationHomeScreen>
                   child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text('인기 Top20 케이크',
+                        Text('인기 Top100 케이크',
                             style: TextStyle(
                                 color: gray08,
                                 fontSize: 18,
                                 fontWeight: FontWeight.w600)),
                         GestureDetector(
-                          onTap: () => onTapMore(popularCakes),
+                          onTap: () => onTapMore(),
                           child: Text('더보기',
                               style: TextStyle(
                                   color: gray05,
@@ -394,7 +405,7 @@ class CurationHomeScreenState extends ConsumerState<CurationHomeScreen>
                         separatorBuilder: (context, index) =>
                             const SizedBox(width: 12),
                         scrollDirection: Axis.horizontal,
-                        //TODO: 10개 올거임. 바꾸기
+                        //TODO: 10개 올거임
                         itemCount: 5,
                         // itemCount: popularCakes.length,
                         itemBuilder: (context, index) {

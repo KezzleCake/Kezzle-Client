@@ -42,6 +42,7 @@ class CurationRepo {
     required String curationId,
   }) async {
     Dio dio = ref.watch(dioProvider);
+
     try {
       final response = await dio.get('cakes/anniversary/$curationId');
       if (response.statusCode == 200) {
@@ -52,6 +53,48 @@ class CurationRepo {
       print('하나의 큐레이션 케이크 리스트 가져오기 실패');
     }
     return null;
+  }
+
+  Future<Map<String, dynamic>> fetchCurationCakesById({
+    required String curationId,
+    required int page,
+  }) async {
+    Dio dio = ref.watch(dioProvider);
+    final queryParams = {
+      'page': page,
+    };
+    try {
+      final response =
+          await dio.get('curation/$curationId', queryParameters: queryParams);
+      if (response.statusCode == 200) {
+        return response.data;
+      }
+    } catch (e) {
+      print(e);
+      print('하나의 큐레이션 케이크 리스트 가져오기 실패');
+    }
+    return {};
+  }
+
+  Future<Map<String, dynamic>> fetchAnniversaryCakesById({
+    required String curationId,
+    required int page,
+  }) async {
+    Dio dio = ref.watch(dioProvider);
+    final queryParams = {
+      'page': page,
+    };
+    try {
+      final response = await dio.get('cakes/anniversary/$curationId',
+          queryParameters: queryParams);
+      if (response.statusCode == 200) {
+        return response.data;
+      }
+    } catch (e) {
+      print(e);
+      print('기념일 케이크 리스트 가져오기 실패');
+    }
+    return {};
   }
 }
 

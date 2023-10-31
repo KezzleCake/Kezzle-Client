@@ -6,6 +6,7 @@ import 'package:kezzle/features/analytics/analytics.dart';
 import 'package:kezzle/models/curation_model.dart';
 import 'package:kezzle/models/home_store_model.dart';
 import 'package:kezzle/repo/cakes_repo.dart';
+import 'package:kezzle/screens/infinite_curation_screen.dart';
 import 'package:kezzle/screens/more_curation_screen.dart';
 import 'package:kezzle/utils/colors.dart';
 
@@ -24,9 +25,13 @@ class CurationBoxWidget extends ConsumerWidget {
   });
 
   void onTapCurationBox(BuildContext context, WidgetRef ref) {
-    context.pushNamed(MoreCurationScreen.routeName, extra: {
-      'title': cover.description,
-      'fetchCakes': fetchCoverCakes,
+    // context.pushNamed(MoreCurationScreen.routeName, extra: {
+    //   'title': cover.description,
+    //   'fetchCakes': fetchCoverCakes,
+    // });
+    context.pushNamed(InfiniteCurationScreen.routeName, extra: {
+      'curation_id': cover.id,
+      'curation_description': cover.description,
     });
 
     ref.read(analyticsProvider).gaEvent('click_curation', {

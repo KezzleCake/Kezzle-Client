@@ -22,7 +22,9 @@ import 'package:kezzle/models/home_store_model.dart';
 import 'package:kezzle/responsive/mobile_screen_layout.dart';
 import 'package:kezzle/screens/authorization_check_screen.dart';
 import 'package:kezzle/screens/detail_cake_screen.dart';
+import 'package:kezzle/screens/infinite_anniversary_screen.dart';
 import 'package:kezzle/screens/infinite_curation_screen.dart';
+import 'package:kezzle/screens/infinite_popular_cake_screen.dart';
 import 'package:kezzle/screens/more_curation_screen.dart';
 import 'package:kezzle/screens/store/detail_store_screen.dart';
 
@@ -39,8 +41,9 @@ final routerProvider = Provider((ref) {
       // initialLocation: Platform.isAndroid ? "/splash" : "/home",
 
       //TODO: 무한 스크롤 확인 하려고! 나중에 교체하기
-      initialLocation: InfiniteCurationScreen.routeUrl,
-      // Platform.isAndroid ? "/splash" : "/authorization_check_screen",
+      initialLocation:
+          // InfiniteCurationScreen.routeUrl,
+          Platform.isAndroid ? "/splash" : "/authorization_check_screen",
       routes: [
         ShellRoute(
           builder: (context, state, child) {
@@ -189,8 +192,50 @@ final routerProvider = Provider((ref) {
             GoRoute(
               name: InfiniteCurationScreen.routeName,
               path: InfiniteCurationScreen.routeUrl,
-              builder: (context, state) => const InfiniteCurationScreen(),
+              builder: (context, state) {
+                Map<String, dynamic> args = state.extra as Map<String, dynamic>;
+                return InfiniteCurationScreen(
+                  curationId: args['curation_id'] as String,
+                  curationDescription: args['curation_description'] as String,
+                );
+              },
             ),
+            GoRoute(
+              name: InfiniteAnniversaryScreen.routeName,
+              path: InfiniteAnniversaryScreen.routeUrl,
+              builder: (context, state) {
+                Map<String, dynamic> args = state.extra as Map<String, dynamic>;
+                return InfiniteAnniversaryScreen(
+                  curationId: args['curation_id'] as String,
+                  curationDescription: args['curation_description'] as String,
+                );
+              },
+            ),
+            GoRoute(
+              name: InfinitePopularCakeScreen.routeName,
+              path: InfinitePopularCakeScreen.routeUrl,
+              builder: (context, state) {
+                Map<String, dynamic> args = state.extra as Map<String, dynamic>;
+                return InfinitePopularCakeScreen(
+                  curationId: args['curation_id'] as String,
+                  curationDescription: args['curation_description'] as String,
+                );
+              },
+            ),
+            // GoRoute(
+            //   path: "/more_curation",
+            //   name: MoreCurationScreen.routeName,
+            //   builder: (context, state) {
+            //     Map<String, dynamic> args = state.extra as Map<String, dynamic>;
+            //     // final String title = state.pathParameters['title']!;
+            //     return MoreCurationScreen(
+            //       title: args['title'] as String,
+            //       // fetchCakes는 안 올 수도 있음
+            //       fetchCakes: args['fetchCakes'] as Function?,
+            //       initailCakes: args['initailCakes'] as List<Cake>?,
+            //     );
+            //   },
+            // ),
           ],
         )
       ]);

@@ -5,22 +5,22 @@ import 'package:kezzle/models/home_store_model.dart';
 import 'package:kezzle/repo/curation_repo.dart';
 import 'package:kezzle/screens/more_curation_screen.dart';
 
-class InfiniteCurationScreen extends ConsumerStatefulWidget {
-  static const routeName = '/infinite_curation_screen';
-  static const routeUrl = '/infinite_curation_screen';
+class InfinitePopularCakeScreen extends ConsumerStatefulWidget {
+  static const routeName = '/infinite_popular_cake_screen';
+  static const routeUrl = '/infinite_popular_cake_screen';
   final String curationId;
   final String curationDescription;
 
-  const InfiniteCurationScreen(
+  const InfinitePopularCakeScreen(
       {super.key, required this.curationId, required this.curationDescription});
 
   @override
-  ConsumerState<InfiniteCurationScreen> createState() =>
-      _InfiniteCurationScreenState();
+  ConsumerState<InfinitePopularCakeScreen> createState() =>
+      _InfinitePopularCakeScreenState();
 }
 
-class _InfiniteCurationScreenState
-    extends ConsumerState<InfiniteCurationScreen> {
+class _InfinitePopularCakeScreenState
+    extends ConsumerState<InfinitePopularCakeScreen> {
   // List<String> items = List.generate(15, (index) => 'Item ${index + 1}');
   // List<String> items = [];
   List<Cake> items = [];
@@ -56,9 +56,7 @@ class _InfiniteCurationScreenState
     fetch();
 
     controller.addListener(() {
-      if (controller.position.maxScrollExtent == controller.offset
-          // controller.offset > controller.position.maxScrollExtent - 300
-          ) {
+      if (controller.position.maxScrollExtent == controller.offset) {
         print('????');
         fetch();
       }
@@ -73,6 +71,7 @@ class _InfiniteCurationScreenState
 
   Future fetch() async {
     if (isLoading) return;
+    // isLoading = true;
     if (mounted) {
       setState(() {
         isLoading = true;
@@ -86,9 +85,13 @@ class _InfiniteCurationScreenState
     // await Future.delayed(const Duration(seconds: 2));
 
     List<Cake> newItems = [];
+    // final response = await ref
+    //     .read(curationRepo)
+    //     .fetchCurationCakesById(curationId: widget.curationId, page: page);
+    //TODO: api 변경하기
     final response = await ref
         .read(curationRepo)
-        .fetchCurationCakesById(curationId: widget.curationId, page: page);
+        .fetchAnniversaryCakesById(curationId: widget.curationId, page: page);
     response['cakes'].forEach((cake) {
       newItems.add(Cake.fromJson(cake));
     });
@@ -129,7 +132,6 @@ class _InfiniteCurationScreenState
           : Stack(
               children: [
                 MasonryGridView.builder(
-                    // shrinkWrap: true,
                     physics: const AlwaysScrollableScrollPhysics(),
                     controller: controller,
                     mainAxisSpacing: 23,
@@ -137,7 +139,7 @@ class _InfiniteCurationScreenState
                     padding: const EdgeInsets.only(
                         left: 15, right: 15, bottom: 80, top: 20),
                     // itemCount: cakeLength,
-                    itemCount: items.length + 2,
+                    itemCount: items.length + 1,
                     gridDelegate:
                         const SliverSimpleGridDelegateWithFixedCrossAxisCount(
                             crossAxisCount: 2),
@@ -153,7 +155,6 @@ class _InfiniteCurationScreenState
                             child: Center(
                               child: hasMore
                                   ?
-                                  // 중앙에 하나만 두려면?
                                   // const CircularProgressIndicator()
                                   Container()
                                   : const Text('마지막입니다.'),
