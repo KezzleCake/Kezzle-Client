@@ -96,6 +96,26 @@ class CurationRepo {
     }
     return {};
   }
+
+  Future<Map<String, dynamic>> fetchPopularCakes({
+    required double? lastCursor,
+  }) async {
+    Dio dio = ref.watch(dioProvider);
+    final queryParams = {
+      'after': lastCursor,
+    };
+    try {
+      final response =
+          await dio.get('cakes/popular', queryParameters: queryParams);
+      if (response.statusCode == 200) {
+        return response.data;
+      }
+    } catch (e) {
+      print(e);
+      print('인기 케이크 리스트 가져오기 실패');
+    }
+    return {};
+  }
 }
 
 // 프로바이더 등록

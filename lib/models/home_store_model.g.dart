@@ -24,7 +24,7 @@ Cake _$CakeFromJson(Map<String, dynamic> json) => Cake(
       json['isLiked'] as bool?,
       json['cursor'] as String?,
       (json['hashtag'] as List<dynamic>).map((e) => e as String).toList(),
-    );
+    )..popularCursor = (json['popular_cal'] as num?)?.toDouble();
 
 Map<String, dynamic> _$CakeToJson(Cake instance) => <String, dynamic>{
       '_id': instance.id,
@@ -33,6 +33,7 @@ Map<String, dynamic> _$CakeToJson(Cake instance) => <String, dynamic>{
       'isLiked': instance.isLiked,
       'cursor': instance.cursor,
       'hashtag': instance.hashtag,
+      'popular_cal': instance.popularCursor,
     };
 
 HomeStoreModel _$HomeStoreModelFromJson(Map<String, dynamic> json) =>

@@ -13,6 +13,7 @@ import 'package:kezzle/models/curation_model.dart';
 import 'package:kezzle/models/home_store_model.dart';
 import 'package:kezzle/repo/curation_repo.dart';
 import 'package:kezzle/screens/infinite_anniversary_screen.dart';
+import 'package:kezzle/screens/infinite_popular_cake_screen.dart';
 import 'package:kezzle/utils/colors.dart';
 import 'package:kezzle/widgets/curation_box_widget.dart';
 import 'package:kezzle/widgets/home_cake_widget.dart';
@@ -152,7 +153,7 @@ class CurationHomeScreenState extends ConsumerState<CurationHomeScreen>
     //     'initailCakes': popularCakes,
     //   },
     // );
-    context.pushNamed(InfiniteAnniversaryScreen.routeName, extra: {
+    context.pushNamed(InfinitePopularCakeScreen.routeName, extra: {
       'curation_id': 'popular',
       'curation_description': '인기 Top100 케이크',
     });

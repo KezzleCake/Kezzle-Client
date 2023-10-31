@@ -26,6 +26,8 @@ class Cake {
   bool? isLiked;
   String? cursor;
   List<String> hashtag;
+  @JsonKey(name: 'popular_cal')
+  double? popularCursor;
 
   Cake(
     this.id,

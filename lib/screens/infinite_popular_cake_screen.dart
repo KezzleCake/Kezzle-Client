@@ -8,11 +8,10 @@ import 'package:kezzle/screens/more_curation_screen.dart';
 class InfinitePopularCakeScreen extends ConsumerStatefulWidget {
   static const routeName = '/infinite_popular_cake_screen';
   static const routeUrl = '/infinite_popular_cake_screen';
-  final String curationId;
   final String curationDescription;
 
   const InfinitePopularCakeScreen(
-      {super.key, required this.curationId, required this.curationDescription});
+      {super.key, required this.curationDescription});
 
   @override
   ConsumerState<InfinitePopularCakeScreen> createState() =>
@@ -25,29 +24,29 @@ class _InfinitePopularCakeScreenState
   // List<String> items = [];
   List<Cake> items = [];
   final controller = ScrollController();
-  int page = 0;
+  // int page = 0;
   bool hasMore = true;
   bool isLoading = false;
   final List<double> widthList = [240, 174, 200, 174];
 
-  Future refresh() async {
-    setState(() {
-      isLoading = false;
-      hasMore = true;
-      page = 0;
-      items.clear();
-    });
+  // Future refresh() async {
+  //   setState(() {
+  //     isLoading = false;
+  //     hasMore = true;
+  //     // page = 0;
+  //     items.clear();
+  //   });
 
-    fetch();
+  //   fetch();
 
-    // api 요청
-    // await Future.delayed(const Duration(seconds: 1));
-    // //api 요청 결과로 리스트 업데이트
-    // setState(() {
-    //   List<String> items = List.generate(15, (index) => 'Item ${index + 1}');
-    //   this.items.addAll(items);
-    // });
-  }
+  //   // api 요청
+  //   // await Future.delayed(const Duration(seconds: 1));
+  //   // //api 요청 결과로 리스트 업데이트
+  //   // setState(() {
+  //   //   List<String> items = List.generate(15, (index) => 'Item ${index + 1}');
+  //   //   this.items.addAll(items);
+  //   // });
+  // }
 
   @override
   void initState() {
@@ -70,8 +69,10 @@ class _InfinitePopularCakeScreenState
   }
 
   Future fetch() async {
-    if (isLoading) return;
+    print(hasMore);
+    if (isLoading || !hasMore) return;
     // isLoading = true;
+
     if (mounted) {
       setState(() {
         isLoading = true;
@@ -88,22 +89,29 @@ class _InfinitePopularCakeScreenState
     // final response = await ref
     //     .read(curationRepo)
     //     .fetchCurationCakesById(curationId: widget.curationId, page: page);
-    //TODO: api 변경하기
-    final response = await ref
-        .read(curationRepo)
-        .fetchAnniversaryCakesById(curationId: widget.curationId, page: page);
+    if (items.isEmpty) {
+      print('없음');
+    } else {
+      print('마지막 아이템커서, 매장이름: ${items.last.popularCursor}, ${items.last.id}');
+    }
+
+    final response = await ref.read(curationRepo).fetchPopularCakes(
+        lastCursor: items.isEmpty ? null : items.last.popularCursor);
     response['cakes'].forEach((cake) {
       newItems.add(Cake.fromJson(cake));
     });
 
-    setState(() {
-      page++;
-      isLoading = false;
-      if (newItems.length < limit) {
-        hasMore = false;
-      }
-      items.addAll(newItems);
-    });
+    if (mounted) {
+      setState(() {
+        // page++;
+        isLoading = false;
+        if (newItems.length < limit) {
+          hasMore = false;
+        }
+        items.addAll(newItems);
+        // print(items.length);
+      });
+    }
 
     // final List<String> newItems =
     //     List.generate(15, (index) => 'Item ${index + 1}');
@@ -153,15 +161,17 @@ class _InfinitePopularCakeScreenState
                         return Padding(
                             padding: const EdgeInsets.symmetric(vertical: 32),
                             child: Center(
-                              child: hasMore
-                                  ?
-                                  // const CircularProgressIndicator()
-                                  Container()
-                                  : const Text('마지막입니다.'),
+                              child: Container(),
+                              // hasMore
+                              // ?
+                              // // const CircularProgressIndicator()
+                              // Container()
+                              // : const Text('마지막입니다.'),
                             ));
                       }
                     }),
-                if (isLoading) // isLoading 값에 따라 CircularProgressIndicator 표시 결정
+                if (isLoading &&
+                    hasMore) // isLoading 값에 따라 CircularProgressIndicator 표시 결정
                   const Positioned(
                       bottom: 65,
                       left: 0,

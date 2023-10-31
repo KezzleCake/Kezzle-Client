@@ -217,7 +217,6 @@ final routerProvider = Provider((ref) {
               builder: (context, state) {
                 Map<String, dynamic> args = state.extra as Map<String, dynamic>;
                 return InfinitePopularCakeScreen(
-                  curationId: args['curation_id'] as String,
                   curationDescription: args['curation_description'] as String,
                 );
               },

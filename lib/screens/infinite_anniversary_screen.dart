@@ -95,14 +95,16 @@ class _InfiniteAnniversaryScreenState
       newItems.add(Cake.fromJson(cake));
     });
 
-    setState(() {
-      page++;
-      isLoading = false;
-      if (newItems.length < limit) {
-        hasMore = false;
-      }
-      items.addAll(newItems);
-    });
+    if (mounted) {
+      setState(() {
+        page++;
+        isLoading = false;
+        if (newItems.length < limit) {
+          hasMore = false;
+        }
+        items.addAll(newItems);
+      });
+    }
 
     // final List<String> newItems =
     //     List.generate(15, (index) => 'Item ${index + 1}');
