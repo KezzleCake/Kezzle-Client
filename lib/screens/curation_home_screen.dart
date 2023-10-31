@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
@@ -14,8 +13,6 @@ import 'package:kezzle/models/curation_model.dart';
 import 'package:kezzle/models/home_store_model.dart';
 import 'package:kezzle/repo/curation_repo.dart';
 import 'package:kezzle/screens/infinite_anniversary_screen.dart';
-import 'package:kezzle/screens/infinite_curation_screen.dart';
-import 'package:kezzle/screens/more_curation_screen.dart';
 import 'package:kezzle/utils/colors.dart';
 import 'package:kezzle/widgets/curation_box_widget.dart';
 import 'package:kezzle/widgets/home_cake_widget.dart';
@@ -33,6 +30,7 @@ class CurationHomeScreen extends ConsumerStatefulWidget {
 class CurationHomeScreenState extends ConsumerState<CurationHomeScreen>
     with SingleTickerProviderStateMixin {
   final CarouselController _carouselController = CarouselController();
+  final CarouselController _bannerController = CarouselController();
   // late Future<List<Cake>> fetchPopularCakes;
   late Future<Map<String, dynamic>> fetchCurations;
   List<List<Color>> colors = [
@@ -44,6 +42,18 @@ class CurationHomeScreenState extends ConsumerState<CurationHomeScreen>
     [const Color(0xffFFB8B8), const Color(0xffB67272)],
     [const Color(0xFFFFE7B8), const Color(0xFF96825C)],
     [const Color(0xFFE8B8FF), const Color(0xFF9E76B1)],
+  ];
+
+  // int _currentBannerPage = 0;
+  List bannerImageList = [
+    'assets/event/가입이벤트배너.png',
+    'assets/event/스벅배너.png',
+    'assets/event/사장님배너.png',
+  ];
+  List<String> bannerUrl = [
+    'https://forms.gle/YR9EnmqK9t9SbAXX8',
+    'https://forms.gle/wztk59iVxkYPDhtL8',
+    'https://forms.gle/Y6SV3LvCMUvvi4xE8',
   ];
 
   @override
@@ -93,23 +103,23 @@ class CurationHomeScreenState extends ConsumerState<CurationHomeScreen>
     });
   }
 
-  Future<List<Cake>> fetchAnniversaryCakes(WidgetRef ref) async {
-    //케이크 정보 가져오기
-    List<Cake> cakes = [];
-    final response = await ref
-        .read(curationRepo)
-        .fetchAnniversaryCakes(curationId: anniversaryId);
-    print(anniversaryId);
-    if (response != null) {
-      // print(response);
-      response['cakes'].forEach((cake) {
-        cakes.add(Cake.fromJson(cake));
-      });
-      return cakes;
-    } else {
-      return [];
-    }
-  }
+  // Future<List<Cake>> fetchAnniversaryCakes(WidgetRef ref) async {
+  //   //케이크 정보 가져오기
+  //   List<Cake> cakes = [];
+  //   final response = await ref
+  //       .read(curationRepo)
+  //       .fetchAnniversaryCakes(curationId: anniversaryId);
+  //   print(anniversaryId);
+  //   if (response != null) {
+  //     // print(response);
+  //     response['cakes'].forEach((cake) {
+  //       cakes.add(Cake.fromJson(cake));
+  //     });
+  //     return cakes;
+  //   } else {
+  //     return [];
+  //   }
+  // }
 
   void onPageChanged(int index, CarouselPageChangedReason reason) {
     setState(() {
@@ -271,7 +281,8 @@ class CurationHomeScreenState extends ConsumerState<CurationHomeScreen>
           builder: (context, snapshot) {
             if (
                 // snapshot.hasData
-                snapshot.connectionState == ConnectionState.done) {
+                snapshot.connectionState == ConnectionState.done &&
+                    snapshot.hasData) {
               // WidgetsBinding.instance.addPostFrameCallback((_) {
               //   // 화면이 다 그려진 후에 실행되는 코드
               //   popUpTest();
@@ -464,35 +475,87 @@ class CurationHomeScreenState extends ConsumerState<CurationHomeScreen>
                                 cover:
                                     curations[1].curationCoverModelList[index]);
                           })),
-                  const SizedBox(height: 30),
-                  Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 10,
-                      ),
-                      child: Column(children: [
-                        GestureDetector(
-                          onTap: () {
-                            // TODO: 이벤트 심기
-                            launchUrlString(
-                                'https://forms.gle/Y6SV3LvCMUvvi4xE8',
-                                mode: LaunchMode.externalApplication);
-                          },
-                          child: Image.asset('assets/event/사장님배너.png',
-                              width: double.infinity),
+                  // const SizedBox(height: 10),
+                  // Padding(
+                  //     padding: const EdgeInsets.symmetric(
+                  //       horizontal: 10,
+                  //     ),
+                  //     child: Column(children: [
+                  //       GestureDetector(
+                  //         onTap: () {
+                  //           // TODO: 이벤트 심기
+                  //           launchUrlString(
+                  //               'https://forms.gle/Y6SV3LvCMUvvi4xE8',
+                  //               mode: LaunchMode.externalApplication);
+                  //         },
+                  //         child: Image.asset('assets/event/사장님배너.png',
+                  //             width: double.infinity),
+                  //       ),
+                  //       const SizedBox(height: 12),
+                  //       GestureDetector(
+                  //           onTap: () {
+                  //             // TODO: 이벤트 심기
+                  //             launchUrlString(
+                  //               'https://forms.gle/wztk59iVxkYPDhtL8',
+                  //               mode: LaunchMode.externalApplication,
+                  //             );
+                  //           },
+                  //           child: Image.asset('assets/event/스벅배너.png',
+                  //               width: double.infinity)),
+                  //       const SizedBox(height: 16),
+                  //     ])),
+                  Stack(children: [
+                    CarouselSlider(
+                        carouselController: _bannerController,
+                        options: CarouselOptions(
+                          autoPlay: true,
+                          viewportFraction: 0.85,
+                          // onPageChanged: (index, reason) => setState(() {
+                          //   _currentBannerPage = index;
+                          // }),
                         ),
-                        const SizedBox(height: 12),
-                        GestureDetector(
-                            onTap: () {
-                              // TODO: 이벤트 심기
-                              launchUrlString(
-                                'https://forms.gle/wztk59iVxkYPDhtL8',
-                                mode: LaunchMode.externalApplication,
-                              );
-                            },
-                            child: Image.asset('assets/event/스벅배너.png',
-                                width: double.infinity)),
-                        const SizedBox(height: 16),
-                      ])),
+                        //TODO: 이벤트 페이지 url 넣기
+                        items: bannerImageList
+                            .map((e) => Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: GestureDetector(
+                                      onTap: () => launchUrlString(
+                                          bannerUrl[bannerImageList.indexOf(e)],
+                                          mode: LaunchMode.externalApplication),
+                                      child: Image.asset(e,
+                                          width: double.infinity)),
+                                ))
+                            .toList()),
+                    // Positioned(
+                    //   bottom: 45,
+                    //   // bottom: 0,
+                    //   left: 0,
+                    //   right: 0,
+                    //   child: Row(
+                    //       mainAxisAlignment: MainAxisAlignment.center,
+                    //       children: bannerImageList.asMap().entries.map((e) {
+                    //         return GestureDetector(
+                    //             onTap: () =>
+                    //                 _bannerController.animateToPage(e.key),
+                    //             child: Container(
+                    //                 width: 8,
+                    //                 height: 8,
+                    //                 margin: const EdgeInsets.symmetric(
+                    //                     horizontal: 4),
+                    //                 decoration: BoxDecoration(
+                    //                   shape: BoxShape.circle,
+                    //                   border: Border.all(
+                    //                       color: _currentBannerPage == e.key
+                    //                           ? coral01
+                    //                           : coral04,
+                    //                       width: 1),
+                    //                   color: _currentBannerPage == e.key
+                    //                       ? coral01
+                    //                       : gray01,
+                    //                 )));
+                    //       }).toList()),
+                    // )
+                  ]),
                 ]),
               ]);
             } else if (snapshot.hasError) {

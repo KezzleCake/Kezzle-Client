@@ -81,6 +81,64 @@ class LoginScreenState extends ConsumerState<LoginScreen> {
   // }
 
   @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      showDialogFunction(context);
+    });
+  }
+
+  void showDialogFunction(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          elevation: 0,
+          backgroundColor: Colors.transparent,
+          content: Container(
+              height: MediaQuery.of(context).size.height * 0.6,
+              width: MediaQuery.of(context).size.width * 0.95,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+              ),
+              clipBehavior: Clip.hardEdge,
+              child: SingleChildScrollView(
+                child: GestureDetector(
+                  onTap: () => launchUrlString(
+                      'https://forms.gle/YR9EnmqK9t9SbAXX8',
+                      mode: LaunchMode.externalApplication),
+                  child: Image.asset(
+                    'assets/event/가입이벤트.png',
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              )),
+          actions: <Widget>[
+            GestureDetector(
+              onTap: () {
+                Navigator.of(context).pop();
+              },
+              child: Container(
+                  padding: const EdgeInsets.symmetric(vertical: 10),
+                  width: MediaQuery.of(context).size.width * 0.95,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(30),
+                    color: coral01,
+                  ),
+                  child: Text('닫기',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                          color: gray01,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700))),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
         body: isLoading != null
@@ -92,113 +150,106 @@ class LoginScreenState extends ConsumerState<LoginScreen> {
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      SvgPicture.asset('assets/splash_icons/logo.svg'),
-                      const SizedBox(height: 98),
-                      Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            GestureDetector(
-                                onTap: () => onTapGoogleBtn(),
-                                child: Container(
-                                  width: 52,
-                                  padding: const EdgeInsets.all(16),
-                                  decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      border:
-                                          Border.all(color: gray04, width: 1)),
-                                  child: SvgPicture.asset(
-                                      'assets/icons/Google.svg'),
-                                )),
-                            if (Platform.isIOS) ...[
-                              const SizedBox(width: 20),
-                              GestureDetector(
-                                  onTap: () => onTapAppleBtn(),
-                                  child: Container(
-                                      width: 52,
-                                      padding: const EdgeInsets.all(16),
-                                      decoration: BoxDecoration(
-                                        color: Colors.black,
-                                        shape: BoxShape.circle,
-                                        border: Border.all(
-                                            color: Colors.black, width: 1),
-                                      ),
-                                      child: const FaIcon(
-                                          FontAwesomeIcons.apple,
-                                          color: Colors.white,
-                                          size: 23))),
-                            ]
-                          ]),
-                      const SizedBox(height: 20),
-                      SizedBox(
-                          width: 221,
-                          height: 18,
-                          child: Stack(alignment: Alignment.center, children: [
-                            const Divider(),
-                            Container(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 20),
-                                color: Colors.white,
-                                child: Text("또는",
-                                    style: TextStyle(
-                                        color: gray05,
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w600))),
-                          ])),
-                      // const SizedBox(height: 20),
-                      // GestureDetector(
-                      //   onTap: onTapLaterSign,
-                      //   child: Container(
-                      //       width: 280,
-                      //       padding: const EdgeInsets.all(16),
-                      //       decoration: BoxDecoration(
-                      //           border: Border.all(color: coral01, width: 1),
-                      //           borderRadius: BorderRadius.circular(28)),
-                      //       child: Text('나중에 가입하기',
-                      //           textAlign: TextAlign.center,
-                      //           style: TextStyle(
-                      //               fontSize: 16,
-                      //               fontWeight: FontWeight.w600,
-                      //               color: coral01))),
-                      // ),
-                      const SizedBox(height: 40),
-                      Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            GestureDetector(
-                              onTap: () {
-                                launchUrlString(
-                                    'https://sites.google.com/view/kezzle-privacy-policy/%ED%99%88');
-                              },
-                              child: Container(
-                                alignment: Alignment.center,
-                                width: 102,
-                                height: 30,
-                                child: Text('개인정보처리방침',
-                                    style: TextStyle(
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w600,
-                                        color: gray05)),
-                              ),
-                            ),
-                            const SizedBox(width: 10),
-                            GestureDetector(
-                              onTap: () {
-                                launchUrlString(
-                                    'https://drive.google.com/file/d/1jUHzvH-6RB-DTRFmQkNsGG2URpcTj9FN/view');
-                              },
-                              child: Container(
-                                alignment: Alignment.center,
-                                width: 58,
-                                height: 30,
-                                child: Text('이용약관',
-                                    style: TextStyle(
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w600,
-                                        color: gray05)),
-                              ),
-                            ),
-                          ]),
+                    GestureDetector(
+                        // onTap: () => showDialogFunction(context),
+                        child:
+                            SvgPicture.asset('assets/splash_icons/logo.svg')),
+                    const SizedBox(height: 98),
+                    Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                      GestureDetector(
+                          onTap: () => onTapGoogleBtn(),
+                          child: Container(
+                            width: 52,
+                            padding: const EdgeInsets.all(16),
+                            decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                border: Border.all(color: gray04, width: 1)),
+                            child: SvgPicture.asset('assets/icons/Google.svg'),
+                          )),
+                      if (Platform.isIOS) ...[
+                        const SizedBox(width: 20),
+                        GestureDetector(
+                            onTap: () => onTapAppleBtn(),
+                            child: Container(
+                                width: 52,
+                                padding: const EdgeInsets.all(16),
+                                decoration: BoxDecoration(
+                                  color: Colors.black,
+                                  shape: BoxShape.circle,
+                                  border:
+                                      Border.all(color: Colors.black, width: 1),
+                                ),
+                                child: const FaIcon(FontAwesomeIcons.apple,
+                                    color: Colors.white, size: 23))),
+                      ]
                     ]),
-              ));
+                    const SizedBox(height: 20),
+                    SizedBox(
+                        width: 221,
+                        height: 18,
+                        child: Stack(alignment: Alignment.center, children: [
+                          const Divider(),
+                          Container(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 20),
+                              color: Colors.white,
+                              child: Text("또는",
+                                  style: TextStyle(
+                                      color: gray05,
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w600))),
+                        ])),
+                    // const SizedBox(height: 20),
+                    // GestureDetector(
+                    //   onTap: onTapLaterSign,
+                    //   child: Container(
+                    //       width: 280,
+                    //       padding: const EdgeInsets.all(16),
+                    //       decoration: BoxDecoration(
+                    //           border: Border.all(color: coral01, width: 1),
+                    //           borderRadius: BorderRadius.circular(28)),
+                    //       child: Text('나중에 가입하기',
+                    //           textAlign: TextAlign.center,
+                    //           style: TextStyle(
+                    //               fontSize: 16,
+                    //               fontWeight: FontWeight.w600,
+                    //               color: coral01))),
+                    // ),
+                    const SizedBox(height: 40),
+                    Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                      GestureDetector(
+                        onTap: () {
+                          launchUrlString(
+                              'https://sites.google.com/view/kezzle-privacy-policy/%ED%99%88');
+                        },
+                        child: Container(
+                          alignment: Alignment.center,
+                          width: 102,
+                          height: 30,
+                          child: Text('개인정보처리방침',
+                              style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600,
+                                  color: gray05)),
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      GestureDetector(
+                          onTap: () {
+                            launchUrlString(
+                                'https://drive.google.com/file/d/1jUHzvH-6RB-DTRFmQkNsGG2URpcTj9FN/view');
+                          },
+                          child: Container(
+                            alignment: Alignment.center,
+                            width: 58,
+                            height: 30,
+                            child: Text('이용약관',
+                                style: TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w600,
+                                    color: gray05)),
+                          )),
+                    ]),
+                  ])));
   }
 }

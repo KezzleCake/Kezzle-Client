@@ -126,6 +126,8 @@ flutter:
     - assets/event/store_event.png
     - assets/event/사장님배너.png
     - assets/event/스벅배너.png
+    - assets/event/가입이벤트.png
+    - assets/event/가입이벤트배너.png
     - assets/onboarding/onboarding1.png
     - assets/onboarding/onboarding2.png
     - assets/onboarding/onboarding3.png
