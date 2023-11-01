@@ -84,6 +84,7 @@ class CurationHomeScreenState extends ConsumerState<CurationHomeScreen>
   int _currentPage = 0;
   // 자동 슬라이드 여부
   bool autoPlay = false;
+  bool banner_autoPlay = false;
   late String anniversaryId;
 
   void onTapSlide(AniversaryCurationModel aniversaryCuration) {
@@ -139,6 +140,21 @@ class CurationHomeScreenState extends ConsumerState<CurationHomeScreen>
     } else {
       setState(() {
         autoPlay = true;
+      });
+    }
+  }
+
+  // 슬라이드가 보이는지 안보이는지 체크 (보이면 자동재생, 안보이면 멈춤)
+  void _bannerVisibilityChanged(VisibilityInfo info) {
+    if (info.visibleFraction == 0) {
+      if (mounted) {
+        setState(() {
+          banner_autoPlay = false;
+        });
+      }
+    } else {
+      setState(() {
+        banner_autoPlay = true;
       });
     }
   }
@@ -506,27 +522,33 @@ class CurationHomeScreenState extends ConsumerState<CurationHomeScreen>
                   //       const SizedBox(height: 16),
                   //     ])),
                   Stack(children: [
-                    CarouselSlider(
-                        carouselController: _bannerController,
-                        options: CarouselOptions(
-                          autoPlay: true,
-                          viewportFraction: 0.85,
-                          // onPageChanged: (index, reason) => setState(() {
-                          //   _currentBannerPage = index;
-                          // }),
-                        ),
-                        //TODO: 이벤트 페이지 url 넣기
-                        items: bannerImageList
-                            .map((e) => Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: GestureDetector(
-                                      onTap: () => launchUrlString(
-                                          bannerUrl[bannerImageList.indexOf(e)],
-                                          mode: LaunchMode.externalApplication),
-                                      child: Image.asset(e,
-                                          width: double.infinity)),
-                                ))
-                            .toList()),
+                    VisibilityDetector(
+                      key: const Key('banner'),
+                      onVisibilityChanged: _bannerVisibilityChanged,
+                      child: CarouselSlider(
+                          carouselController: _bannerController,
+                          options: CarouselOptions(
+                            autoPlay: banner_autoPlay,
+                            viewportFraction: 0.85,
+                            // onPageChanged: (index, reason) => setState(() {
+                            //   _currentBannerPage = index;
+                            // }),
+                          ),
+                          //TODO: 이벤트 페이지 url 넣기
+                          items: bannerImageList
+                              .map((e) => Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: GestureDetector(
+                                        onTap: () => launchUrlString(
+                                            bannerUrl[
+                                                bannerImageList.indexOf(e)],
+                                            mode:
+                                                LaunchMode.externalApplication),
+                                        child: Image.asset(e,
+                                            width: double.infinity)),
+                                  ))
+                              .toList()),
+                    ),
                     // Positioned(
                     //   bottom: 45,
                     //   // bottom: 0,
