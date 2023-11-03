@@ -25,7 +25,7 @@ class Cake {
   String ownerStoreId;
   bool? isLiked;
   String? cursor;
-  List<String> hashtag;
+  List<String>? hashtag;
   @JsonKey(name: 'popular_cal')
   double? popularCursor;
 

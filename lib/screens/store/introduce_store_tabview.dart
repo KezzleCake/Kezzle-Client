@@ -87,7 +87,7 @@ class _IntroduceStoreState extends State<IntroduceStore> {
           child: Text(widget.store.storeDescription!,
               style: TextStyle(
                   fontSize: 12, color: gray07, fontWeight: FontWeight.w400))),
-      const MyDivider(),
+      MyDivider(),
       Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20),
           child:

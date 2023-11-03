@@ -38,8 +38,7 @@ class MoreCurationScreen extends ConsumerWidget {
             if (data.hasData) {
               final List<Cake> cakes = initailCakes ?? data.data![0];
 
-              return 
-              MasonryGridView.builder(
+              return MasonryGridView.builder(
                   mainAxisSpacing: 23,
                   crossAxisSpacing: 5,
                   padding: const EdgeInsets.only(
@@ -103,7 +102,7 @@ class CakeKeywordWidget extends StatelessWidget {
       //     fit: BoxFit.cover)),
       const SizedBox(height: 8),
       // cakes[index].hashtag.isEmpty
-      cake.hashtag.isEmpty
+      cake.hashtag!.isEmpty
           ? const SizedBox()
           : SizedBox(
               height: 26,
@@ -111,7 +110,7 @@ class CakeKeywordWidget extends StatelessWidget {
                   shrinkWrap: true,
                   // itemCount: keywords.length,
                   // itemCount: cakes[index].hashtag.length,
-                  itemCount: cake.hashtag.length,
+                  itemCount: cake.hashtag!.length,
                   scrollDirection: Axis.horizontal,
                   itemBuilder: (context, tagIndex) {
                     return Container(
@@ -124,7 +123,7 @@ class CakeKeywordWidget extends StatelessWidget {
                               horizontal: 10, vertical: 4),
                           child: Text(
                               // cakes[index].hashtag[tagIndex],
-                              cake.hashtag[tagIndex],
+                              cake.hashtag![tagIndex],
                               style: TextStyle(
                                   fontSize: 12,
                                   fontWeight: FontWeight.w500,

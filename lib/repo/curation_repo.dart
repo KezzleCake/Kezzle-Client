@@ -116,6 +116,20 @@ class CurationRepo {
     }
     return {};
   }
+
+  Future<Map<String, dynamic>> fetchHomeData() async {
+    Dio dio = ref.watch(dioProvider);
+    try {
+      final response = await dio.get('v2/curation');
+      if (response.statusCode == 200) {
+        return response.data;
+      }
+    } catch (e) {
+      print(e);
+      print('홈 데이터 가져오기 실패');
+    }
+    return {};
+  }
 }
 
 // 프로바이더 등록

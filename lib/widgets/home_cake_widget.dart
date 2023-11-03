@@ -9,10 +9,12 @@ import 'package:kezzle/utils/colors.dart';
 
 class HomeCakeWidget extends ConsumerWidget {
   final Cake cakeData;
+  double? circular;
 
-  const HomeCakeWidget({
+  HomeCakeWidget({
     super.key,
     required this.cakeData,
+    this.circular = 16,
   });
 
   @override
@@ -30,7 +32,8 @@ class HomeCakeWidget extends ConsumerWidget {
       },
       child: Container(
         decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(16), boxShadow: [shadow01]),
+            borderRadius: BorderRadius.circular(circular!),
+            boxShadow: [shadow01]),
         clipBehavior: Clip.hardEdge,
         child:
             // Stack(

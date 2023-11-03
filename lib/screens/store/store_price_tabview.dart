@@ -192,7 +192,7 @@ class _StorePriceState extends State<StorePrice> {
                 ],
               ),
             ),
-            const MyDivider(),
+             MyDivider(),
             Padding(
               padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
               child: Column(
@@ -265,7 +265,7 @@ class _StorePriceState extends State<StorePrice> {
                 ],
               ),
             ),
-            const MyDivider(),
+             MyDivider(),
             Padding(
               padding: EdgeInsets.symmetric(
                 horizontal: horizontalPadding,
@@ -367,7 +367,7 @@ class _StorePriceState extends State<StorePrice> {
                 ],
               ),
             ),
-            const MyDivider(),
+             MyDivider(),
             Padding(
               padding: EdgeInsets.symmetric(
                 horizontal: horizontalPadding,

@@ -1,4 +1,5 @@
 import 'package:json_annotation/json_annotation.dart';
+import 'package:kezzle/models/home_store_model.dart';
 part 'curation_model.g.dart';
 
 // @JsonSerializable()
@@ -70,4 +71,24 @@ class CurationCoverModel {
       _$CurationCoverModelFromJson(json);
 
   Map<String, dynamic> toJson() => _$CurationCoverModelToJson(this);
+}
+
+@JsonSerializable()
+class HomeCurationModel {
+  @JsonKey(name: '_id')
+  final String id;
+  @JsonKey(name: 'cakes')
+  final List<Cake> cakes; // 각 소제목들
+  final String description; //상황별 베스트 같은 대제목
+
+  HomeCurationModel(
+    this.id,
+    this.description,
+    this.cakes,
+  );
+
+  factory HomeCurationModel.fromJson(Map<String, dynamic> json) =>
+      _$HomeCurationModelFromJson(json);
+
+  Map<String, dynamic> toJson() => _$HomeCurationModelToJson(this);
 }

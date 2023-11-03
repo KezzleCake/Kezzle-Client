@@ -162,7 +162,7 @@ final routerProvider = Provider((ref) {
               path: "/search_cake",
               name: SearchCakeInitailScreen.routeName,
               builder: (context, state) {
-                return const SearchCakeInitailScreen();
+                return SearchCakeInitailScreen();
               },
             ),
             // 위치 설정 화면 라우팅 설정

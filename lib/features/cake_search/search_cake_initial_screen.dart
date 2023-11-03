@@ -17,8 +17,9 @@ import 'package:kezzle/widgets/bookmark_cake_widget.dart';
 
 class SearchCakeInitailScreen extends ConsumerStatefulWidget {
   static const routeName = '/search_cake_initial_screen';
+  String? keyword;
 
-  const SearchCakeInitailScreen({super.key});
+  SearchCakeInitailScreen({super.key, this.keyword});
 
   @override
   SearchCakeInitailScreenState createState() => SearchCakeInitailScreenState();
@@ -61,6 +62,14 @@ class SearchCakeInitailScreenState
     fetchRanking = fetchRankingList();
     controller.addListener(scrollListener);
     super.initState();
+
+    // 화면이 그려지고 난후, search함수 실행
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (widget.keyword != null) {
+        print('제발요');
+        search(widget.keyword!);
+      }
+    });
   }
 
   void scrollListener() async {

@@ -55,6 +55,7 @@ dependencies:
   intl: ^0.18.1
   json_annotation: ^4.8.1
   kakaomap_webview: ^0.6.2
+  logger: ^2.0.2+1
   path: ^1.8.3
   photo_view: ^0.14.0
   shared_preferences: ^2.2.0
@@ -132,6 +133,7 @@ flutter:
     - assets/onboarding/onboarding2.png
     - assets/onboarding/onboarding3.png
     - assets/onboarding/onboarding4.png
+    - assets/icons/bookclip.svg
     # - images/a_dot_burr.jpeg
     # - images/a_dot_ham.jpeg
 

@@ -53,3 +53,19 @@ Map<String, dynamic> _$CurationCoverModelToJson(CurationCoverModel instance) =>
       'image': instance.s3url,
       'description': instance.description,
     };
+
+HomeCurationModel _$HomeCurationModelFromJson(Map<String, dynamic> json) =>
+    HomeCurationModel(
+      json['_id'] as String,
+      json['description'] as String,
+      (json['cakes'] as List<dynamic>)
+          .map((e) => Cake.fromJson(e as Map<String, dynamic>))
+          .toList(),
+    );
+
+Map<String, dynamic> _$HomeCurationModelToJson(HomeCurationModel instance) =>
+    <String, dynamic>{
+      '_id': instance.id,
+      'cakes': instance.cakes,
+      'description': instance.description,
+    };
