@@ -13,6 +13,7 @@ import 'package:kezzle/models/home_store_model.dart';
 import 'package:kezzle/repo/curation_repo.dart';
 import 'package:kezzle/screens/infinite_anniversary_screen.dart';
 import 'package:kezzle/screens/infinite_curation_screen.dart';
+import 'package:kezzle/screens/infinite_new_cake_screen.dart';
 import 'package:kezzle/screens/infinite_popular_cake_screen.dart';
 import 'package:kezzle/utils/colors.dart';
 // import 'package:kezzle/utils/provider_observer.dart';
@@ -86,7 +87,7 @@ class FinalHomeScreenState extends ConsumerState<FinalHomeScreen>
   // 자동 슬라이드 여부
   bool autoPlay = false;
   bool banner_autoPlay = false;
-  late String anniversaryId;
+  // late String anniversaryId;
 
   void onTapSlide(AniversaryCurationModel anniversaryCuration) {
     context.pushNamed(InfiniteAnniversaryScreen.routeName, extra: {
@@ -94,7 +95,7 @@ class FinalHomeScreenState extends ConsumerState<FinalHomeScreen>
       'curation_description': anniversaryCuration.anniversaryTitle,
     });
     ref.read(analyticsProvider).gaEvent('click_curation', {
-      'anniversary_id': anniversaryId,
+      'anniversary_id': anniversaryCuration.id,
       'curation_description': 'anniversary',
     });
   }
@@ -413,8 +414,6 @@ class FinalHomeScreenState extends ConsumerState<FinalHomeScreen>
                       padding: const EdgeInsets.symmetric(horizontal: 20),
                       child: RichText(
                           text: TextSpan(
-                              //TODO: 닉네임 가져오는 것 좀 고치기, 아니면 문구를 그냥 박는 것도 나쁘지 않을 듯. 좀 자연스럽게!
-                              // text: ref.watch(profileProvider).value?.nickname ??'',
                               text: '당신',
                               style: TextStyle(
                                   color: coral01,
@@ -432,7 +431,6 @@ class FinalHomeScreenState extends ConsumerState<FinalHomeScreen>
                           ]))),
                   const SizedBox(height: 16),
                   SizedBox(
-                      // height: 127, // TODO:이거 나중에 비율 화면에 맞게 조절해야할 거 같긴 함.
                       height: MediaQuery.of(context).size.width * 0.33,
                       child: ListView.separated(
                           padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -539,24 +537,22 @@ class FinalHomeScreenState extends ConsumerState<FinalHomeScreen>
                               //         letterSpacing: -0.5,
                               //         fontWeight: FontWeight.w600)),
                               GestureDetector(
-                                onTap: redirectSearchScreen,
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.end,
-                                  children: [
-                                    Text('더보기',
-                                        textAlign: TextAlign.end,
-                                        style: TextStyle(
-                                            color: gray08,
-                                            fontSize: 14,
-                                            letterSpacing: -0.5,
-                                            fontWeight: FontWeight.w400)),
-                                    const SizedBox(width: 5),
-                                    // SvgPicture.asset('assets/icons/arrow_right.svg'),
-                                    FaIcon(FontAwesomeIcons.chevronRight,
-                                        size: 12, color: gray08),
-                                  ],
-                                ),
-                              ),
+                                  onTap: redirectSearchScreen,
+                                  child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.end,
+                                      children: [
+                                        Text('더보기',
+                                            textAlign: TextAlign.end,
+                                            style: TextStyle(
+                                                color: gray08,
+                                                fontSize: 14,
+                                                letterSpacing: -0.5,
+                                                fontWeight: FontWeight.w400)),
+                                        const SizedBox(width: 5),
+                                        // SvgPicture.asset('assets/icons/arrow_right.svg'),
+                                        FaIcon(FontAwesomeIcons.chevronRight,
+                                            size: 12, color: gray08),
+                                      ])),
                             ]),
                         const SizedBox(height: 10),
                         Row(
@@ -569,8 +565,9 @@ class FinalHomeScreenState extends ConsumerState<FinalHomeScreen>
                                   HomeKeywordRank(
                                       rank: 1,
                                       keyword: rankList[0].keyword,
+                                      // keyword: '너무길어지면어떻게되나요궁금해요',
                                       change: CHANGE.up),
-                                  const SizedBox(height: 10),
+                                  const SizedBox(height: 13),
                                   HomeKeywordRank(
                                       rank: 2,
                                       keyword: rankList[1].keyword,
@@ -585,7 +582,7 @@ class FinalHomeScreenState extends ConsumerState<FinalHomeScreen>
                                       rank: 3,
                                       keyword: rankList[2].keyword,
                                       change: CHANGE.none),
-                                  const SizedBox(height: 10),
+                                  const SizedBox(height: 13),
                                   HomeKeywordRank(
                                       rank: 4,
                                       keyword: rankList[3].keyword,
@@ -618,20 +615,24 @@ class FinalHomeScreenState extends ConsumerState<FinalHomeScreen>
                                           letterSpacing: -0.5,
                                           fontWeight: FontWeight.w600))
                                 ])),
-                            Row(
-                              children: [
-                                Text('더보기',
-                                    style: TextStyle(
-                                        color: gray08,
-                                        fontSize: 14,
-                                        letterSpacing: -0.5,
-                                        fontWeight: FontWeight.w400)),
-                                // 화살표
-                                const SizedBox(width: 5),
-                                // SvgPicture.asset('assets/icons/arrow_right.svg'),
-                                FaIcon(FontAwesomeIcons.chevronRight,
-                                    size: 12, color: gray08),
-                              ],
+                            GestureDetector(
+                              onTap: () => context
+                                  .pushNamed(InfiniteNewCakeScreen.routeName),
+                              child: Row(
+                                children: [
+                                  Text('더보기',
+                                      style: TextStyle(
+                                          color: gray08,
+                                          fontSize: 14,
+                                          letterSpacing: -0.5,
+                                          fontWeight: FontWeight.w400)),
+                                  // 화살표
+                                  const SizedBox(width: 5),
+                                  // SvgPicture.asset('assets/icons/arrow_right.svg'),
+                                  FaIcon(FontAwesomeIcons.chevronRight,
+                                      size: 12, color: gray08),
+                                ],
+                              ),
                             ),
                           ])),
                   const SizedBox(height: 16),
@@ -673,11 +674,11 @@ class FinalHomeScreenState extends ConsumerState<FinalHomeScreen>
                         carouselController: _bannerController,
                         options: CarouselOptions(
                           autoPlay: banner_autoPlay,
-                          viewportFraction: 1,
+                          viewportFraction: 0.9,
                         ),
                         items: bannerImageList
                             .map((e) => Padding(
-                                  padding: const EdgeInsets.all(8.0),
+                                  padding: const EdgeInsets.all(4.0),
                                   child: GestureDetector(
                                       onTap: () => launchUrlString(
                                           bannerUrl[bannerImageList.indexOf(e)],
@@ -763,7 +764,6 @@ class CurationSection extends ConsumerWidget {
                 ])),
         const SizedBox(height: 16),
         SizedBox(
-            // height: 127, // TODO:이거 나중에 비율 화면에 맞게 조절해야할 거 같긴 함.
             height: MediaQuery.of(context).size.width * 0.33,
             child: ListView.separated(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -813,24 +813,28 @@ class HomeKeywordRank extends StatelessWidget {
         Navigator.of(context).push(MaterialPageRoute(
             builder: (context) => SearchCakeInitailScreen(keyword: keyword)));
       },
-      child: Row(children: [
+      child: Row(mainAxisSize: MainAxisSize.max, children: [
         Text('$rank',
             style: TextStyle(
                 color: coral01, fontSize: 14, fontWeight: FontWeight.w700)),
         const SizedBox(width: 7),
-        Text(keyword,
+        Text(
+            // keyword,
+            // 너무 길어지는 경우 대비하기
+            keyword.length > 10 ? '${keyword.substring(0, 10)}...' : keyword,
+            maxLines: 1,
             style: TextStyle(
               color: gray08,
               fontSize: 14,
               fontWeight: FontWeight.w500,
               letterSpacing: -0.5,
             )),
-        Expanded(child: Container()),
-        SvgPicture.asset(change == CHANGE.up
-            ? 'assets/icons/up_rank.svg'
-            : change == CHANGE.down
-                ? 'assets/icons/down_rank.svg'
-                : 'assets/icons/rank.svg'),
+        // Expanded(child: Container()),
+        // SvgPicture.asset(change == CHANGE.up
+        //     ? 'assets/icons/up_rank.svg'
+        //     : change == CHANGE.down
+        //         ? 'assets/icons/down_rank.svg'
+        //         : 'assets/icons/rank.svg'),
       ]),
     );
   }

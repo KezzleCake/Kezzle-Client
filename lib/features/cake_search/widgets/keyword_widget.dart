@@ -76,7 +76,9 @@ class KeywordWidget extends StatelessWidget {
               )),
           // applied! ? const SizedBox(width: 5) : Container(),
           applied!
-              ? GestureDetector(
+              ? InkWell(
+                  highlightColor: Colors.transparent, // 눌린 상태에서 물결 효과 비활성화
+                  splashColor: Colors.transparent,
                   // onTap: () => print('delete'),
                   onTap: () => deleteFunction(),
                   child: Padding(

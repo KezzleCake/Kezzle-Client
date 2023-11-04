@@ -45,7 +45,6 @@ class UserScreenState extends ConsumerState<UserScreen> {
               // 로그아웃 시키기
               onTapConfirm: () {
                 // print('로그아웃');
-                //TODO: 온보딩, 팝업
                 ref.read(sharedPreferenceRepo).setBool('onboarding', true);
                 ref.read(sharedPreferenceRepo).setBool('isShowPopUp', true);
 
@@ -68,7 +67,6 @@ class UserScreenState extends ConsumerState<UserScreen> {
             cancelText: '탈퇴하기',
             confirmText: '계속 유지할게요',
             onTapCancel: () {
-              //TODO: 온보딩, 팝업
               ref.read(sharedPreferenceRepo).setBool('onboarding', true);
               ref.read(sharedPreferenceRepo).setBool('isShowPopUp', true);
 

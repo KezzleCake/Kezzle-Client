@@ -24,6 +24,7 @@ import 'package:kezzle/screens/authorization_check_screen.dart';
 import 'package:kezzle/screens/detail_cake_screen.dart';
 import 'package:kezzle/screens/infinite_anniversary_screen.dart';
 import 'package:kezzle/screens/infinite_curation_screen.dart';
+import 'package:kezzle/screens/infinite_new_cake_screen.dart';
 import 'package:kezzle/screens/infinite_popular_cake_screen.dart';
 import 'package:kezzle/screens/more_curation_screen.dart';
 import 'package:kezzle/screens/store/detail_store_screen.dart';
@@ -40,9 +41,7 @@ final routerProvider = Provider((ref) {
       observers: [FirebaseAnalyticsObserver(analytics: analytics)],
       // initialLocation: Platform.isAndroid ? "/splash" : "/home",
 
-      //TODO: 무한 스크롤 확인 하려고! 나중에 교체하기
       initialLocation:
-          // InfiniteCurationScreen.routeUrl,
           Platform.isAndroid ? "/splash" : "/authorization_check_screen",
       routes: [
         ShellRoute(
@@ -215,10 +214,14 @@ final routerProvider = Provider((ref) {
               name: InfinitePopularCakeScreen.routeName,
               path: InfinitePopularCakeScreen.routeUrl,
               builder: (context, state) {
-                Map<String, dynamic> args = state.extra as Map<String, dynamic>;
-                return InfinitePopularCakeScreen(
-                  curationDescription: args['curation_description'] as String,
-                );
+                return const InfinitePopularCakeScreen();
+              },
+            ),
+            GoRoute(
+              name: InfiniteNewCakeScreen.routeName,
+              path: InfiniteNewCakeScreen.routeUrl,
+              builder: (context, state) {
+                return const InfiniteNewCakeScreen();
               },
             ),
             // GoRoute(

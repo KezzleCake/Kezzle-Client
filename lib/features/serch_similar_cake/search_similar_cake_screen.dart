@@ -145,69 +145,82 @@ class SearchSimilarCakeScreenState
             crossAxisAlignment: CrossAxisAlignment.center,
             // crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              GestureDetector(
+              InkWell(
+                highlightColor: Colors.transparent, // 눌린 상태에서 물결 효과 비활성화
+                splashColor: Colors.transparent,
                 onTap: () => _onTapLocation(context),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                        // 주소가 없으면 '위치를 설정해주세요' 로
-                        ref
-                                .watch(searchSettingViewModelProvider)
-                                .address
-                                .isEmpty
-                            ? '위치를 설정해주세요'
-                            :
-                            // 15글자 넘어가면 끝에 ... 로
-                            ref
-                                        .watch(searchSettingViewModelProvider)
-                                        .address
-                                        .length >
-                                    16
-                                ? '${ref.watch(searchSettingViewModelProvider).address.substring(0, 14)}...'
-                                : ref
-                                    .watch(searchSettingViewModelProvider)
-                                    .address,
-                        textAlign: TextAlign.right,
-                        style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                            color: gray08)),
-                    Padding(
-                        padding: Platform.isAndroid
-                            ? const EdgeInsets.only(top: 2.0)
-                            : const EdgeInsets.all(0),
-                        child: SvgPicture.asset('assets/icons/arrow-down.svg',
-                            colorFilter:
-                                ColorFilter.mode(gray07, BlendMode.srcIn))),
-                  ],
-                ),
-              ),
-
-              GestureDetector(
-                  onTap: () => _onTapDistance(context),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8.0),
                   child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Padding(
-                          padding: Platform.isAndroid
-                              ? const EdgeInsets.only(top: 2.0)
-                              : const EdgeInsets.all(0),
-                          child: Text(
-                              '${ref.watch(searchSettingViewModelProvider).radius}km',
-                              style: const TextStyle(
-                                  fontSize: 14, fontWeight: FontWeight.w600)),
-                        ),
-                        Padding(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                          // 주소가 없으면 '위치를 설정해주세요' 로
+                          ref
+                                  .watch(searchSettingViewModelProvider)
+                                  .address
+                                  .isEmpty
+                              ? '위치를 설정해주세요'
+                              :
+                              // 15글자 넘어가면 끝에 ... 로
+                              ref
+                                          .watch(searchSettingViewModelProvider)
+                                          .address
+                                          .length >
+                                      16
+                                  ? '${ref.watch(searchSettingViewModelProvider).address.substring(0, 14)}...'
+                                  : ref
+                                      .watch(searchSettingViewModelProvider)
+                                      .address,
+                          textAlign: TextAlign.right,
+                          style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                              color: gray08)),
+                      Padding(
                           padding: Platform.isAndroid
                               ? const EdgeInsets.only(top: 2.0)
                               : const EdgeInsets.all(0),
                           child: SvgPicture.asset('assets/icons/arrow-down.svg',
                               colorFilter:
-                                  ColorFilter.mode(gray07, BlendMode.srcIn)),
-                        ),
-                      ])),
+                                  ColorFilter.mode(gray07, BlendMode.srcIn))),
+                    ],
+                  ),
+                ),
+              ),
+
+              InkWell(
+                  highlightColor: Colors.transparent, // 눌린 상태에서 물결 효과 비활성화
+                  splashColor: Colors.transparent,
+                  onTap: () {
+                    _onTapDistance(context);
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                    child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Padding(
+                            padding: Platform.isAndroid
+                                ? const EdgeInsets.only(top: 2.0)
+                                : const EdgeInsets.all(0),
+                            child: Text(
+                                '${ref.watch(searchSettingViewModelProvider).radius}km',
+                                style: const TextStyle(
+                                    fontSize: 14, fontWeight: FontWeight.w600)),
+                          ),
+                          Padding(
+                            padding: Platform.isAndroid
+                                ? const EdgeInsets.only(top: 2.0)
+                                : const EdgeInsets.all(0),
+                            child: SvgPicture.asset(
+                                'assets/icons/arrow-down.svg',
+                                colorFilter:
+                                    ColorFilter.mode(gray07, BlendMode.srcIn)),
+                          ),
+                        ]),
+                  )),
               //         ])),
               Text('내 검색 결과',
                   style: TextStyle(

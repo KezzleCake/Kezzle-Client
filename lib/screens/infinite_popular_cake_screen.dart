@@ -8,10 +8,8 @@ import 'package:kezzle/widgets/cake_with_keyword_widget.dart';
 class InfinitePopularCakeScreen extends ConsumerStatefulWidget {
   static const routeName = '/infinite_popular_cake_screen';
   static const routeUrl = '/infinite_popular_cake_screen';
-  final String curationDescription;
 
-  const InfinitePopularCakeScreen(
-      {super.key, required this.curationDescription});
+  const InfinitePopularCakeScreen({super.key});
 
   @override
   ConsumerState<InfinitePopularCakeScreen> createState() =>
@@ -112,32 +110,14 @@ class _InfinitePopularCakeScreenState
           hasMore = false;
         }
         items.addAll(newItems);
-        // print(items.length);
       });
     }
-
-    // final List<String> newItems =
-    //     List.generate(15, (index) => 'Item ${index + 1}');
-
-    // setState(() {
-    //   page++;
-    //   // isLoading = false;
-
-    //   if (newItems.length < limit) {
-    //     hasMore = false;
-    //   }
-    //   items.addAll(newItems);
-    // });
   }
 
-  //TODO: circular progress indicator 위치 변경하기.
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-            title: Text(widget.curationDescription
-                .replaceAll(RegExp('\n'), ' ')
-                .replaceAll(RegExp('  '), ' '))),
+        appBar: AppBar(title: const Text('실시간 BEST')),
         body: items.isEmpty
             ? const Center(child: CircularProgressIndicator())
             : Padding(
@@ -151,7 +131,6 @@ class _InfinitePopularCakeScreenState
                       crossAxisSpacing: 5,
                       delegate: SliverChildBuilderDelegate(
                         (context, index) {
-                          print(index);
                           return CakeKeywordWidget(
                             width: widthList[index % 4],
                             cake: items[index],
@@ -164,9 +143,11 @@ class _InfinitePopularCakeScreenState
                         crossAxisCount: 2,
                       ),
                     ),
-                    if (isLoading && hasMore)
+                    if (isLoading)
                       const SliverToBoxAdapter(
-                        child: Center(child: CircularProgressIndicator()),
+                        child: Padding(
+                            padding: EdgeInsets.symmetric(vertical: 40),
+                            child: Center(child: CircularProgressIndicator())),
                       ),
                   ],
                 ),

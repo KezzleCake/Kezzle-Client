@@ -117,6 +117,31 @@ class CurationRepo {
     return {};
   }
 
+  Future<Map<String, dynamic>> fetchNewCakes({
+    required String? lastCakeId,
+  }) async {
+    Dio dio = ref.watch(dioProvider);
+    final queryParams = lastCakeId == null
+        ? {
+            'count': 20,
+          }
+        : {
+            'after': lastCakeId,
+            'count': 20,
+          };
+    try {
+      final response =
+          await dio.get('cakes/newest', queryParameters: queryParams);
+      if (response.statusCode == 200) {
+        return response.data;
+      }
+    } catch (e) {
+      print(e);
+      print('최근등록된 케이크 리스트 가져오기 실패');
+    }
+    return {};
+  }
+
   Future<Map<String, dynamic>> fetchHomeData() async {
     Dio dio = ref.watch(dioProvider);
     try {

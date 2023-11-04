@@ -5,50 +5,46 @@ import 'package:kezzle/models/home_store_model.dart';
 import 'package:kezzle/repo/curation_repo.dart';
 import 'package:kezzle/widgets/cake_with_keyword_widget.dart';
 
-class InfiniteCurationScreen extends ConsumerStatefulWidget {
-  static const routeName = '/infinite_curation_screen';
-  static const routeUrl = '/infinite_curation_screen';
-  final String curationId;
-  final String curationDescription;
+class InfiniteNewCakeScreen extends ConsumerStatefulWidget {
+  static const routeName = '/infinite_new_cake_screen';
+  static const routeUrl = '/infinite_new_cake_screen';
+  // final String curationDescription;
 
-  const InfiniteCurationScreen(
-      {super.key, required this.curationId, required this.curationDescription})
-      ;
+  const InfiniteNewCakeScreen({super.key});
 
   @override
-  ConsumerState<InfiniteCurationScreen> createState() =>
-      _InfiniteCurationScreenState();
+  ConsumerState<InfiniteNewCakeScreen> createState() =>
+      _InfiniteNewCakeScreenState();
 }
 
-class _InfiniteCurationScreenState
-    extends ConsumerState<InfiniteCurationScreen> {
+class _InfiniteNewCakeScreenState extends ConsumerState<InfiniteNewCakeScreen> {
   // List<String> items = List.generate(15, (index) => 'Item ${index + 1}');
   // List<String> items = [];
   List<Cake> items = [];
   final controller = ScrollController();
-  int page = 0;
+  // int page = 0;
   bool hasMore = true;
   bool isLoading = false;
   final List<double> widthList = [240, 174, 200, 174];
 
-  Future refresh() async {
-    setState(() {
-      isLoading = false;
-      hasMore = true;
-      page = 0;
-      items.clear();
-    });
+  // Future refresh() async {
+  //   setState(() {
+  //     isLoading = false;
+  //     hasMore = true;
+  //     // page = 0;
+  //     items.clear();
+  //   });
 
-    fetch();
+  //   fetch();
 
-    // api 요청
-    // await Future.delayed(const Duration(seconds: 1));
-    // //api 요청 결과로 리스트 업데이트
-    // setState(() {
-    //   List<String> items = List.generate(15, (index) => 'Item ${index + 1}');
-    //   this.items.addAll(items);
-    // });
-  }
+  //   // api 요청
+  //   // await Future.delayed(const Duration(seconds: 1));
+  //   // //api 요청 결과로 리스트 업데이트
+  //   // setState(() {
+  //   //   List<String> items = List.generate(15, (index) => 'Item ${index + 1}');
+  //   //   this.items.addAll(items);
+  //   // });
+  // }
 
   @override
   void initState() {
@@ -58,7 +54,10 @@ class _InfiniteCurationScreenState
 
     controller.addListener(() {
       if (controller.offset > controller.position.maxScrollExtent - 300 &&
-          hasMore) {
+              hasMore
+          // controller.position.maxScrollExtent == controller.offset
+          ) {
+        // print('????');
         fetch();
       }
     });
@@ -71,7 +70,9 @@ class _InfiniteCurationScreenState
   }
 
   Future fetch() async {
-    if (isLoading) return;
+    print(hasMore);
+    if (isLoading || !hasMore) return;
+    // isLoading = true;
 
     if (mounted) {
       setState(() {
@@ -86,16 +87,25 @@ class _InfiniteCurationScreenState
     // await Future.delayed(const Duration(seconds: 2));
 
     List<Cake> newItems = [];
+    // final response = await ref
+    //     .read(curationRepo)
+    //     .fetchCurationCakesById(curationId: widget.curationId, page: page);
+    // if (items.isEmpty) {
+    //   print('없음');
+    // } else {
+    //   // print('마지막 아이템커서, 매장이름: ${items.last.popularCursor}, ${items.last.id}');
+    // }
+
     final response = await ref
         .read(curationRepo)
-        .fetchCurationCakesById(curationId: widget.curationId, page: page);
+        .fetchNewCakes(lastCakeId: items.isEmpty ? null : items.last.id);
     response['cakes'].forEach((cake) {
       newItems.add(Cake.fromJson(cake));
     });
 
     if (mounted) {
       setState(() {
-        page++;
+        // page++;
         isLoading = false;
         if (newItems.length < limit) {
           hasMore = false;
@@ -103,28 +113,12 @@ class _InfiniteCurationScreenState
         items.addAll(newItems);
       });
     }
-
-    // final List<String> newItems =
-    //     List.generate(15, (index) => 'Item ${index + 1}');
-
-    // setState(() {
-    //   page++;
-    //   // isLoading = false;
-
-    //   if (newItems.length < limit) {
-    //     hasMore = false;
-    //   }
-    //   items.addAll(newItems);
-    // });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-            title: Text(widget.curationDescription
-                .replaceAll(RegExp('\n'), ' ')
-                .replaceAll(RegExp('  '), ' '))),
+        appBar: AppBar(title: const Text('NEW 케이크 디자인')),
         body: items.isEmpty
             ? const Center(child: CircularProgressIndicator())
             : Padding(

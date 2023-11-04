@@ -8,7 +8,6 @@ import 'package:kezzle/screens/home_screen.dart';
 // import 'package:kezzle/features/cake_search/search_cake_initial_screen.dart';
 
 List<Widget> homeScreenItems = [
-  //TODO: 고쳐지면 홈화면 변경
   // const HomeScreen(),
   // const CurationHomeScreen(),
   const FinalHomeScreen(),

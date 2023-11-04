@@ -72,49 +72,73 @@ class SearchAroundScreenState extends ConsumerState<SearchAroundScreen>
         appBar: AppBar(
           title: Row(children: [
             const SizedBox(width: 10),
-            GestureDetector(
-                onTap: () => _onTapLocation(context),
-                child: Row(children: [
-                  Text(
-                      ref.watch(searchSettingViewModelProvider).address.isEmpty
-                          ? '위치를 설정해주세요'
-                          : ref.watch(searchSettingViewModelProvider).address,
-                      style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                          color: gray08)),
-                  Padding(
-                    padding: Platform.isAndroid
-                        ? const EdgeInsets.only(top: 2.0)
-                        : const EdgeInsets.all(0),
-                    child: SvgPicture.asset('assets/icons/arrow-down.svg',
-                        colorFilter: ColorFilter.mode(gray07, BlendMode.srcIn)),
-                  )
-                ])),
-            GestureDetector(
+            InkWell(
+                highlightColor: Colors.transparent, // 눌린 상태에서 물결 효과 비활성화
+                splashColor: Colors.transparent,
+                onTap: () {
+                  _onTapLocation(context);
+                },
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                  child: Row(children: [
+                    Text(
+                        ref
+                                .watch(searchSettingViewModelProvider)
+                                .address
+                                .isEmpty
+                            ? '위치를 설정해주세요'
+                            : ref
+                                        .watch(searchSettingViewModelProvider)
+                                        .address
+                                        .length >
+                                    20
+                                ? '${ref.watch(searchSettingViewModelProvider).address.substring(0, 18)}...'
+                                : ref
+                                    .watch(searchSettingViewModelProvider)
+                                    .address,
+                        style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                            color: gray08)),
+                    Padding(
+                      padding: Platform.isAndroid
+                          ? const EdgeInsets.only(top: 2.0)
+                          : const EdgeInsets.all(0),
+                      child: SvgPicture.asset('assets/icons/arrow-down.svg',
+                          colorFilter:
+                              ColorFilter.mode(gray07, BlendMode.srcIn)),
+                    )
+                  ]),
+                )),
+            InkWell(
+                highlightColor: Colors.transparent, // 눌린 상태에서 물결 효과 비활성화
+                splashColor: Colors.transparent,
                 onTap: () => _onTapDistance(context),
-                child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Padding(
-                        padding: Platform.isAndroid
-                            ? const EdgeInsets.only(top: 2.0)
-                            : const EdgeInsets.all(0),
-                        child: Text(
-                            '${ref.watch(searchSettingViewModelProvider).radius}km',
-                            style: const TextStyle(
-                                fontSize: 14, fontWeight: FontWeight.w600)),
-                      ),
-                      Padding(
-                        padding: Platform.isAndroid
-                            ? const EdgeInsets.only(top: 2.0)
-                            : const EdgeInsets.all(0),
-                        child: SvgPicture.asset('assets/icons/arrow-down.svg',
-                            colorFilter:
-                                ColorFilter.mode(gray07, BlendMode.srcIn)),
-                      ),
-                    ])),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                  child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Padding(
+                          padding: Platform.isAndroid
+                              ? const EdgeInsets.only(top: 2.0)
+                              : const EdgeInsets.all(0),
+                          child: Text(
+                              '${ref.watch(searchSettingViewModelProvider).radius}km',
+                              style: const TextStyle(
+                                  fontSize: 14, fontWeight: FontWeight.w600)),
+                        ),
+                        Padding(
+                          padding: Platform.isAndroid
+                              ? const EdgeInsets.only(top: 2.0)
+                              : const EdgeInsets.all(0),
+                          child: SvgPicture.asset('assets/icons/arrow-down.svg',
+                              colorFilter:
+                                  ColorFilter.mode(gray07, BlendMode.srcIn)),
+                        ),
+                      ]),
+                )),
           ]),
         ),
         body: DefaultTabController(

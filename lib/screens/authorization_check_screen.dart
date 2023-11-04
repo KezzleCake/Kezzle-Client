@@ -71,7 +71,6 @@ class AuthorizationCheckScreenState
             if (snapshot.data == 'login firebase') {
               // return const Text('로그인 화면으로 이동');
               // return const LoginScreen();
-              // TODO: 온보딩 값 저장했는지 확인하고 온보딩 화면으로 이동
               ref.read(sharedPreferenceRepo).getBool('onbording').then((value) {
                 value != false
                     ? context.go(OnboardingScreen.routeURL)
