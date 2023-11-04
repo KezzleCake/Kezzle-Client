@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
@@ -15,6 +16,7 @@ import 'package:kezzle/repo/curation_repo.dart';
 import 'package:kezzle/screens/infinite_anniversary_screen.dart';
 import 'package:kezzle/screens/infinite_popular_cake_screen.dart';
 import 'package:kezzle/utils/colors.dart';
+import 'package:kezzle/view_models/id_token_provider.dart';
 import 'package:kezzle/widgets/curation_box_widget.dart';
 import 'package:kezzle/widgets/home_cake_widget.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -281,10 +283,18 @@ class CurationHomeScreenState extends ConsumerState<CurationHomeScreen>
           centerTitle: false,
           title:
               Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-            SvgPicture.asset(
-              'assets/Kezzle.svg',
-              width: 95,
-              colorFilter: ColorFilter.mode(coral01, BlendMode.srcIn),
+            //TODO: 나중에 지우기
+            GestureDetector(
+              onTap: () {
+                print('dd??');
+                var token = ref.read(tokenProvider).value!.token;
+                log(token.toString());
+              },
+              child: SvgPicture.asset(
+                'assets/Kezzle.svg',
+                width: 95,
+                colorFilter: ColorFilter.mode(coral01, BlendMode.srcIn),
+              ),
             ),
             GestureDetector(
               onTap: onTapSearch,
@@ -433,9 +443,8 @@ class CurationHomeScreenState extends ConsumerState<CurationHomeScreen>
                         separatorBuilder: (context, index) =>
                             const SizedBox(width: 12),
                         scrollDirection: Axis.horizontal,
-                        //TODO: 10개 올거임
-                        itemCount: 5,
-                        // itemCount: popularCakes.length,
+                        // itemCount: 5,
+                        itemCount: popularCakes.length,
                         itemBuilder: (context, index) {
                           return HomeCakeWidget(cakeData: popularCakes[index]);
                         })),

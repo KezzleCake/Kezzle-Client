@@ -271,41 +271,73 @@ class SearchCakeInitailScreenState
                         const SizedBox(height: 16),
                         ref.read(recentKeywordRecordProvider).isEmpty
                             ? const SizedBox()
-                            : Container(
-                                padding:
-                                    const EdgeInsets.only(left: 20, right: 20),
-                                height: 33,
-                                child: ListView.separated(
-                                    scrollDirection: Axis.horizontal,
-                                    itemBuilder: (context, index) {
-                                      return GestureDetector(
-                                        onTap: () {
-                                          search(ref.read(
-                                                  recentKeywordRecordProvider)[
-                                              index]);
-                                          ref
-                                              .read(analyticsProvider)
-                                              .gaEvent('click_recent_keyword', {
-                                            'keyword': ref.read(
-                                                    recentKeywordRecordProvider)[
-                                                index],
-                                          });
-                                        },
-                                        child: KeywordWidget(
-                                            // keyword: recentKeyword[index],
-                                            keyword: ref.watch(
-                                                    recentKeywordRecordProvider)[
-                                                index],
-                                            deleteFunction: () {}),
-                                      );
-                                    },
-                                    separatorBuilder: (context, index) {
-                                      return const SizedBox(width: 8);
-                                    },
-                                    itemCount: ref
-                                        .watch(recentKeywordRecordProvider)
-                                        .length),
-                              ),
+                            : SingleChildScrollView(
+                                scrollDirection: Axis.horizontal,
+                                child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 20),
+                                    child: Row(children: [
+                                      for (var i = 0;
+                                          i <
+                                              ref
+                                                  .watch(
+                                                      recentKeywordRecordProvider)
+                                                  .length;
+                                          i++) ...[
+                                        GestureDetector(
+                                          onTap: () {
+                                            search(ref.read(
+                                                recentKeywordRecordProvider)[i]);
+                                            ref.read(analyticsProvider).gaEvent(
+                                                'click_recent_keyword', {
+                                              'keyword': ref.read(
+                                                  recentKeywordRecordProvider)[i],
+                                            });
+                                          },
+                                          child: KeywordWidget(
+                                              // keyword: recentKeyword[index],
+                                              keyword: ref.watch(
+                                                  recentKeywordRecordProvider)[i],
+                                              deleteFunction: () {}),
+                                        ),
+                                        const SizedBox(width: 8),
+                                      ]
+                                    ]))),
+                        // Container(
+                        //     padding:
+                        //         const EdgeInsets.only(left: 20, right: 20),
+                        //     height: 33,
+                        //     child: ListView.separated(
+                        //         scrollDirection: Axis.horizontal,
+                        //         itemBuilder: (context, index) {
+                        //           return GestureDetector(
+                        //             onTap: () {
+                        //               search(ref.read(
+                        //                       recentKeywordRecordProvider)[
+                        //                   index]);
+                        //               ref
+                        //                   .read(analyticsProvider)
+                        //                   .gaEvent('click_recent_keyword', {
+                        //                 'keyword': ref.read(
+                        //                         recentKeywordRecordProvider)[
+                        //                     index],
+                        //               });
+                        //             },
+                        //             child: KeywordWidget(
+                        //                 // keyword: recentKeyword[index],
+                        //                 keyword: ref.watch(
+                        //                         recentKeywordRecordProvider)[
+                        //                     index],
+                        //                 deleteFunction: () {}),
+                        //           );
+                        //         },
+                        //         separatorBuilder: (context, index) {
+                        //           return const SizedBox(width: 8);
+                        //         },
+                        //         itemCount: ref
+                        //             .watch(recentKeywordRecordProvider)
+                        //             .length),
+                        //   ),
                         const SizedBox(height: 40),
                         FutureBuilder<RankingListModel?>(
                             future: fetchRanking,

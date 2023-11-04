@@ -247,11 +247,11 @@ class FinalHomeScreenState extends ConsumerState<FinalHomeScreen>
               Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
         GestureDetector(
           // //TODO: 이거 지우기
-          // onTap: () {
-          //   print('dd??');
-          //   var token = ref.read(tokenProvider).value!.token;
-          //   log(token.toString());
-          // },
+          onTap: () {
+            print('dd??');
+            var token = ref.read(tokenProvider).value!.token;
+            log(token.toString());
+          },
           child: SvgPicture.asset('assets/Kezzle.svg',
               height: 20,
               colorFilter: ColorFilter.mode(coral01, BlendMode.srcIn)),

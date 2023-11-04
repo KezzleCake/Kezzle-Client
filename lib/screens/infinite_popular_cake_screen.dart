@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:kezzle/models/home_store_model.dart';
 import 'package:kezzle/repo/curation_repo.dart';
-import 'package:kezzle/screens/more_curation_screen.dart';
+import 'package:kezzle/widgets/cake_with_keyword_widget.dart';
 
 class InfinitePopularCakeScreen extends ConsumerStatefulWidget {
   static const routeName = '/infinite_popular_cake_screen';
@@ -55,8 +55,11 @@ class _InfinitePopularCakeScreenState
     fetch();
 
     controller.addListener(() {
-      if (controller.position.maxScrollExtent == controller.offset) {
-        print('????');
+      if (controller.offset > controller.position.maxScrollExtent - 300 &&
+              hasMore
+          // controller.position.maxScrollExtent == controller.offset
+          ) {
+        // print('????');
         fetch();
       }
     });
@@ -89,11 +92,11 @@ class _InfinitePopularCakeScreenState
     // final response = await ref
     //     .read(curationRepo)
     //     .fetchCurationCakesById(curationId: widget.curationId, page: page);
-    if (items.isEmpty) {
-      print('없음');
-    } else {
-      print('마지막 아이템커서, 매장이름: ${items.last.popularCursor}, ${items.last.id}');
-    }
+    // if (items.isEmpty) {
+    //   print('없음');
+    // } else {
+    //   // print('마지막 아이템커서, 매장이름: ${items.last.popularCursor}, ${items.last.id}');
+    // }
 
     final response = await ref.read(curationRepo).fetchPopularCakes(
         lastCursor: items.isEmpty ? null : items.last.popularCursor);
@@ -131,56 +134,42 @@ class _InfinitePopularCakeScreenState
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-          title: Text(widget.curationDescription
-              .replaceAll(RegExp('\n'), ' ')
-              .replaceAll(RegExp('  '), ' '))),
-      body: items.isEmpty
-          ? const Center(child: CircularProgressIndicator())
-          : Stack(
-              children: [
-                MasonryGridView.builder(
-                    physics: const AlwaysScrollableScrollPhysics(),
-                    controller: controller,
-                    mainAxisSpacing: 23,
-                    crossAxisSpacing: 5,
-                    padding: const EdgeInsets.only(
-                        left: 15, right: 15, bottom: 80, top: 20),
-                    // itemCount: cakeLength,
-                    itemCount: items.length + 1,
-                    gridDelegate:
-                        const SliverSimpleGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 2),
-                    itemBuilder: (context, index) {
-                      // List<String> keywords = ['생일', '파스텔', '초코'];
-
-                      if (index < items.length) {
-                        return CakeKeywordWidget(
-                            width: widthList[index % 4], cake: items[index]);
-                      } else {
-                        return Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 32),
-                            child: Center(
-                              child: Container(),
-                              // hasMore
-                              // ?
-                              // // const CircularProgressIndicator()
-                              // Container()
-                              // : const Text('마지막입니다.'),
-                            ));
-                      }
-                    }),
-                if (isLoading &&
-                    hasMore) // isLoading 값에 따라 CircularProgressIndicator 표시 결정
-                  const Positioned(
-                      bottom: 65,
-                      left: 0,
-                      right: 0,
-                      child: Center(
-                        child: CircularProgressIndicator(),
-                      )),
-              ],
-            ),
-    );
+        appBar: AppBar(
+            title: Text(widget.curationDescription
+                .replaceAll(RegExp('\n'), ' ')
+                .replaceAll(RegExp('  '), ' '))),
+        body: items.isEmpty
+            ? const Center(child: CircularProgressIndicator())
+            : Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 18),
+                child: CustomScrollView(
+                  // physics: AlwaysScrollableScrollPhysics(),
+                  controller: controller,
+                  slivers: [
+                    SliverMasonryGrid(
+                      mainAxisSpacing: 23,
+                      crossAxisSpacing: 5,
+                      delegate: SliverChildBuilderDelegate(
+                        (context, index) {
+                          print(index);
+                          return CakeKeywordWidget(
+                            width: widthList[index % 4],
+                            cake: items[index],
+                          );
+                        },
+                        childCount: items.length,
+                      ),
+                      gridDelegate:
+                          const SliverSimpleGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                      ),
+                    ),
+                    if (isLoading && hasMore)
+                      const SliverToBoxAdapter(
+                        child: Center(child: CircularProgressIndicator()),
+                      ),
+                  ],
+                ),
+              ));
   }
 }

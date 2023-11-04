@@ -4,6 +4,7 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:kezzle/models/home_store_model.dart';
 import 'package:kezzle/repo/curation_repo.dart';
 import 'package:kezzle/screens/more_curation_screen.dart';
+import 'package:kezzle/widgets/cake_with_keyword_widget.dart';
 
 class InfiniteCurationScreen extends ConsumerStatefulWidget {
   static const routeName = '/infinite_curation_screen';
