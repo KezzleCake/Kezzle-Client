@@ -35,6 +35,7 @@ class UserRepo {
     try {
       final response = await dio.get('users/${user.uid}');
       if (response.statusCode == 200) {
+        print('uid: ${user.uid}');
         return response.data;
       } else {
         return null;

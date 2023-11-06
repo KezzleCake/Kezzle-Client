@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 import 'package:kezzle/features/analytics/analytics.dart';
 import 'package:kezzle/features/cake_search/model/hotkeyword_model.dart';
 import 'package:kezzle/features/cake_search/search_cake_initial_screen.dart';
@@ -36,14 +37,13 @@ class FinalHomeScreenState extends ConsumerState<FinalHomeScreen>
     with SingleTickerProviderStateMixin {
   final CarouselController _carouselController = CarouselController();
   final CarouselController _bannerController = CarouselController();
-  late Future<Map<String, dynamic>> fetchHomeData;
+  late Future<Map<String, dynamic>?> fetchHomeData;
   // late Future<Map<String, dynamic>> _dataFuture;
   // late Future<List<Cake>> fetchPopularCakes;
   // late Future<Map<String, dynamic>> fetchCurations;
 
   // int _currentBannerPage = 0;
   List bannerImageList = [
-    //TODO: 가입이벤트 배너 바꾸기, 문구들도 수정
     'assets/event/가입이벤트배너.png',
     'assets/event/스벅배너.png',
     'assets/event/사장님배너.png',
@@ -67,19 +67,13 @@ class FinalHomeScreenState extends ConsumerState<FinalHomeScreen>
     super.initState();
     fetchHomeData = fetchData();
     // fetchCurations = fetchHomeCurations();
-    // fetchCurations.then((_) async {
-    //   final sharedPreferences = await SharedPreferences.getInstance();
-    //   if (sharedPreferences.getBool('isShowPopUp') == null ||
-    //       sharedPreferences.getBool('isShowPopUp') == true) {
-    //     // _showPopup(context);
-    //     popUpTest();
-    //   }
-    // });
-
-    // WidgetsBinding.instance.addPostFrameCallback((_) {
-    //   // 화면이 다 그려진 후에 실행되는 코드
-    //   popUpTest();
-    // });
+    fetchHomeData.then((_) async {
+      final sharedPreferences = await SharedPreferences.getInstance();
+      if (sharedPreferences.getBool('isShowPopUp') == null ||
+          sharedPreferences.getBool('isShowPopUp') == true) {
+        popUpTest();
+      }
+    });
   }
 
   // 현재 슬라이드 페이지
@@ -137,91 +131,91 @@ class FinalHomeScreenState extends ConsumerState<FinalHomeScreen>
     }
   }
 
-  // void popUpTest() async {
-  //   //TODO: 두번씩 호출되는거 어쩔거야..
+  void popUpTest() async {
+    //TODO: 두번씩 호출되는거 어쩔거야..
 
-  //   showDialog(
-  //       context: context,
-  //       builder: (BuildContext context) {
-  //         return Column(
-  //             // mainAxisSize: MainAxisSize.min,
-  //             mainAxisAlignment: MainAxisAlignment.center,
-  //             children: [
-  //               GestureDetector(
-  //                 onTap: () => launchUrlString(
-  //                   'https://forms.gle/Y6SV3LvCMUvvi4xE8',
-  //                   mode: LaunchMode.externalApplication,
-  //                 ),
-  //                 child: Container(
-  //                     decoration: BoxDecoration(
-  //                         borderRadius: BorderRadius.circular(20)),
-  //                     clipBehavior: Clip.hardEdge,
-  //                     width: MediaQuery.of(context).size.width - 55,
-  //                     // height: 475,
-  //                     child: Image.asset('assets/event/store_event.png')),
-  //               ),
-  //               Padding(
-  //                   padding: const EdgeInsets.symmetric(horizontal: 27.5),
-  //                   child: Row(
-  //                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-  //                       children: [
-  //                         TextButton(
-  //                             onPressed: () async {
-  //                               // shared 값 변경
-  //                               //TODO: shared 쓰는 방식 고치기, 값저장하는거 고치기
-  //                               final sharedPreferences =
-  //                                   await SharedPreferences.getInstance();
-  //                               sharedPreferences.setBool('isShowPopUp', false);
-  //                               // Navigator.pop(context);
-  //                               if (!mounted) return;
-  //                               context.pop();
-  //                             },
-  //                             child: Row(
-  //                               children: [
-  //                                 FaIcon(FontAwesomeIcons.circleCheck,
-  //                                     size: 15, color: gray01),
-  //                                 const SizedBox(width: 5),
-  //                                 Text(
-  //                                   '다시 보지 않기',
-  //                                   style: TextStyle(
-  //                                       color: gray01,
-  //                                       fontSize: 15,
-  //                                       fontWeight: FontWeight.w500),
-  //                                 ),
-  //                               ],
-  //                             )),
-  //                         TextButton(
-  //                             onPressed: () async {
-  //                               // Navigator.pop(context);
-  //                               // shared 값 변경
-  //                               //TODO: shared 쓰는 방식 고치기, 값저장하는거 고치기
-  //                               final sharedPreferences =
-  //                                   await SharedPreferences.getInstance();
-  //                               sharedPreferences.setBool('isShowPopUp', false);
-  //                               // Navigator.pop(context);
-  //                               if (!mounted) return;
-  //                               context.pop();
-  //                             },
-  //                             child: Row(
-  //                                 crossAxisAlignment: CrossAxisAlignment.center,
-  //                                 children: [
-  //                                   Text(
-  //                                     '닫기',
-  //                                     style: TextStyle(
-  //                                         color: gray01,
-  //                                         fontSize: 15,
-  //                                         fontWeight: FontWeight.w500),
-  //                                   ),
-  //                                   const SizedBox(width: 5),
-  //                                   FaIcon(FontAwesomeIcons.circleXmark,
-  //                                       size: 15, color: gray01)
-  //                                 ])),
-  //                       ])),
-  //             ]);
-  //       });
-  // }
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return Column(
+              // mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                GestureDetector(
+                  onTap: () => launchUrlString(
+                    'https://forms.gle/Y6SV3LvCMUvvi4xE8',
+                    mode: LaunchMode.externalApplication,
+                  ),
+                  child: Container(
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(20)),
+                      clipBehavior: Clip.hardEdge,
+                      width: MediaQuery.of(context).size.width - 55,
+                      // height: 475,
+                      child: Image.asset('assets/event/store_event.png')),
+                ),
+                Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 27.5),
+                    child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          TextButton(
+                              onPressed: () async {
+                                // shared 값 변경
+                                //TODO: shared 쓰는 방식 고치기, 값저장하는거 고치기
+                                final sharedPreferences =
+                                    await SharedPreferences.getInstance();
+                                sharedPreferences.setBool('isShowPopUp', false);
+                                // Navigator.pop(context);
+                                if (!mounted) return;
+                                context.pop();
+                              },
+                              child: Row(
+                                children: [
+                                  FaIcon(FontAwesomeIcons.circleCheck,
+                                      size: 15, color: gray01),
+                                  const SizedBox(width: 5),
+                                  Text(
+                                    '다시 보지 않기',
+                                    style: TextStyle(
+                                        color: gray01,
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.w500),
+                                  ),
+                                ],
+                              )),
+                          TextButton(
+                              onPressed: () async {
+                                // Navigator.pop(context);
+                                // shared 값 변경
+                                //TODO: shared 쓰는 방식 고치기, 값저장하는거 고치기
+                                final sharedPreferences =
+                                    await SharedPreferences.getInstance();
+                                sharedPreferences.setBool('isShowPopUp', false);
+                                // Navigator.pop(context);
+                                if (!mounted) return;
+                                context.pop();
+                              },
+                              child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      '닫기',
+                                      style: TextStyle(
+                                          color: gray01,
+                                          fontSize: 15,
+                                          fontWeight: FontWeight.w500),
+                                    ),
+                                    const SizedBox(width: 5),
+                                    FaIcon(FontAwesomeIcons.circleXmark,
+                                        size: 15, color: gray01)
+                                  ])),
+                        ])),
+              ]);
+        });
+  }
 
-  Future<Map<String, dynamic>> fetchData() async {
+  Future<Map<String, dynamic>?> fetchData() async {
     // 예제 비동기 함수: 여기에서 데이터를 가져온다고 가정
     final response = ref.read(curationRepo).fetchHomeData();
     return response;
@@ -282,12 +276,13 @@ class FinalHomeScreenState extends ConsumerState<FinalHomeScreen>
                   ])),
         ))
       ])),
-      body: FutureBuilder<Map<String, dynamic>>(
+      body: FutureBuilder<Map<String, dynamic>?>(
           future: fetchHomeData,
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.done &&
                 snapshot.hasData) {
               // print('ddd');
+              // if (snapshot.data == null) return Container();
               final rawData = snapshot.data;
 
               // 기념일 큐레이션 데이터
@@ -530,12 +525,17 @@ class FinalHomeScreenState extends ConsumerState<FinalHomeScreen>
                                       fontWeight: FontWeight.w600)),
                               const SizedBox(width: 7),
                               // 하려면 Expanded 써야함
-                              // Text('19시 기준',
-                              //     style: TextStyle(
-                              //         color: gray05,
-                              //         fontSize: 12,
-                              //         letterSpacing: -0.5,
-                              //         fontWeight: FontWeight.w600)),
+                              Expanded(
+                                child: Text(
+                                    // 24시 기준으로 가져오기
+                                    '${DateFormat.H().format(DateTime.now())}시 기준',
+                                    // 시간 가져오기
+                                    style: TextStyle(
+                                        color: gray05,
+                                        fontSize: 12,
+                                        letterSpacing: -0.5,
+                                        fontWeight: FontWeight.w600)),
+                              ),
                               GestureDetector(
                                   onTap: redirectSearchScreen,
                                   child: Row(
@@ -699,7 +699,35 @@ class FinalHomeScreenState extends ConsumerState<FinalHomeScreen>
               );
             } else if (snapshot.hasError) {
               return const Center(child: Text('에러'));
+            } else if (!snapshot.hasData &&
+                snapshot.connectionState == ConnectionState.done) {
+              return RefreshIndicator(
+                color: coral01,
+                onRefresh: () async {
+                  setState(() {
+                    fetchHomeData = fetchData();
+                  });
+                },
+                child: ListView(
+                  children: [
+                    SizedBox(
+                      // appbar 높이만큼 빼기
+                      // bottom navigation 높이만큼 빼기
+                      height: MediaQuery.of(context).size.height * 0.8,
+                      child: const Center(
+                        child: Text(
+                          '홈화면 데이터를 불러오는데 실패했습니다.\n화면을 아래로 당겨 새로고침 해주세요.',
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              );
             } else {
+              // print('loading');
+              // print(snapshot.connectionState);
+              // print(snapshot.hasData);
               return const Center(child: CircularProgressIndicator());
             }
           }),

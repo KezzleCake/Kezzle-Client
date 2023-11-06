@@ -520,6 +520,10 @@ class MapScreenState extends ConsumerState<MapScreen> {
               return Center(child: CircularProgressIndicator(color: coral01));
             }, error: (error, stackTrace) {
               //에러 메시지 출력
+              // 자세한 에러메시지 출력
+              print(stackTrace);
+              print(error);
+
               return const Center(child: Text('에러가 발생했습니다.'));
             }, data: (cakes) {
               similarCakeList = cakes;

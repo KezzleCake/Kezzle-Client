@@ -16,7 +16,6 @@ import 'package:kezzle/view_models/search_setting_vm.dart';
 import 'package:kezzle/view_models/searched_address_view_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-
 class MyHttpOverrides extends HttpOverrides {
   @override
   HttpClient createHttpClient(SecurityContext? context) {
@@ -70,7 +69,6 @@ class KezzleApp extends ConsumerWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    
     return MaterialApp.router(
       debugShowCheckedModeBanner: false,
       routerConfig: ref.watch(routerProvider),
@@ -91,6 +89,9 @@ class KezzleApp extends ConsumerWidget {
               color: gray08, fontSize: 16, fontWeight: FontWeight.w600),
         ),
       ),
+      builder: (context, child) => MediaQuery(
+          data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
+          child: child!),
     );
   }
 }

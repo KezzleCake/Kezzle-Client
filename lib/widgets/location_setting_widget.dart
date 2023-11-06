@@ -252,7 +252,10 @@ class LocationSettingWidgetState extends ConsumerState<LocationSettingWidget> {
                               fontWeight: FontWeight.w600,
                               color: gray06)),
                       const SizedBox(height: 24),
-                      GestureDetector(
+                      InkWell(
+                          // 색 없애기
+                          splashColor: Colors.transparent,
+                          highlightColor: Colors.transparent,
                           onTap: () => onTapCurrentLocation(),
                           child: Row(mainAxisSize: MainAxisSize.min, children: [
                             Text('현재 위치로 설정',
