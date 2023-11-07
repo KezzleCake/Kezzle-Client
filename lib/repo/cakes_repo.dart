@@ -288,7 +288,6 @@ class CakesRepo {
     return null;
   }
 
-  // 인기케이크 가져오기
   Future<SerachCakesVO?> searchCakes(
       {required List<String> keywords, int? page}) async {
     Dio dio = ref.watch(dioProvider);
@@ -308,6 +307,7 @@ class CakesRepo {
         final cakes = (result['cakes'] as List)
             .map((e) => Cake.fromJson(e as Map<String, dynamic>))
             .toList();
+        print('가져온 케이크 갯수: ${cakes.length}');
         return SerachCakesVO(
           cakes: cakes,
           hasMore: result['hasMore'] as bool,
@@ -344,6 +344,26 @@ class CakesRepo {
       // dio.close();
     }
     return null;
+  }
+
+  // 케이크 삭제
+  Future<bool> deleteCake({required String cakeId}) async {
+    Dio dio = ref.watch(dioProvider);
+
+    try {
+      final response = await dio.delete('cakes/$cakeId');
+      if (response.statusCode == 200) {
+        print('케이크 삭제 성공');
+        return true;
+      }
+    } catch (e) {
+      print(e);
+      print('케이크 삭제 실패');
+      return false;
+    } finally {
+      // dio.close();
+    }
+    return false;
   }
 }
 

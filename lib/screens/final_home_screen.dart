@@ -9,6 +9,7 @@ import 'package:intl/intl.dart';
 import 'package:kezzle/features/analytics/analytics.dart';
 import 'package:kezzle/features/cake_search/model/hotkeyword_model.dart';
 import 'package:kezzle/features/cake_search/search_cake_initial_screen.dart';
+import 'package:kezzle/features/profile/view_models/profile_vm.dart';
 import 'package:kezzle/models/curation_model.dart';
 import 'package:kezzle/models/home_store_model.dart';
 import 'package:kezzle/repo/curation_repo.dart';
@@ -17,10 +18,8 @@ import 'package:kezzle/screens/infinite_curation_screen.dart';
 import 'package:kezzle/screens/infinite_new_cake_screen.dart';
 import 'package:kezzle/screens/infinite_popular_cake_screen.dart';
 import 'package:kezzle/utils/colors.dart';
-// import 'package:kezzle/utils/provider_observer.dart';
 import 'package:kezzle/view_models/id_token_provider.dart';
 import 'package:kezzle/widgets/home_cake_widget.dart';
-import 'package:kezzle/widgets/my_divider_widget.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 import 'package:visibility_detector/visibility_detector.dart';
@@ -243,9 +242,10 @@ class FinalHomeScreenState extends ConsumerState<FinalHomeScreen>
         GestureDetector(
           // //TODO: 이거 지우기
           onTap: () {
-            print('dd??');
+            // print('dd??');
             var token = ref.read(tokenProvider).value!.token;
             log(token.toString());
+            print('${ref.read(profileProvider).value!.roles}');
           },
           child: SvgPicture.asset('assets/Kezzle.svg',
               height: 20,
@@ -751,7 +751,7 @@ class CurationSection extends ConsumerWidget {
 
     ref.read(analyticsProvider).gaEvent('click_curation', {
       'curation_id': curationData.id,
-      'curation_description': curationData.description,
+      // 'curation_description': curationData.description,
       // 'curation_cover_image': cover.s3url,
     });
   }

@@ -36,7 +36,7 @@ class CurationBoxWidget extends ConsumerWidget {
 
     ref.read(analyticsProvider).gaEvent('click_curation', {
       'curation_id': cover.id,
-      'curation_description': cover.description,
+      // 'curation_description': cover.description,
       // 'curation_cover_image': cover.s3url,
     });
   }

@@ -36,11 +36,18 @@ class ProfileVM extends AutoDisposeAsyncNotifier<UserModel> {
         // print(profile);
         // ref.watch(authRepo).dbUserExists = true;
         // return UserModel.fromJson(profile);
+
+        List<String> fetchedroles = [];
+        if (profile['roles'] != null) {
+          fetchedroles = List<String>.from(profile['roles']);
+        }
+
         return UserModel(
           uid: _authRepo.user!.uid,
           email: _authRepo.user!.email!,
           nickname: profile['nickname'] as String,
           oathProvider: _authRepo.user!.providerData[0].providerId,
+          roles: fetchedroles,
         );
       } else {
         print('프로필 없음');
@@ -60,39 +67,39 @@ class ProfileVM extends AutoDisposeAsyncNotifier<UserModel> {
   }
 
   // 새로 로그인한 유저 정보 받아서 프로필 정보 서버에 저장
-  Future<void> createProfile(
-      /*UserCredential credential,*/ String nickname) async {
-    state = const AsyncValue.loading();
-    // 토큰을 가져와서
-    final String? token = await _authRepo.user!.getIdToken();
+  // Future<void> createProfile(
+  //     /*UserCredential credential,*/ String nickname) async {
+  //   state = const AsyncValue.loading();
+  //   // 토큰을 가져와서
+  //   final String? token = await _authRepo.user!.getIdToken();
 
-    // if (credential.user == null) {
-    //   throw Exception("유저 정보가 없습니다.");
-    // }
+  //   // if (credential.user == null) {
+  //   //   throw Exception("유저 정보가 없습니다.");
+  //   // }
 
-    // 유저 프로필 정보를 만들어서
-    // final profile = UserModel(
-    //   uid: credential.user!.uid,
-    //   email: credential.user!.email! ?? "kezzle@google.com",
-    //   nickname: nickname,
-    //   // 프로바이더가 잘 나오는지 모르겠네.. 일단...적어놓자..
-    //   oathProvider: credential.user!.providerData[0].providerId ?? "kakao.com",
-    // );
-    // 서버에 저장
-    // await _userRepo.createProfile(profile);
-    // state = AsyncValue.data(profile);
+  //   // 유저 프로필 정보를 만들어서
+  //   // final profile = UserModel(
+  //   //   uid: credential.user!.uid,
+  //   //   email: credential.user!.email! ?? "kezzle@google.com",
+  //   //   nickname: nickname,
+  //   //   // 프로바이더가 잘 나오는지 모르겠네.. 일단...적어놓자..
+  //   //   oathProvider: credential.user!.providerData[0].providerId ?? "kakao.com",
+  //   // );
+  //   // 서버에 저장
+  //   // await _userRepo.createProfile(profile);
+  //   // state = AsyncValue.data(profile);
 
-    // 유저 프로필 정보를 만들어서
-    final profile = UserModel(
-      uid: _authRepo.user!.uid,
-      email: _authRepo.user!.email!,
-      nickname: nickname,
-      oathProvider: _authRepo.user!.providerData[0].providerId,
-    );
-    // 서버에 저장 후, state 변경
-    // await _userRepo.createProfile(profile, _authRepo.user!);
-    state = AsyncValue.data(profile);
-  }
+  //   // 유저 프로필 정보를 만들어서
+  //   final profile = UserModel(
+  //     uid: _authRepo.user!.uid,
+  //     email: _authRepo.user!.email!,
+  //     nickname: nickname,
+  //     oathProvider: _authRepo.user!.providerData[0].providerId,
+  //   );
+  //   // 서버에 저장 후, state 변경
+  //   // await _userRepo.createProfile(profile, _authRepo.user!);
+  //   state = AsyncValue.data(profile);
+  // }
 
   // 닉네임 수정 시, 변경 내용을 서버에 저장
   Future<void> updateProfile(String nickname) async {
@@ -136,6 +143,11 @@ class ProfileVM extends AutoDisposeAsyncNotifier<UserModel> {
         // 서버에서 삭제 실패 시, 그냥 두기
       }
     }
+  }
+
+  // user의 role이 admin인지 확인
+  bool get isAdmin {
+    return state.value!.roles.contains('isAdmin');
   }
 }
 

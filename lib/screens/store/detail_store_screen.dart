@@ -231,6 +231,11 @@ class DetailStoreScreen extends ConsumerWidget {
                   // if (ref.read(storeProvider(storeId) == null)) {
                   // ref.read(storeProvider(storeId).notifier).init(initialLike);
                   // }
+                  if (ref.read(storeProvider(storeId)) == null) {
+                    ref
+                        .read(storeProvider(storeId).notifier)
+                        .init(store.isLiked);
+                  }
 
                   ref.watch(storeProvider(store.id)) == true
                       ? ref.read(likeCntProvider.notifier).state -= 1

@@ -9,6 +9,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:kezzle/features/analytics/analytics.dart';
+import 'package:kezzle/features/profile/view_models/profile_vm.dart';
 import 'package:kezzle/features/serch_similar_cake/search_similar_cake_screen.dart';
 import 'package:kezzle/models/detail_store_model.dart';
 import 'package:kezzle/models/home_store_model.dart';
@@ -19,7 +20,6 @@ import 'package:kezzle/utils/toast.dart';
 import 'package:kezzle/view_models/cake_vm.dart';
 import 'package:kezzle/widgets/store_widget.dart';
 import 'package:kezzle/widgets/url_launch_dialog_widget.dart';
-import 'package:showcaseview/showcaseview.dart';
 import 'package:super_clipboard/super_clipboard.dart';
 
 class DetailCakeScreen extends ConsumerStatefulWidget {
@@ -231,13 +231,6 @@ class DetailCakeScreenState extends ConsumerState<DetailCakeScreen> {
       });
     }
 
-    GlobalKey one = GlobalKey();
-    GlobalKey two = GlobalKey();
-    // GlobalKey three = GlobalKey();
-
-    // WidgetsBinding.instance.addPostFrameCallback(
-    //     (_) => ShowCaseWidget.of(context).startShowCase([one, two]));
-
     return FutureBuilder<List<dynamic>>(
         future: Future.wait([fetchCake(), fetchStore(), fetchAnoterCake()]),
         builder: (context, data) {
@@ -246,384 +239,202 @@ class DetailCakeScreenState extends ConsumerState<DetailCakeScreen> {
             final DetailStoreModel storeData = data.data![1]!;
             final List<Cake> anotherCakeList = data.data![2]!;
 
-            return ShowCaseWidget(
-              builder: Builder(builder: (context) {
-                return Scaffold(
-                    // backgroundColor: Colors.white,
-                    appBar: AppBar(
-                      title: const Text('케이크 상세보기',
-                          style: TextStyle(
-                              fontSize: 16, fontWeight: FontWeight.w600)),
-                      actions: [
-                        // 케이크 별로 상태관리 해줘야됨....
-                        Showcase(
-                          key: one,
-                          title: '케이크 이미지를 저장하거나, 클립보드에 복사할 수 있습니다.',
-                          description: '케이크 이미지를 저장하거나, 클립보드에 복사할 수 있습니다.',
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              GestureDetector(
-                                  onTap: () =>
-                                      onTapSaveBtn(cakeData.image.s3Url),
-                                  child: Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 7.5, vertical: 12),
-                                      child: FaIcon(FontAwesomeIcons.download,
-                                          size: 20, color: gray08))),
-                              GestureDetector(
-                                  onTap: () => copyImage(cakeData.image.s3Url),
-                                  child: Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 7.5, vertical: 12),
-                                      child: FaIcon(FontAwesomeIcons.paperclip,
-                                          size: 20, color: gray08))),
-                            ],
-                          ),
-                        ),
-                        LikeButton(cakeData: cakeData),
-                      ],
-                    ),
-                    body: SingleChildScrollView(
-                        // 바운스 되는 게 낫나?
-                        // physics: ClampingScrollPhysics(),
-                        child: Column(children: [
-                      AspectRatio(
-                        aspectRatio: 1,
-                        child: SizedBox(
-                          width: double.infinity,
-                          child: CachedNetworkImage(
-                            imageUrl: data.data![0].image.s3Url
-                                .replaceFirst("https", "http"),
-                            fit: BoxFit.cover,
-                          ),
+            return Scaffold(
+                // backgroundColor: Colors.white,
+                appBar: AppBar(
+                  title: const Text('케이크 상세보기',
+                      style:
+                          TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+                  actions: [
+                    // 케이크 별로 상태관리 해줘야됨....
+                    if (ref.read(profileProvider.notifier).isAdmin)
+                      InkWell(
+                        splashColor: Colors.transparent,
+                        highlightColor: Colors.transparent,
+                        onTap: () async {
+                          bool success = await ref
+                              .read(cakesRepo)
+                              .deleteCake(cakeId: cakeData.id);
+                          if (success) {
+                            if (!mounted) return;
+                            Toast.toast(context, '삭제 성공');
+                          }
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 7.5, vertical: 12),
+                          child: FaIcon(FontAwesomeIcons.trash,
+                              size: 20, color: gray08),
                         ),
                       ),
-                      const SizedBox(height: 20),
-                      Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 20),
-                          child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
+                    GestureDetector(
+                        onTap: () => onTapSaveBtn(cakeData.image.s3Url),
+                        child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 7.5, vertical: 12),
+                            child: FaIcon(FontAwesomeIcons.download,
+                                size: 20, color: gray08))),
+                    GestureDetector(
+                        onTap: () => copyImage(cakeData.image.s3Url),
+                        child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 7.5, vertical: 12),
+                            child: FaIcon(FontAwesomeIcons.paperclip,
+                                size: 20, color: gray08))),
+                    // ref.read(profileProvider).
+
+                    LikeButton(cakeData: cakeData),
+                  ],
+                ),
+                body: SingleChildScrollView(
+                    // 바운스 되는 게 낫나?
+                    // physics: ClampingScrollPhysics(),
+                    child: Column(children: [
+                  AspectRatio(
+                    aspectRatio: 1,
+                    child: SizedBox(
+                      width: double.infinity,
+                      child: CachedNetworkImage(
+                        imageUrl: data.data![0].image.s3Url
+                            .replaceFirst("https", "http"),
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Row(
                                     children: [
-                                      Row(
-                                        children: [
-                                          Text(
-                                            '스토어',
-                                            style: TextStyle(
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.w600,
-                                              color: gray08,
-                                            ),
-                                          ),
-                                          const SizedBox(width: 6),
-                                        ],
-                                      ),
-                                    ]),
-                                const SizedBox(height: 16),
-                                StoreWidget(storeData: data.data![1]!),
-                                const SizedBox(height: 40),
-                                Row(children: [
-                                  Text('해당 스토어의 다른 케이크',
-                                      style: TextStyle(
+                                      Text(
+                                        '스토어',
+                                        style: TextStyle(
                                           fontSize: 16,
                                           fontWeight: FontWeight.w600,
-                                          color: gray08)),
-                                  const SizedBox(width: 6),
+                                          color: gray08,
+                                        ),
+                                      ),
+                                      const SizedBox(width: 6),
+                                    ],
+                                  ),
                                 ]),
-                                const SizedBox(height: 16),
-                                SizedBox(
-                                    height: (MediaQuery.of(context).size.width -
-                                            40 -
-                                            6 * 3) /
-                                        4,
-                                    child: ListView.separated(
-                                        physics: const BouncingScrollPhysics(),
-                                        itemCount: data.data![2]!.length,
-                                        scrollDirection: Axis.horizontal,
-                                        separatorBuilder: (context, index) =>
-                                            const SizedBox(width: 6),
-                                        itemBuilder: (context, index) {
-                                          return GestureDetector(
-                                              onTap: () {
-                                                // print('케이크 상세보기 페이지로 이동');
-                                                // context.push(
-                                                //     "/detail_cake/${anotherCakeList[index].id}/${anotherCakeList[index].ownerStoreId}");
+                            const SizedBox(height: 16),
+                            StoreWidget(storeData: data.data![1]!),
+                            const SizedBox(height: 40),
+                            Row(children: [
+                              Text('해당 스토어의 다른 케이크',
+                                  style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600,
+                                      color: gray08)),
+                              const SizedBox(width: 6),
+                            ]),
+                            const SizedBox(height: 16),
+                            SizedBox(
+                                height: (MediaQuery.of(context).size.width -
+                                        40 -
+                                        6 * 3) /
+                                    4,
+                                child: ListView.separated(
+                                    physics: const BouncingScrollPhysics(),
+                                    itemCount: data.data![2]!.length,
+                                    scrollDirection: Axis.horizontal,
+                                    separatorBuilder: (context, index) =>
+                                        const SizedBox(width: 6),
+                                    itemBuilder: (context, index) {
+                                      return GestureDetector(
+                                          onTap: () {
+                                            // print('케이크 상세보기 페이지로 이동');
+                                            // context.push(
+                                            //     "/detail_cake/${anotherCakeList[index].id}/${anotherCakeList[index].ownerStoreId}");
 
-                                                index == 3
-                                                    ? context.push(
-                                                        "/detail_store/${storeData.id}")
-                                                    : context.pushNamed(
-                                                        SearchSimilarCakeScreen
-                                                            .routeName,
-                                                        extra: anotherCakeList[
-                                                            index]);
-                                              },
-                                              child: Container(
-                                                  width: (MediaQuery.of(context)
-                                                              .size
-                                                              .width -
-                                                          40 -
-                                                          6 * 3) /
-                                                      4,
-                                                  decoration: BoxDecoration(
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              16),
-                                                      boxShadow: [shadow01]),
-                                                  clipBehavior: Clip.hardEdge,
-                                                  child: Stack(
-                                                    children: [
-                                                      AspectRatio(
-                                                        aspectRatio: 1,
-                                                        child: CachedNetworkImage(
-                                                            imageUrl: data
-                                                                .data![2]![
-                                                                    index]
-                                                                .image
-                                                                .s3Url
-                                                                .replaceFirst(
-                                                                    "https",
-                                                                    "http"),
-                                                            fit: BoxFit.cover),
-                                                      ),
-                                                      index == 3
-                                                          ? Container(
-                                                              alignment:
-                                                                  Alignment
-                                                                      .center,
-                                                              color: const Color(
-                                                                      0xff40414F)
-                                                                  .withOpacity(
-                                                                      0.7),
-                                                              child: Text(
-                                                                  '더보기+',
-                                                                  style: TextStyle(
-                                                                      fontSize:
-                                                                          13,
-                                                                      fontWeight:
-                                                                          FontWeight
-                                                                              .w500,
-                                                                      color:
-                                                                          gray01),
-                                                                  textAlign:
-                                                                      TextAlign
-                                                                          .center),
-                                                            )
-                                                          : Container(),
-                                                    ],
-                                                  )));
-                                        })),
-                                const SizedBox(height: 40),
-                              ])),
-                      // const SizedBox(height: 70),
-                    ])),
-                    bottomNavigationBar: Showcase(
-                      key: two,
-                      title: '스토어의 카카오톡 채널 또는 인스타그램으로 이동할 수 있습니다.',
-                      description: '스토어의 카카오톡 채널 또는 인스타그램으로 이동할 수 있습니다.',
-                      child: BottomAppBar(
-                          color: Colors.transparent,
-                          elevation: 0,
-                          child: GestureDetector(
-                            onTap: () => onTapOrderBtn(
-                                context,
-                                storeData.kakaoURL!,
-                                storeData.instaURL!,
-                                ref,
-                                storeData.name),
-                            child: Container(
-                                alignment: Alignment.center,
-                                decoration: BoxDecoration(
-                                  color: coral01,
-                                  borderRadius: BorderRadius.circular(30),
-                                ),
-                                child: Text('주문하러 가기',
-                                    style: TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w700,
-                                        color: gray01))),
-                          )),
-                    ));
-              }),
-            );
-            // Scaffold(
-            //     // backgroundColor: Colors.white,
-            //     appBar: AppBar(
-            //       title: const Text('케이크 상세보기',
-            //           style:
-            //               TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
-            //       actions: [
-            //         // 케이크 별로 상태관리 해줘야됨....
-            //         GestureDetector(
-            //             onTap: () => onTapSaveBtn(cakeData.image.s3Url),
-            //             child: Padding(
-            //                 padding: const EdgeInsets.symmetric(
-            //                     horizontal: 7.5, vertical: 12),
-            //                 child: FaIcon(FontAwesomeIcons.download,
-            //                     size: 20, color: gray08))),
-            //         GestureDetector(
-            //             onTap: () => copyImage(cakeData.image.s3Url),
-            //             child: Padding(
-            //                 padding: const EdgeInsets.symmetric(
-            //                     horizontal: 7.5, vertical: 12),
-            //                 child: FaIcon(FontAwesomeIcons.paperclip,
-            //                     size: 20, color: gray08))),
-            //         LikeButton(cakeData: cakeData),
-            //       ],
-            //     ),
-            //     body: SingleChildScrollView(
-            //         // 바운스 되는 게 낫나?
-            //         // physics: ClampingScrollPhysics(),
-            //         child: Column(children: [
-            //       AspectRatio(
-            //         aspectRatio: 1,
-            //         child: SizedBox(
-            //           width: double.infinity,
-            //           child: CachedNetworkImage(
-            //             imageUrl: data.data![0].image.s3Url
-            //                 .replaceFirst("https", "http"),
-            //             fit: BoxFit.cover,
-            //           ),
-            //         ),
-            //       ),
-            //       const SizedBox(height: 20),
-            //       Padding(
-            //           padding: const EdgeInsets.symmetric(horizontal: 20),
-            //           child: Column(
-            //               crossAxisAlignment: CrossAxisAlignment.start,
-            //               children: [
-            //                 Row(
-            //                     mainAxisAlignment:
-            //                         MainAxisAlignment.spaceBetween,
-            //                     children: [
-            //                       Row(
-            //                         children: [
-            //                           Text(
-            //                             '스토어',
-            //                             style: TextStyle(
-            //                               fontSize: 16,
-            //                               fontWeight: FontWeight.w600,
-            //                               color: gray08,
-            //                             ),
-            //                           ),
-            //                           const SizedBox(width: 6),
-            //                         ],
-            //                       ),
-            //                     ]),
-            //                 const SizedBox(height: 16),
-            //                 StoreWidget(storeData: data.data![1]!),
-            //                 const SizedBox(height: 40),
-            //                 Row(children: [
-            //                   Text('해당 스토어의 다른 케이크',
-            //                       style: TextStyle(
-            //                           fontSize: 16,
-            //                           fontWeight: FontWeight.w600,
-            //                           color: gray08)),
-            //                   const SizedBox(width: 6),
-            //                 ]),
-            //                 const SizedBox(height: 16),
-            //                 SizedBox(
-            //                     height: (MediaQuery.of(context).size.width -
-            //                             40 -
-            //                             6 * 3) /
-            //                         4,
-            //                     child: ListView.separated(
-            //                         physics: const BouncingScrollPhysics(),
-            //                         itemCount: data.data![2]!.length,
-            //                         scrollDirection: Axis.horizontal,
-            //                         separatorBuilder: (context, index) =>
-            //                             const SizedBox(width: 6),
-            //                         itemBuilder: (context, index) {
-            //                           return GestureDetector(
-            //                               onTap: () {
-            //                                 // print('케이크 상세보기 페이지로 이동');
-            //                                 // context.push(
-            //                                 //     "/detail_cake/${anotherCakeList[index].id}/${anotherCakeList[index].ownerStoreId}");
-
-            //                                 index == 3
-            //                                     ? context.push(
-            //                                         "/detail_store/${storeData.id}")
-            //                                     : context.pushNamed(
-            //                                         SearchSimilarCakeScreen
-            //                                             .routeName,
-            //                                         extra:
-            //                                             anotherCakeList[index]);
-            //                               },
-            //                               child: Container(
-            //                                   width: (MediaQuery.of(context)
-            //                                               .size
-            //                                               .width -
-            //                                           40 -
-            //                                           6 * 3) /
-            //                                       4,
-            //                                   decoration: BoxDecoration(
-            //                                       borderRadius:
-            //                                           BorderRadius.circular(16),
-            //                                       boxShadow: [shadow01]),
-            //                                   clipBehavior: Clip.hardEdge,
-            //                                   child: Stack(
-            //                                     children: [
-            //                                       AspectRatio(
-            //                                         aspectRatio: 1,
-            //                                         child: CachedNetworkImage(
-            //                                             imageUrl: data
-            //                                                 .data![2]![index]
-            //                                                 .image
-            //                                                 .s3Url
-            //                                                 .replaceFirst(
-            //                                                     "https",
-            //                                                     "http"),
-            //                                             fit: BoxFit.cover),
-            //                                       ),
-            //                                       index == 3
-            //                                           ? Container(
-            //                                               alignment:
-            //                                                   Alignment.center,
-            //                                               color: const Color(
-            //                                                       0xff40414F)
-            //                                                   .withOpacity(0.7),
-            //                                               child: Text('더보기+',
-            //                                                   style: TextStyle(
-            //                                                       fontSize: 13,
-            //                                                       fontWeight:
-            //                                                           FontWeight
-            //                                                               .w500,
-            //                                                       color:
-            //                                                           gray01),
-            //                                                   textAlign:
-            //                                                       TextAlign
-            //                                                           .center),
-            //                                             )
-            //                                           : Container(),
-            //                                     ],
-            //                                   )));
-            //                         })),
-            //                 const SizedBox(height: 40),
-            //               ])),
-            //       // const SizedBox(height: 70),
-            //     ])),
-            //     bottomNavigationBar: BottomAppBar(
-            //         color: Colors.transparent,
-            //         elevation: 0,
-            //         child: GestureDetector(
-            //           onTap: () => onTapOrderBtn(context, storeData.kakaoURL!,
-            //               storeData.instaURL!, ref, storeData.name),
-            //           child: Container(
-            //               alignment: Alignment.center,
-            //               decoration: BoxDecoration(
-            //                 color: coral01,
-            //                 borderRadius: BorderRadius.circular(30),
-            //               ),
-            //               child: Text('주문하러 가기',
-            //                   style: TextStyle(
-            //                       fontSize: 16,
-            //                       fontWeight: FontWeight.w700,
-            //                       color: gray01))),
-            //         )));
+                                            index == 3
+                                                ? context.push(
+                                                    "/detail_store/${storeData.id}")
+                                                : context.pushNamed(
+                                                    SearchSimilarCakeScreen
+                                                        .routeName,
+                                                    extra:
+                                                        anotherCakeList[index]);
+                                          },
+                                          child: Container(
+                                              width: (MediaQuery.of(context)
+                                                          .size
+                                                          .width -
+                                                      40 -
+                                                      6 * 3) /
+                                                  4,
+                                              decoration: BoxDecoration(
+                                                  borderRadius:
+                                                      BorderRadius.circular(16),
+                                                  boxShadow: [shadow01]),
+                                              clipBehavior: Clip.hardEdge,
+                                              child: Stack(
+                                                children: [
+                                                  AspectRatio(
+                                                    aspectRatio: 1,
+                                                    child: CachedNetworkImage(
+                                                        imageUrl: data
+                                                            .data![2]![index]
+                                                            .image
+                                                            .s3Url
+                                                            .replaceFirst(
+                                                                "https",
+                                                                "http"),
+                                                        fit: BoxFit.cover),
+                                                  ),
+                                                  index == 3
+                                                      ? Container(
+                                                          alignment:
+                                                              Alignment.center,
+                                                          color: const Color(
+                                                                  0xff40414F)
+                                                              .withOpacity(0.7),
+                                                          child: Text('더보기+',
+                                                              style: TextStyle(
+                                                                  fontSize: 13,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w500,
+                                                                  color:
+                                                                      gray01),
+                                                              textAlign:
+                                                                  TextAlign
+                                                                      .center),
+                                                        )
+                                                      : Container(),
+                                                ],
+                                              )));
+                                    })),
+                            const SizedBox(height: 40),
+                          ])),
+                  // const SizedBox(height: 70),
+                ])),
+                bottomNavigationBar: BottomAppBar(
+                    color: Colors.transparent,
+                    elevation: 0,
+                    child: GestureDetector(
+                      onTap: () => onTapOrderBtn(context, storeData.kakaoURL!,
+                          storeData.instaURL!, ref, storeData.name),
+                      child: Container(
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                            color: coral01,
+                            borderRadius: BorderRadius.circular(30),
+                          ),
+                          child: Text('주문하러 가기',
+                              style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w700,
+                                  color: gray01))),
+                    )));
           } else if (data.connectionState == ConnectionState.waiting) {
             return Scaffold(
                 body: Center(child: CircularProgressIndicator(color: coral01)));

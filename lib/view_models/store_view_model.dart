@@ -26,7 +26,7 @@ class StoreViewModel extends AutoDisposeFamilyNotifier<bool?, String> {
   }
 
   void toggleLike(/*HomeStoreModel store*/) {
-    if (like == null) init(false);
+    // if (like == null) init(false);
     if (like! == true) {
       dislikeStore();
     } else {
