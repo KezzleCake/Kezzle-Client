@@ -31,7 +31,12 @@ class LoginScreenState extends ConsumerState<LoginScreen> {
   }
 
   void onTapGoogleBtn() async {
+    print("dddd");
     ref.read(authRepo).signInWithGoogle().then((value) async {
+      if (value == null) {
+        print('이게 무슨일이람.');
+        return;
+      }
       setState(() {
         isLoading = true;
       });

@@ -454,6 +454,7 @@ class LikeButton extends ConsumerWidget {
   final Cake cakeData;
   void onTapLikes(bool initialLike, WidgetRef ref) async {
     print('좋아요 버튼 클릭');
+    //TODO: GA 추가
     if (ref.read(cakeProvider(cakeData.id)) == null) {
       ref.read(cakeProvider(cakeData.id).notifier).init(initialLike);
     }
