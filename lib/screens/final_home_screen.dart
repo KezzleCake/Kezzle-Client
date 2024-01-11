@@ -66,20 +66,20 @@ class FinalHomeScreenState extends ConsumerState<FinalHomeScreen>
     super.initState();
     fetchHomeData = fetchData();
     // fetchCurations = fetchHomeCurations();
-    fetchHomeData.then((_) async {
-      final sharedPreferences = await SharedPreferences.getInstance();
-      if (sharedPreferences.getBool('isShowPopUp') == null ||
-          sharedPreferences.getBool('isShowPopUp') == true) {
-        popUpTest();
-      }
-    });
+    // fetchHomeData.then((_) async {
+    //   final sharedPreferences = await SharedPreferences.getInstance();
+    //   if (sharedPreferences.getBool('isShowPopUp') == null ||
+    //       sharedPreferences.getBool('isShowPopUp') == true) {
+    //     popUpTest();
+    //   }
+    // });
   }
 
   // 현재 슬라이드 페이지
   int _currentPage = 0;
   // 자동 슬라이드 여부
   bool autoPlay = false;
-  bool banner_autoPlay = false;
+  // bool banner_autoPlay = false;
   // late String anniversaryId;
 
   void onTapSlide(AniversaryCurationModel anniversaryCuration) {
@@ -116,103 +116,103 @@ class FinalHomeScreenState extends ConsumerState<FinalHomeScreen>
   }
 
   // 슬라이드가 보이는지 안보이는지 체크 (보이면 자동재생, 안보이면 멈춤)
-  void _bannerVisibilityChanged(VisibilityInfo info) {
-    if (info.visibleFraction == 0) {
-      if (mounted) {
-        setState(() {
-          banner_autoPlay = false;
-        });
-      }
-    } else {
-      setState(() {
-        banner_autoPlay = true;
-      });
-    }
-  }
+  // void _bannerVisibilityChanged(VisibilityInfo info) {
+  //   if (info.visibleFraction == 0) {
+  //     if (mounted) {
+  //       setState(() {
+  //         banner_autoPlay = false;
+  //       });
+  //     }
+  //   } else {
+  //     setState(() {
+  //       banner_autoPlay = true;
+  //     });
+  //   }
+  // }
 
-  void popUpTest() async {
-    //TODO: 두번씩 호출되는거 어쩔거야..
+  // void popUpTest() async {
+  //   //TODO: 두번씩 호출되는거 어쩔거야..
 
-    showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return Column(
-              // mainAxisSize: MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                GestureDetector(
-                  onTap: () => launchUrlString(
-                    'https://forms.gle/Y6SV3LvCMUvvi4xE8',
-                    mode: LaunchMode.externalApplication,
-                  ),
-                  child: Container(
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(20)),
-                      clipBehavior: Clip.hardEdge,
-                      width: MediaQuery.of(context).size.width - 55,
-                      // height: 475,
-                      child: Image.asset('assets/event/store_event.png')),
-                ),
-                Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 27.5),
-                    child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          TextButton(
-                              onPressed: () async {
-                                // shared 값 변경
-                                //TODO: shared 쓰는 방식 고치기, 값저장하는거 고치기
-                                final sharedPreferences =
-                                    await SharedPreferences.getInstance();
-                                sharedPreferences.setBool('isShowPopUp', false);
-                                // Navigator.pop(context);
-                                if (!mounted) return;
-                                context.pop();
-                              },
-                              child: Row(
-                                children: [
-                                  FaIcon(FontAwesomeIcons.circleCheck,
-                                      size: 15, color: gray01),
-                                  const SizedBox(width: 5),
-                                  Text(
-                                    '다시 보지 않기',
-                                    style: TextStyle(
-                                        color: gray01,
-                                        fontSize: 15,
-                                        fontWeight: FontWeight.w500),
-                                  ),
-                                ],
-                              )),
-                          TextButton(
-                              onPressed: () async {
-                                // Navigator.pop(context);
-                                // shared 값 변경
-                                //TODO: shared 쓰는 방식 고치기, 값저장하는거 고치기
-                                final sharedPreferences =
-                                    await SharedPreferences.getInstance();
-                                sharedPreferences.setBool('isShowPopUp', false);
-                                // Navigator.pop(context);
-                                if (!mounted) return;
-                                context.pop();
-                              },
-                              child: Row(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    Text(
-                                      '닫기',
-                                      style: TextStyle(
-                                          color: gray01,
-                                          fontSize: 15,
-                                          fontWeight: FontWeight.w500),
-                                    ),
-                                    const SizedBox(width: 5),
-                                    FaIcon(FontAwesomeIcons.circleXmark,
-                                        size: 15, color: gray01)
-                                  ])),
-                        ])),
-              ]);
-        });
-  }
+  //   showDialog(
+  //       context: context,
+  //       builder: (BuildContext context) {
+  //         return Column(
+  //             // mainAxisSize: MainAxisSize.min,
+  //             mainAxisAlignment: MainAxisAlignment.center,
+  //             children: [
+  //               GestureDetector(
+  //                 onTap: () => launchUrlString(
+  //                   'https://forms.gle/Y6SV3LvCMUvvi4xE8',
+  //                   mode: LaunchMode.externalApplication,
+  //                 ),
+  //                 child: Container(
+  //                     decoration: BoxDecoration(
+  //                         borderRadius: BorderRadius.circular(20)),
+  //                     clipBehavior: Clip.hardEdge,
+  //                     width: MediaQuery.of(context).size.width - 55,
+  //                     // height: 475,
+  //                     child: Image.asset('assets/event/store_event.png')),
+  //               ),
+  //               Padding(
+  //                   padding: const EdgeInsets.symmetric(horizontal: 27.5),
+  //                   child: Row(
+  //                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  //                       children: [
+  //                         TextButton(
+  //                             onPressed: () async {
+  //                               // shared 값 변경
+  //                               //TODO: shared 쓰는 방식 고치기, 값저장하는거 고치기
+  //                               final sharedPreferences =
+  //                                   await SharedPreferences.getInstance();
+  //                               sharedPreferences.setBool('isShowPopUp', false);
+  //                               // Navigator.pop(context);
+  //                               if (!mounted) return;
+  //                               context.pop();
+  //                             },
+  //                             child: Row(
+  //                               children: [
+  //                                 FaIcon(FontAwesomeIcons.circleCheck,
+  //                                     size: 15, color: gray01),
+  //                                 const SizedBox(width: 5),
+  //                                 Text(
+  //                                   '다시 보지 않기',
+  //                                   style: TextStyle(
+  //                                       color: gray01,
+  //                                       fontSize: 15,
+  //                                       fontWeight: FontWeight.w500),
+  //                                 ),
+  //                               ],
+  //                             )),
+  //                         TextButton(
+  //                             onPressed: () async {
+  //                               // Navigator.pop(context);
+  //                               // shared 값 변경
+  //                               //TODO: shared 쓰는 방식 고치기, 값저장하는거 고치기
+  //                               final sharedPreferences =
+  //                                   await SharedPreferences.getInstance();
+  //                               sharedPreferences.setBool('isShowPopUp', false);
+  //                               // Navigator.pop(context);
+  //                               if (!mounted) return;
+  //                               context.pop();
+  //                             },
+  //                             child: Row(
+  //                                 crossAxisAlignment: CrossAxisAlignment.center,
+  //                                 children: [
+  //                                   Text(
+  //                                     '닫기',
+  //                                     style: TextStyle(
+  //                                         color: gray01,
+  //                                         fontSize: 15,
+  //                                         fontWeight: FontWeight.w500),
+  //                                   ),
+  //                                   const SizedBox(width: 5),
+  //                                   FaIcon(FontAwesomeIcons.circleXmark,
+  //                                       size: 15, color: gray01)
+  //                                 ])),
+  //                       ])),
+  //             ]);
+  //       });
+  // }
 
   Future<Map<String, dynamic>?> fetchData() async {
     // 예제 비동기 함수: 여기에서 데이터를 가져온다고 가정
@@ -239,18 +239,9 @@ class FinalHomeScreenState extends ConsumerState<FinalHomeScreen>
       appBar: AppBar(
           title:
               Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-        GestureDetector(
-          // //TODO: 이거 지우기
-          onTap: () {
-            // print('dd??');
-            var token = ref.read(tokenProvider).value!.token;
-            log(token.toString());
-            print('${ref.read(profileProvider).value!.roles}');
-          },
-          child: SvgPicture.asset('assets/Kezzle.svg',
-              height: 20,
-              colorFilter: ColorFilter.mode(coral01, BlendMode.srcIn)),
-        ),
+        SvgPicture.asset('assets/Kezzle.svg',
+            height: 20,
+            colorFilter: ColorFilter.mode(coral01, BlendMode.srcIn)),
         const SizedBox(width: 35),
         Expanded(
             child: GestureDetector(
@@ -667,27 +658,35 @@ class FinalHomeScreenState extends ConsumerState<FinalHomeScreen>
                   ),
                   // 배너
                   const SizedBox(height: 40),
-                  VisibilityDetector(
-                    key: const Key('banner'),
-                    onVisibilityChanged: _bannerVisibilityChanged,
-                    child: CarouselSlider(
-                        carouselController: _bannerController,
-                        options: CarouselOptions(
-                          autoPlay: banner_autoPlay,
-                          viewportFraction: 0.9,
-                        ),
-                        items: bannerImageList
-                            .map((e) => Padding(
-                                  padding: const EdgeInsets.all(4.0),
-                                  child: GestureDetector(
-                                      onTap: () => launchUrlString(
-                                          bannerUrl[bannerImageList.indexOf(e)],
-                                          mode: LaunchMode.externalApplication),
-                                      child: Image.asset(e,
-                                          width: double.infinity)),
-                                ))
-                            .toList()),
+                  Padding(
+                    padding: const EdgeInsets.all(9.0),
+                    child: GestureDetector(
+                        onTap: () => launchUrlString(bannerUrl[2],
+                            mode: LaunchMode.externalApplication),
+                        child: Image.asset(bannerImageList[2])),
                   ),
+
+                  // VisibilityDetector(
+                  //   key: const Key('banner'),
+                  //   onVisibilityChanged: _bannerVisibilityChanged,
+                  //   child: CarouselSlider(
+                  //       carouselController: _bannerController,
+                  //       options: CarouselOptions(
+                  //         autoPlay: banner_autoPlay,
+                  //         viewportFraction: 0.9,
+                  //       ),
+                  //       items: bannerImageList
+                  //           .map((e) => Padding(
+                  //                 padding: const EdgeInsets.all(4.0),
+                  //                 child: GestureDetector(
+                  //                     onTap: () => launchUrlString(
+                  //                         bannerUrl[bannerImageList.indexOf(e)],
+                  //                         mode: LaunchMode.externalApplication),
+                  //                     child: Image.asset(e,
+                  //                         width: double.infinity)),
+                  //               ))
+                  //           .toList()),
+                  // ),
                   const SizedBox(height: 30),
                   // 큐레이션 풀어헤친 위젯들
 

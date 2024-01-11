@@ -147,6 +147,10 @@ class ProfileVM extends AutoDisposeAsyncNotifier<UserModel> {
 
   // user의 role이 admin인지 확인
   bool get isAdmin {
+    if (state.value == null) {
+      // print('이렇게 하면 고쳐지는 게 맞나');
+      return false;
+    }
     return state.value!.roles.contains('isAdmin');
   }
 }

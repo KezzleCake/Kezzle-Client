@@ -5,6 +5,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:google_maps_flutter_android/google_maps_flutter_android.dart';
+// ignore: depend_on_referenced_packages
+import 'package:google_maps_flutter_platform_interface/google_maps_flutter_platform_interface.dart';
+
 import 'package:kezzle/firebase_options.dart';
 import 'package:kezzle/repo/current_keyword_repo.dart';
 import 'package:kezzle/repo/search_setting_repo.dart';
@@ -45,6 +49,16 @@ void main() async {
     DeviceOrientation.portraitUp,
   ]);
 
+  // Require Hybrid Composition mode on Android.
+  if (Platform.isAndroid) {
+    final GoogleMapsFlutterPlatform mapsImplementation =
+        GoogleMapsFlutterPlatform.instance;
+    if (mapsImplementation is GoogleMapsFlutterAndroid) {
+      mapsImplementation.useAndroidViewSurface = true;
+      mapsImplementation.initializeWithRenderer(AndroidMapRenderer.latest);
+    }
+  }
+
   runApp(ProviderScope(
     // observers: [
     //   Logger(),
@@ -59,6 +73,7 @@ void main() async {
     ],
     child: KezzleApp(),
   ));
+  
 }
 
 class KezzleApp extends ConsumerWidget {

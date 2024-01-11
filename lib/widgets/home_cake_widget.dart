@@ -25,6 +25,7 @@ class HomeCakeWidget extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return GestureDetector(
       onTap: () {
+        
         // 케이크 클릭 이벤트 로깅
         ref.read(analyticsProvider).gaEvent('click_cake', {
           'cake_id': cakeData.id,

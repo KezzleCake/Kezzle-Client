@@ -45,17 +45,17 @@ class AuthRepo {
       // Obtain the auth details from the request
       // 성공적으로 완료된 경우, GoogleSignInAuthentication 객체를 반환함.
       // 이 객체에는 GoogleSignInAccount 객체의 ID 토큰과 액세스 토큰이 포함됨.
-      final GoogleSignInAuthentication? googleAuth =
-          await googleUser?.authentication;
+      final GoogleSignInAuthentication googleAuth =
+          await googleUser.authentication;
 
-      if (googleAuth == null) return null;
+      // if (googleAuth == null) return null;
 
       // Create a new credential
       // credential 메서드로 구글인증에 필요한 정보를 전달하고 새로운 인증 자격 증명인 credential을 생성함.
       // 이때, accessToken과 idToken을 전달함.
       final credential = GoogleAuthProvider.credential(
-        accessToken: googleAuth?.accessToken,
-        idToken: googleAuth?.idToken,
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
       );
 
       // oauthCredential = credential;

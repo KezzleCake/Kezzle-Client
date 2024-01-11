@@ -31,10 +31,8 @@ class LoginScreenState extends ConsumerState<LoginScreen> {
   }
 
   void onTapGoogleBtn() async {
-    print("dddd");
     ref.read(authRepo).signInWithGoogle().then((value) async {
       if (value == null) {
-        print('이게 무슨일이람.');
         return;
       }
       setState(() {
@@ -88,100 +86,100 @@ class LoginScreenState extends ConsumerState<LoginScreen> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      showDialogFunction(context);
-    });
+    // WidgetsBinding.instance.addPostFrameCallback((_) {
+    //   showDialogFunction(context);
+    // });
   }
 
-  void showDialogFunction(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            GestureDetector(
-              onTap: () => launchUrlString(
-                  'https://forms.gle/YR9EnmqK9t9SbAXX8',
-                  mode: LaunchMode.externalApplication),
-              child: Container(
-                  decoration:
-                      BoxDecoration(borderRadius: BorderRadius.circular(20)),
-                  clipBehavior: Clip.hardEdge,
-                  width: MediaQuery.of(context).size.width - 55,
-                  // height: 475,
-                  child: Image.asset('assets/event/가입이벤트.png')),
-            ),
-            const SizedBox(height: 20),
-            GestureDetector(
-              onTap: () {
-                Navigator.of(context).pop();
-              },
-              child: Container(
-                alignment: Alignment.center,
-                padding: const EdgeInsets.symmetric(vertical: 10),
-                width: MediaQuery.of(context).size.width - 55,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(30),
-                  color: coral01,
-                ),
-                child: DefaultTextStyle(
-                  style: TextStyle(
-                      color: gray01, fontSize: 16, fontWeight: FontWeight.w700),
-                  child: const Text(
-                    '닫기',
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-              ),
-            ),
-          ],
-        );
-        //  AlertDialog(
-        //   elevation: 0,
-        //   backgroundColor: Colors.transparent,
-        //   content: Container(
-        //       // height: MediaQuery.of(context).size.height * 0.6,
-        //       width: MediaQuery.of(context).size.width * 0.3,
-        //       decoration: BoxDecoration(
-        //         borderRadius: BorderRadius.circular(10),
-        //       ),
-        //       clipBehavior: Clip.hardEdge,
-        //       child: SingleChildScrollView(
-        //         child: GestureDetector(
-        //           onTap: () => launchUrlString(
-        //               'https://forms.gle/YR9EnmqK9t9SbAXX8',
-        //               mode: LaunchMode.externalApplication),
-        //           child: Image.asset(
-        //             'assets/event/가입이벤트.png',
-        //             fit: BoxFit.cover,
-        //           ),
-        //         ),
-        //       )),
-        //   actions: <Widget>[
-        //     GestureDetector(
-        //       onTap: () {
-        //         Navigator.of(context).pop();
-        //       },
-        //       child: Container(
-        //           padding: const EdgeInsets.symmetric(vertical: 10),
-        //           width: MediaQuery.of(context).size.width * 0.95,
-        //           decoration: BoxDecoration(
-        //             borderRadius: BorderRadius.circular(30),
-        //             color: coral01,
-        //           ),
-        //           child: Text('닫기',
-        //               textAlign: TextAlign.center,
-        //               style: TextStyle(
-        //                   color: gray01,
-        //                   fontSize: 16,
-        //                   fontWeight: FontWeight.w700))),
-        //     ),
-        //   ],
-        // );
-      },
-    );
-  }
+  // void showDialogFunction(BuildContext context) {
+  //   showDialog(
+  //     context: context,
+  //     builder: (BuildContext context) {
+  //       return Column(
+  //         mainAxisAlignment: MainAxisAlignment.center,
+  //         children: [
+  //           GestureDetector(
+  //             onTap: () => launchUrlString(
+  //                 'https://forms.gle/YR9EnmqK9t9SbAXX8',
+  //                 mode: LaunchMode.externalApplication),
+  //             child: Container(
+  //                 decoration:
+  //                     BoxDecoration(borderRadius: BorderRadius.circular(20)),
+  //                 clipBehavior: Clip.hardEdge,
+  //                 width: MediaQuery.of(context).size.width - 55,
+  //                 // height: 475,
+  //                 child: Image.asset('assets/event/가입이벤트.png')),
+  //           ),
+  //           const SizedBox(height: 20),
+  //           GestureDetector(
+  //             onTap: () {
+  //               Navigator.of(context).pop();
+  //             },
+  //             child: Container(
+  //               alignment: Alignment.center,
+  //               padding: const EdgeInsets.symmetric(vertical: 10),
+  //               width: MediaQuery.of(context).size.width - 55,
+  //               decoration: BoxDecoration(
+  //                 borderRadius: BorderRadius.circular(30),
+  //                 color: coral01,
+  //               ),
+  //               child: DefaultTextStyle(
+  //                 style: TextStyle(
+  //                     color: gray01, fontSize: 16, fontWeight: FontWeight.w700),
+  //                 child: const Text(
+  //                   '닫기',
+  //                   textAlign: TextAlign.center,
+  //                 ),
+  //               ),
+  //             ),
+  //           ),
+  //         ],
+  //       );
+  //       //  AlertDialog(
+  //       //   elevation: 0,
+  //       //   backgroundColor: Colors.transparent,
+  //       //   content: Container(
+  //       //       // height: MediaQuery.of(context).size.height * 0.6,
+  //       //       width: MediaQuery.of(context).size.width * 0.3,
+  //       //       decoration: BoxDecoration(
+  //       //         borderRadius: BorderRadius.circular(10),
+  //       //       ),
+  //       //       clipBehavior: Clip.hardEdge,
+  //       //       child: SingleChildScrollView(
+  //       //         child: GestureDetector(
+  //       //           onTap: () => launchUrlString(
+  //       //               'https://forms.gle/YR9EnmqK9t9SbAXX8',
+  //       //               mode: LaunchMode.externalApplication),
+  //       //           child: Image.asset(
+  //       //             'assets/event/가입이벤트.png',
+  //       //             fit: BoxFit.cover,
+  //       //           ),
+  //       //         ),
+  //       //       )),
+  //       //   actions: <Widget>[
+  //       //     GestureDetector(
+  //       //       onTap: () {
+  //       //         Navigator.of(context).pop();
+  //       //       },
+  //       //       child: Container(
+  //       //           padding: const EdgeInsets.symmetric(vertical: 10),
+  //       //           width: MediaQuery.of(context).size.width * 0.95,
+  //       //           decoration: BoxDecoration(
+  //       //             borderRadius: BorderRadius.circular(30),
+  //       //             color: coral01,
+  //       //           ),
+  //       //           child: Text('닫기',
+  //       //               textAlign: TextAlign.center,
+  //       //               style: TextStyle(
+  //       //                   color: gray01,
+  //       //                   fontSize: 16,
+  //       //                   fontWeight: FontWeight.w700))),
+  //       //     ),
+  //       //   ],
+  //       // );
+  //     },
+  //   );
+  // }
 
   @override
   Widget build(BuildContext context) {
