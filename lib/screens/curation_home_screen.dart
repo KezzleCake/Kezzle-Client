@@ -193,7 +193,6 @@ class CurationHomeScreenState extends ConsumerState<CurationHomeScreen>
   }
 
   void popUpTest() async {
-    //TODO: 두번씩 호출되는거 어쩔거야..
 
     showDialog(
         context: context,

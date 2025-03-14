@@ -30,9 +30,6 @@ class DetailStoreScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     Future<DetailStoreModel?> fetchDetailStoreData() async {
-      // final lat = ref.watch(searchSettingViewModelProvider).latitude;
-      // final lng = ref.watch(searchSettingViewModelProvider).longitude;
-
       final response = await ref.read(storeRepo).fetchDetailStore(
             storeId: storeId, /* lat: lat, lng: lng*/
           );
@@ -102,15 +99,6 @@ class DetailStoreScreen extends ConsumerWidget {
         return Padding(
             padding: const EdgeInsets.all(20),
             child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              // CircleAvatar(
-
-              //   radius: 63 / 2,
-              //   foregroundImage: NetworkImage(store.logo != null
-              //       ? store.logo!.s3Url.replaceFirst("https", "http")
-              //       : ''),
-              //   onForegroundImageError: (exception, stackTrace) =>
-              //       const SizedBox(),
-              // ),
               Container(
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
@@ -137,16 +125,7 @@ class DetailStoreScreen extends ConsumerWidget {
                           fontWeight: FontWeight.w600,
                         )),
                     const SizedBox(height: 3),
-                    // Row(children: [
-                    //   FaIcon(FontAwesomeIcons.solidStar, size: 14, color: orange01),
-                    //   const SizedBox(width: 3),
-                    //   Text('4.5(100+)',
-                    //       style: TextStyle(
-                    //         fontSize: 12,
-                    //         color: gray07,
-                    //         fontWeight: FontWeight.w600,
-                    //       )),
-                    // ]),
+
                     const SizedBox(height: 8),
                     if (store.storeFeature != null &&
                         store.storeFeature!.isNotEmpty) ...[
